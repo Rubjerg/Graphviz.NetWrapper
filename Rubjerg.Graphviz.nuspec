@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+    <metadata>
+        <id>Rubjerg.Graphviz</id>
+        <version>1.0.1</version>
+        <authors>Chiel ten Brinke</authors>
+        <owners>Chiel ten Brinke</owners>
+        <licenseUrl>https://github.com/Rubjerg/Graphviz.NetWrapper/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Lean wrapper around Graphviz for building graphs, reading/writing dot files, exporting images, or reading out layout parameters.</description>
+        <copyright>Copyright 2020</copyright>
+        <tags>graphviz dotnet graphdrawing</tags>
+    </metadata>
+    <files>
+        <file src="NativeFiles\*" target="build\NativeFiles" />
+        <file src="*.targets" target="build" />
+        <file src="Rubjerg.Graphviz\bin\Release\Rubjerg.Graphviz.dll" target="lib" />
+    </files>
+</package>

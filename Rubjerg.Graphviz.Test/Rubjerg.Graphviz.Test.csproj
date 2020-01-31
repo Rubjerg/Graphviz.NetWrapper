@@ -17,6 +17,8 @@
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
@@ -76,18 +78,13 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Rubjerg.Graphviz\Rubjerg.Graphviz.csproj">
-      <Project>{66D83B79-08D5-4590-90E3-8F6CDF108D5E}</Project>
+      <Project>{66d83b79-08d5-4590-90e3-8f6cdf108d5e}</Project>
       <Name>Rubjerg.Graphviz</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="postbuildalways.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
@@ -109,6 +106,21 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PowerShell># 2&gt;nul || type %~df0|find /v "setlocal"|find /v "errorlevel"|powershell.exe -noninteractive -&amp; exit %errorlevel% || #</PowerShell>
+  </PropertyGroup>
+  <Target Name="AfterBuild">
+    <PropertyGroup>
+      <GenerateReadme>$(PowerShell)
+        Write-Host "Generating README.md"
+        Get-Content ../README-src.md | Set-Content ../README.md
+        Add-Content ../README.md '```cs'
+        Get-Content Tutorial.cs | Add-Content ../README.md
+        Add-Content ../README.md '```'
+      </GenerateReadme>
+    </PropertyGroup>
+    <Exec Command="$(GenerateReadme)" EchoOff="true" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

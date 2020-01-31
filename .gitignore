@@ -2,3 +2,5 @@
 packages/
 TestResult.xml
 coverage.xml
+*.nupkg
+NativeFiles

@@ -56,36 +56,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\CGraphThing.cs" />
-    <Compile Include="Src\ForeignFunctionInterface.cs" />
-    <Compile Include="Src\Edge.cs" />
-    <Compile Include="Src\Graph.cs" />
-    <Compile Include="Src\Node.cs" />
-    <Compile Include="Src\RootGraph.cs" />
-    <Compile Include="Src\GraphComparer.cs" />
+    <Compile Include="CGraphThing.cs" />
+    <Compile Include="ForeignFunctionInterface.cs" />
+    <Compile Include="Edge.cs" />
+    <Compile Include="Graph.cs" />
+    <Compile Include="Node.cs" />
+    <Compile Include="RootGraph.cs" />
+    <Compile Include="GraphComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Src\Utils.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\SubGraph.cs" />
+    <Compile Include="SubGraph.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\GraphVizThing.cs" />
+    <Compile Include="GraphVizThing.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\GraphVizLabel.cs" />
+    <Compile Include="GraphVizLabel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="postbuildalways.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <GraphvizFiles Include="$(MSBuildThisFileDirectory)..\GraphvizWrapper\bin\$(Configuration)\*" />
-    <None Include="@(GraphvizFiles)">
-      <Link>%(FileName)%(Extension)</Link>
+    <ProjectReference Include="..\GraphvizWrapper\GraphvizWrapper.vcxproj">
+      <Project>{F9BC5523-352D-469F-8DBB-97ECA9D70648}</Project>
+      <Name>GraphvizWrapper</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Content</OutputItemType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
