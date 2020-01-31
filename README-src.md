@@ -4,32 +4,33 @@ Graphviz.NetWrapper
 [![Build status](https://ci.appveyor.com/api/projects/status/4bhyr3dvo6kap9mn?svg=true)](https://ci.appveyor.com/project/Chiel92/graphviz-netwrapper)
 [![codecov](https://codecov.io/gh/Rubjerg/Graphviz.NetWrapper/branch/master/graph/badge.svg)](https://codecov.io/gh/Rubjerg/Graphviz.NetWrapper)
 
+## Supported platforms
+
+At the moment, `Rubjerg.Graphviz` ships with a bunch of precompiled Graphviz dlls built for
+Windows. In the future support may be extended to other platforms.
+
 ## Contributing
+
+This project aims to provide a thin .NET layer around the Graphviz C++ libraries. Pull request
+that fall within the scope of this project are welcome.
 
 ## Installation
 
-### Adding the Rubjerg.Graphviz code into your solution
-If you want to add Rubjerg.Graphviz to your solution you have to take a few hurdles because msbuild can't deal
-with unmanaged compilation artifacts.
-1. Make this code available to your solution, e.g. by adding this repository as a git submodule to your repository.
-2. Add both the projects Rubjerg.Graphviz and GraphvizWrapper to your solution.
-3. Add GraphvizWrapper as build dependency of Rubjerg.Graphviz in your solution.
-4. For your project that wants to reference Rubjerg.Graphviz, add a reference to it, like with normal project references.
-5. To the bottom (but within the `<Project>` tags) of your project file (.csproj), add the following post build
-   step (make sure you use the correct path to the GraphvizWrapper artifacts):
-```xml
-  <Target Name="AfterBuild">
-    <ItemGroup>
-      <GraphvizFiles Include="..\Graphviz.NetWrapper\GraphvizWrapper\bin\$(Configuration)\**" />
-    </ItemGroup>
-    <Copy SourceFiles="@(GraphvizFiles)" DestinationFolder="$(TargetDir)\%(RecursiveDir)" SkipUnchangedFiles="true" />
-  </Target>
-```
+You can either add this library as a nuget package to project, or include the source and add a
+project reference.
+
+### Adding as a Nuget package
+
+Add the [Rubjerg.Graphviz nuget package](https://www.nuget.org/packages/Rubjerg.Graphviz/) to
+your project.
+
+### Adding the Rubjerg.Graphviz code to your project or solution
+1. Make this code available to your own code, e.g. by adding this repository as a git submodule to your own repository.
+2. Add the project Rubjerg.Graphviz to your solution.
+3. To use Rubjerg.Graphviz within a project, simply add a project reference to it.
 
 When building your project, you should now see all the Graphviz binaries show up in your output
 folder.
-
-### Adding the Nuget package to your project
 
 ## Documentation
 
