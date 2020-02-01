@@ -56,11 +56,13 @@ namespace Rubjerg.Graphviz.Test
         {
             // You can programmatically construct graphs as follows
             RootGraph root = RootGraph.CreateNew("Some Unique Identifier", GraphType.Directed);
+
             // The node names are unique identifiers within a graph in Graphviz
             Node node1 = root.GetOrAddNode("Unique node name 1");
             Node node2 = root.GetOrAddNode("Unique node name 2");
             Node node3 = root.GetOrAddNode("Unique node name 3");
             Node node4 = root.GetOrAddNode("Unique node name 4");
+
             // The edge name is only unique between two nodes
             Edge edge1 = root.GetOrAddEdge(node1, node2, "Edge name");
             Edge edge2 = root.GetOrAddEdge(node2, node3, "Edge name");
@@ -94,24 +96,30 @@ namespace Rubjerg.Graphviz.Test
             root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/dot_out.svg");
 
             // Or programatically read out the layout attributes
-            Node node1 = root.GetNode("Unique node name 1");
-            Node node2 = root.GetNode("Unique node name 2");
-            PointF pos1 = node1.Position();
-            TestContext.WriteLine(pos1.ToString());
-            RectangleF nodeboundingbox = node1.BoundingBox();
+            Node node = root.GetNode("Unique node name 1");
+            PointF pos = node.Position();
+            TestContext.WriteLine(pos.ToString());
+
+            RectangleF nodeboundingbox = node.BoundingBox();
             TestContext.WriteLine(nodeboundingbox.ToString());
-            Edge edge = root.GetEdge(node1, node2, "Edge name");
-            PointF[] spline1 = edge.FirstSpline();
-            TestContext.WriteLine(string.Join(", ", spline1.Select(p => p.ToString())));
+
+            Node node2 = root.GetNode("Unique node name 2");
+            Edge edge = root.GetEdge(node, node2, "Edge name");
+            PointF[] spline = edge.FirstSpline();
+            TestContext.WriteLine(string.Join(", ", spline.Select(p => p.ToString())));
 
             // Once all layout information is obtained from the graph, the resources should be
             // reclaimed. To do this, the application should call the cleanup routine associated
             // with the layout algorithm used to draw the graph. This is done by a call to
-            // FreeLayout()
-            root.FreeLayout();
+            // FreeLayout().
             // A given graph can be laid out multiple times. The application, however, must
-            // clean up the earlier layout's information with a call to gvFreeLayout before
-            // invoking a new layout function
+            // clean up the earlier layout's information with a call to FreeLayout before
+            // invoking a new layout function.
+            root.FreeLayout();
+
+            // We can use layout engines other than dot by explicitly passing the engine we want
+            root.ComputeLayout(LayoutEngines.Neato);
+            root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/neato_out.svg");
         }
     }
 }

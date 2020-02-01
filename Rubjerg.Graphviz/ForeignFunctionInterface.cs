@@ -60,14 +60,14 @@ namespace Rubjerg.Graphviz
                 return gvFreeLayout(gvc, graph);
             }
         }
-        public static IntPtr GvRender(IntPtr gvc, IntPtr graph, string format, IntPtr @out)
+        public static int GvRender(IntPtr gvc, IntPtr graph, string format, IntPtr @out)
         {
             lock (Mutex)
             {
                 return gvRender(gvc, graph, format, @out);
             }
         }
-        public static IntPtr GvRenderFilename(IntPtr gvc, IntPtr graph, string format, string filename)
+        public static int GvRenderFilename(IntPtr gvc, IntPtr graph, string format, string filename)
         {
             lock (Mutex)
             {
@@ -499,9 +499,9 @@ namespace Rubjerg.Graphviz
         [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern int gvFreeLayout(IntPtr gvc, IntPtr graph);
         [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr gvRender(IntPtr gvc, IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string format, IntPtr @out);
+        private static extern int gvRender(IntPtr gvc, IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string format, IntPtr @out);
         [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr gvRenderFilename(IntPtr gvc, IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string format, [MarshalAs(UnmanagedType.LPStr)] string filename);
+        private static extern int gvRenderFilename(IntPtr gvc, IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string format, [MarshalAs(UnmanagedType.LPStr)] string filename);
 
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr agnode(IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string name, int create);
