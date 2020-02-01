@@ -58,26 +58,33 @@ namespace Rubjerg.Graphviz.Test
             RootGraph root = RootGraph.CreateNew("Some Unique Identifier", GraphType.Directed);
 
             // The node names are unique identifiers within a graph in Graphviz
-            Node node1 = root.GetOrAddNode("Unique node name 1");
-            Node node2 = root.GetOrAddNode("Unique node name 2");
-            Node node3 = root.GetOrAddNode("Unique node name 3");
-            Node node4 = root.GetOrAddNode("Unique node name 4");
+            Node nodeA = root.GetOrAddNode("A");
+            Node nodeB = root.GetOrAddNode("B");
+            Node nodeC = root.GetOrAddNode("C");
+            Node nodeD = root.GetOrAddNode("D");
 
             // The edge name is only unique between two nodes
-            Edge edge1 = root.GetOrAddEdge(node1, node2, "Edge name");
-            Edge edge2 = root.GetOrAddEdge(node2, node3, "Edge name");
+            Edge edgeAB = root.GetOrAddEdge(nodeA, nodeB, "Some edge name");
+            Edge edgeBC = root.GetOrAddEdge(nodeB, nodeC, "Some edge name");
+            Edge anotherEdgeBC = root.GetOrAddEdge(nodeB, nodeC, "Another edge name");
 
-            // We can attach attributes to nodes, edges and graphs to store information and
-            // instruct graphviz by specifying layout parameters. At the moment we only support
-            // string attributes. Cgraph assumes that all objects of a given
-            // kind(graphs/subgraphs, nodes, or edges) have the same attributes - there's no
-            // notion of subtyping within attributes.
-            // The attributes first have to be introduced for a certain kind, before we can use it.
+            // When a subgraph name is prefixed with cluster,
+            // the dot layout engine will render it as a box around the containing nodes.
+            SubGraph cluster = root.GetOrAddSubgraph("cluster_1");
+            cluster.AddExisting(nodeB);
+            cluster.AddExisting(nodeC);
+
+            // We can attach attributes to nodes, edges and graphs to store information and instruct
+            // graphviz by specifying layout parameters. At the moment we only support string
+            // attributes. Cgraph assumes that all objects of a given kind (graphs/subgraphs, nodes,
+            // or edges) have the same attributesThe attributes first have to be introduced for a
+            // certain kind, before we can use it.
             Node.IntroduceAttribute(root, "my attribute", "defaultvalue");
-            node1.SetAttribute("my attribute", "othervalue");
+            nodeA.SetAttribute("my attribute", "othervalue");
 
             // To introduce and set an attribute at the same time, there are convenience wrappers
-            edge1.SafeSetAttribute("color", "red", "black");
+            edgeAB.SafeSetAttribute("color", "red", "black");
+            edgeBC.SafeSetAttribute("arrowsize", "2.0", "1.0");
 
             // We can simply export this graph to a text file in dot format
             root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
@@ -96,24 +103,30 @@ namespace Rubjerg.Graphviz.Test
             root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/dot_out.svg");
 
             // Or programatically read out the layout attributes
-            Node node = root.GetNode("Unique node name 1");
-            PointF pos = node.Position();
-            TestContext.WriteLine(pos.ToString());
+            Node nodeA = root.GetNode("A");
+            PointF position = nodeA.Position();
+            Assert.AreEqual("{X=43, Y=178}", position.ToString());
 
-            RectangleF nodeboundingbox = node.BoundingBox();
-            TestContext.WriteLine(nodeboundingbox.ToString());
+            RectangleF nodeboundingbox = nodeA.BoundingBox();
+            Assert.AreEqual("{X=16,Y=160,Width=54,Height=36}", nodeboundingbox.ToString());
 
-            Node node2 = root.GetNode("Unique node name 2");
-            Edge edge = root.GetEdge(node, node2, "Edge name");
+            Node nodeB = root.GetNode("B");
+            Edge edge = root.GetEdge(nodeA, nodeB, "Some edge name");
             PointF[] spline = edge.FirstSpline();
-            TestContext.WriteLine(string.Join(", ", spline.Select(p => p.ToString())));
+            string splineString = string.Join(", ", spline.Select(p => p.ToString()));
+            string expectedSplineString = "{X=0, Y=0}, {X=43, Y=159.7}, {X=43, Y=151.98},"
+                + " {X=43, Y=142.71}, {X=43, Y=134.11}";
+            Assert.AreEqual(expectedSplineString, splineString);
+
+            GraphVizLabel nodeLabel = nodeA.GetLabel();
+            Assert.AreEqual("{X=37.9467,Y=169.6,Width=10.1066,Height=16.8}", nodeLabel.BoundingBox().ToString());
+            Assert.AreEqual("Times-Roman", nodeLabel.FontName().ToString());
 
             // Once all layout information is obtained from the graph, the resources should be
             // reclaimed. To do this, the application should call the cleanup routine associated
             // with the layout algorithm used to draw the graph. This is done by a call to
-            // FreeLayout().
-            // A given graph can be laid out multiple times. The application, however, must
-            // clean up the earlier layout's information with a call to FreeLayout before
+            // FreeLayout(). A given graph can be laid out multiple times. The application, however,
+            // must clean up the earlier layout's information with a call to FreeLayout before
             // invoking a new layout function.
             root.FreeLayout();
 
