@@ -105,21 +105,21 @@ namespace Rubjerg.Graphviz.Test
             // Or programatically read out the layout attributes
             Node nodeA = root.GetNode("A");
             PointF position = nodeA.Position();
-            Assert.AreEqual("{X=43, Y=178}", position.ToString());
+            Assert.AreEqual("{X=43, Y=192.1739}", position.ToString());
 
             RectangleF nodeboundingbox = nodeA.BoundingBox();
-            Assert.AreEqual("{X=16,Y=160,Width=54,Height=36}", nodeboundingbox.ToString());
+            Assert.AreEqual("{X=16,Y=171.3391,Width=54,Height=41.66957}", nodeboundingbox.ToString());
 
             Node nodeB = root.GetNode("B");
             Edge edge = root.GetEdge(nodeA, nodeB, "Some edge name");
             PointF[] spline = edge.FirstSpline();
             string splineString = string.Join(", ", spline.Select(p => p.ToString()));
-            string expectedSplineString = "{X=0, Y=0}, {X=43, Y=159.7}, {X=43, Y=151.98},"
-                + " {X=43, Y=142.71}, {X=43, Y=134.11}";
+            string expectedSplineString = "{X=0, Y=0}, {X=43, Y=171.29}, {X=43, Y=163.45},"
+                + " {X=43, Y=154.26}, {X=43, Y=145.63}";
             Assert.AreEqual(expectedSplineString, splineString);
 
             GraphVizLabel nodeLabel = nodeA.GetLabel();
-            Assert.AreEqual("{X=37.9467,Y=169.6,Width=10.1066,Height=16.8}", nodeLabel.BoundingBox().ToString());
+            Assert.AreEqual("{X=36.25977,Y=181.4415,Width=13.48047,Height=21.46484}", nodeLabel.BoundingBox().ToString());
             Assert.AreEqual("Times-Roman", nodeLabel.FontName().ToString());
 
             // Once all layout information is obtained from the graph, the resources should be
