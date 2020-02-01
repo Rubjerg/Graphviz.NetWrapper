@@ -60,6 +60,7 @@
     <Compile Include="ForeignFunctionInterface.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="Graph.cs" />
+    <Compile Include="LayoutEngines.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="RootGraph.cs" />
     <Compile Include="GraphComparer.cs" />

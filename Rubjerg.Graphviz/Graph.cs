@@ -422,23 +422,19 @@ namespace Rubjerg.Graphviz
         /// NB: The method FreeLayout should always be called as soon as the layout information
         /// of a graph is not needed anymore.
         /// </summary>
-        public void ComputeLayout(string engine="dot")
+        public void ComputeLayout(string engine = LayoutEngines.Dot)
         {
-            try
-            {
-                int layout_rc = GvLayout(GVC, _ptr, engine);
-                Debug.Assert(layout_rc == 0);
+            int layout_rc = GvLayout(GVC, _ptr, engine);
+            if (layout_rc != 0)
+                throw new ApplicationException($"Graphviz layout returned error code {layout_rc}");
 
-                // Calling gvRender this way sets attributes to the graph etc
-                // The engine specified here doesn't have to be the same as the above.
-                // We always want to use dot here, independently of the layout algorithm,
-                // to ensure a consistent attribute layout.
-                GvRender(GVC, _ptr, "dot", IntPtr.Zero);
-            }
-            catch (Exception er)
-            {
-                Debug.WriteLine("error: {0}", er.ToString());
-            }
+            // Calling gvRender this way sets attributes to the graph etc
+            // The engine specified here doesn't have to be the same as the above.
+            // We always want to use dot here, independently of the layout algorithm,
+            // to ensure a consistent attribute layout.
+            int render_rc = GvRender(GVC, _ptr, "dot", IntPtr.Zero);
+            if (render_rc != 0)
+                throw new ApplicationException($"Graphviz render returned error code {render_rc}");
         }
 
         /// <summary>
@@ -449,7 +445,9 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public void FreeLayout()
         {
-            GvFreeLayout(GVC, _ptr);
+            var free_rc = GvFreeLayout(GVC, _ptr);
+            if (free_rc != 0)
+                throw new ApplicationException($"Graphviz render returned error code {free_rc}");
         }
 
         /// <summary>
@@ -457,7 +455,9 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public void ToSvgFile(string filename)
         {
-            GvRenderFilename(GVC, _ptr, "svg", filename);
+            var render_rc = GvRenderFilename(GVC, _ptr, "svg", filename);
+            if (render_rc != 0)
+                throw new ApplicationException($"Graphviz render returned error code {render_rc}");
         }
 
         public void ToDotFile(string filename)
