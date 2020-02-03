@@ -75,8 +75,15 @@ namespace Rubjerg.Graphviz.Test
             Assert.AreEqual(expectedSplineString, splineString);
 
             GraphVizLabel nodeLabel = nodeA.GetLabel();
-            Assert.AreEqual("{X=36.25977,Y=181.4415,Width=13.48047,Height=21.46484}", nodeLabel.BoundingBox().ToString());
+            Assert.AreEqual("{X=36.25977,Y=181.4415,Width=13.48047,Height=21.46484}",
+                nodeLabel.BoundingBox().ToString());
             Assert.AreEqual("Times-Roman", nodeLabel.FontName().ToString());
+
+            SubGraph cluster = root.GetSubgraph("cluster_1");
+            RectangleF clusterbox = cluster.BoundingBox();
+            RectangleF rootgraphbox = root.BoundingBox();
+            Assert.AreEqual("{X=8,Y=8,Width=70,Height=135.34}", clusterbox.ToString());
+            Assert.AreEqual("{X=0,Y=0,Width=142,Height=213.01}", rootgraphbox.ToString());
 
             // Once all layout information is obtained from the graph, the resources should be
             // reclaimed. To do this, the application should call the cleanup routine associated
