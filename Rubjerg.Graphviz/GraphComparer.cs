@@ -6,7 +6,7 @@ namespace Rubjerg.Graphviz
 {
     public static class GraphComparer
     {
-        public static bool CheckTopologicallyEquals(RootGraph A, RootGraph B, Action<string> logger)
+        public static bool CheckTopologicallyEquals(Graph A, Graph B, Action<string> logger)
         {
             logger($"Comparing graph A = '{A.GetName()}' with graph B = '{B.GetName()}'");
             logger("");
@@ -37,7 +37,7 @@ namespace Rubjerg.Graphviz
 
             foreach (var nodename in common_nodenames)
             {
-                result &= CheckNode(A.GetNode(nodename), B.GetNode(nodename), logger);
+                result &= CheckNode(A, B, A.GetNode(nodename), B.GetNode(nodename), logger);
             }
 
             logger("");
@@ -45,52 +45,52 @@ namespace Rubjerg.Graphviz
             return result;
         }
 
-        private static bool CheckNode(Node A, Node B, Action<string> logger)
+        private static bool CheckNode(Graph A, Graph B, Node nA, Node nB, Action<string> logger)
         {
-            return InnerCheckNode(A, B, logger, "B") & InnerCheckNode(B, A, logger, "A");
+            return InnerCheckNode(A, B, nA, nB, logger, "B") & InnerCheckNode(B, A, nA, nB, logger, "A");
         }
 
-        private static bool InnerCheckNode(Node A, Node B, Action<string> logger, string nameOfGraphOfNodeB)
+        private static bool InnerCheckNode(Graph A, Graph B, Node nA, Node nB, Action<string> logger, string nameOfGraphOfNodeB)
         {
             bool result = true;
-            foreach (var a in A.EdgesOut())
+            foreach (var eA in nA.EdgesOut(A))
             {
-                var expected_endpoint = a.OppositeEndpoint(A);
+                var expected_endpoint = eA.OppositeEndpoint(nA);
                 bool diff = false;
-                if (!B.EdgesOut().Any(b => CheckEdgeName(a, b)))
+                if (!nB.EdgesOut(B).Any(eB => CheckEdgeName(eA, eB)))
                 {
-                    logger($@"In graph {nameOfGraphOfNodeB} the node '{B.GetName()}' does not have an outgoing edge with name '{a.GetName()}'");
+                    logger($@"In graph {nameOfGraphOfNodeB} the node '{nB.GetName()}' does not have an outgoing edge with name '{eA.GetName()}'");
                     result = false;
                     diff = true;
                 }
-                if (!B.EdgesOut().Any(b => CheckEdgeEndpoints(a, b)))
+                if (!nB.EdgesOut(B).Any(eB => CheckEdgeEndpoints(eA, eB)))
                 {
-                    logger($@"In graph {nameOfGraphOfNodeB} the node '{B.GetName()}' does not have an outgoing edge with head '{expected_endpoint.GetName()}'");
+                    logger($@"In graph {nameOfGraphOfNodeB} the node '{nB.GetName()}' does not have an outgoing edge with head '{expected_endpoint.GetName()}'");
                     result = false;
                     diff = true;
                 }
-                if (!diff && !B.EdgesOut().Any(b => CheckEdge(a, b)))
+                if (!diff && !nB.EdgesOut(B).Any(eB => CheckEdge(eA, eB)))
                 {
-                    logger($@"In graph {nameOfGraphOfNodeB} the node '{B.GetName()}' does not have an outgoing edge with **both** name '{a.GetName()}' and head '{expected_endpoint.GetName()}'");
+                    logger($@"In graph {nameOfGraphOfNodeB} the node '{nB.GetName()}' does not have an outgoing edge with **both** name '{eA.GetName()}' and head '{expected_endpoint.GetName()}'");
                     result = false;
                 }
             }
             return result;
         }
 
-        public static bool CheckEdge(Edge A, Edge B)
+        public static bool CheckEdge(Edge eA, Edge eB)
         {
-            return CheckEdgeName(A, B) && CheckEdgeEndpoints(A, B);
+            return CheckEdgeName(eA, eB) && CheckEdgeEndpoints(eA, eB);
         }
 
-        public static bool CheckEdgeName(Edge A, Edge B)
+        public static bool CheckEdgeName(Edge eA, Edge eB)
         {
-            return A.GetName() == B.GetName();
+            return eA.GetName() == eB.GetName();
         }
 
-        public static bool CheckEdgeEndpoints(Edge A, Edge B)
+        public static bool CheckEdgeEndpoints(Edge eA, Edge eB)
         {
-            return A.Head().GetName() == B.Head().GetName() && A.Tail().GetName() == B.Tail().GetName();
+            return eA.Head().GetName() == eB.Head().GetName() && eA.Tail().GetName() == eB.Tail().GetName();
         }
 
     }

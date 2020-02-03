@@ -23,7 +23,7 @@ namespace Rubjerg.Graphviz.Test
             for (int i = 1; i < size; i++)
             {
                 var node = root.GetOrAddNode(i.ToString());
-                root.GetOrAddEdge(centernode, node, "");
+                root.GetOrAddEdge(centernode, node, $"{0} to {i}");
             }
 
             // For each node pick requested number of random neighbors
@@ -35,7 +35,7 @@ namespace Rubjerg.Graphviz.Test
                     var node = root.GetNode(i.ToString());
                     int j = rand.Next(size - 1);
                     var neighbor = root.GetNode(j.ToString());
-                    root.GetOrAddEdge(node, neighbor, "");
+                    root.GetOrAddEdge(node, neighbor, $"{i} to {j}");
                 }
             }
 

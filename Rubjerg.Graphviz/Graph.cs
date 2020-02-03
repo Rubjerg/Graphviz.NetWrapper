@@ -164,24 +164,37 @@ namespace Rubjerg.Graphviz
         }
 
         /// <summary>
+        /// Create and return a subgraph containing the given edges and their endpoints.
+        /// </summary>
+        public SubGraph AddSubgraphFromEdgeSet(string name, HashSet<Edge> edges)
+        {
+            var result = SubGraph.GetOrCreate(this, name);
+            result.AddExisting(edges);
+            // Since subgraphs can contain edges independently of their endpoints,
+            // we need to add the endpoints explicitly.
+            result.AddExisting(edges.SelectMany(e => new[] { e.Tail(), e.Head() }));
+            return result;
+        }
+
+        /// <summary>
         /// Create a subgraph consisting of nodes from the given nodes.
-        /// Edges are added to the result if both endpoints are in the nodes.
-        /// Subgraphs are added to the result if they have nodes in the nodelist.
+        /// Edges are added to the result if both endpoints are among the nodes.
+        /// Subgraphs are added to the result if they have nodes in the given nodelist.
+        /// The names of the Subgraphs are of the form "name:subgraphname".
         /// 
         /// Side effect: adds the returned subgraph (and its children) to self.
         /// </summary>
-        public SubGraph FromNodes(HashSet<Node> nodes)
+        public SubGraph AddSubgraphFromNodes(string name, IEnumerable<Node> nodes)
         {
             // Freeze the list of descendants,
             // since we are going to add subgraphs while iterating over existing subgraphs
             List<SubGraph> descendants = Descendants().ToList();
 
-            string resultname = "Filtered-subgraph-" + Guid.NewGuid().ToString();
-            SubGraph result = GetOrAddSubgraph(resultname);
+            SubGraph result = GetOrAddSubgraph(name);
             foreach (var node in nodes)
                 result.AddExisting(node);
 
-            Debug.Assert(result.Nodes().Count() == nodes.Count);
+            Debug.Assert(result.Nodes().Count() == nodes.Count());
 
             // All that remains to do is to patch up the result by adding edges and subgraphs
             foreach (var node in result.Nodes())
@@ -189,13 +202,13 @@ namespace Rubjerg.Graphviz
                     if (result.Contains(edge.Head()))
                         result.AddExisting(edge);
 
-            Debug.Assert(result.Nodes().Count() == nodes.Count);
+            Debug.Assert(result.Nodes().Count() == nodes.Count());
 
             // Iterate over the (frozen) existing subgraphs and add new filtered subgraphs
             // in the same hierarchical position as their unfiltered counterparts.
             foreach (var subgraph in descendants)
             {
-                string filteredsubgraphname = resultname + ":" + subgraph.GetName();
+                string filteredsubgraphname = name + ":" + subgraph.GetName();
                 Debug.WriteLine("Adding filtered subgraph {0}", filteredsubgraphname);
                 Graph parent = subgraph.Parent();
                 Graph filteredparent;
@@ -203,7 +216,7 @@ namespace Rubjerg.Graphviz
                     filteredparent = result;
                 else
                 {
-                    string parentname = resultname + ":" + parent.GetName();
+                    string parentname = name + ":" + parent.GetName();
                     filteredparent = result.GetDescendantByName(parentname);
                     Debug.Assert(filteredparent != null);
                 }
@@ -211,13 +224,13 @@ namespace Rubjerg.Graphviz
                 filteredparent.AddSubgraphFilteredByNodes(filteredsubgraphname, subgraph, nodes);
             }
 
-            Debug.Assert(result.Nodes().Count() == nodes.Count);
+            Debug.Assert(result.Nodes().Count() == nodes.Count());
 
             // Remove subgraphs again if they are empty
             // Again, we have to freeze the descendants we are enumerating, since we are disposing on the fly
             result.SafeDeleteSubgraphs(s => !s.Nodes().Any());
 
-            Debug.Assert(result.Nodes().Count() == nodes.Count);
+            Debug.Assert(result.Nodes().Count() == nodes.Count());
 
             return result;
         }
