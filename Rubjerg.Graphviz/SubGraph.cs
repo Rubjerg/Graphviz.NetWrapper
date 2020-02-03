@@ -62,18 +62,5 @@ namespace Rubjerg.Graphviz
         {
             Agclose(_ptr);
         }
-
-        /// <summary>
-        /// Create and return a subgraph containing the given edges and their endpoints.
-        /// </summary>
-        public static SubGraph FromEdgeSet(Graph parent, string name, HashSet<Edge> edges)
-        {
-            var result = GetOrCreate(parent, name);
-            result.AddExisting(edges);
-            // Since subgraphs can contain edges independently of their endpoints,
-            // we need to add the endpoints explicitly.
-            result.AddExisting(edges.SelectMany(e => new[] { e.Tail(), e.Head() }));
-            return result;
-        }
     }
 }

@@ -26,6 +26,40 @@ namespace Rubjerg.Graphviz.Test
             Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(root, clone, log));
         }
 
+        [TestCase(10, 5)]
+        public void TestTopologicalEqualsCloneWithSubgraphs(int nodes, int degree)
+        {
+            var root = CreateRandomConnectedGraph(nodes * SizeMultiplier, degree);
+            var nodeSelection = new HashSet<Node>(root.Nodes().Take(nodes / 2));
+            var sub = root.AddSubgraphFromNodes("sub", nodeSelection);
+
+            var subNodeCount = sub.Nodes().Count();
+            var nodeSelection2 = new HashSet<Node>(sub.Nodes().Take(subNodeCount / 2));
+            var sub2 = root.AddSubgraphFromNodes("sub2", nodeSelection2);
+
+            var edgeCount = sub2.Edges().Count();
+            var edgeSelection = new HashSet<Edge>(sub.Edges().Take(edgeCount / 2));
+            var sub3 = root.AddSubgraphFromEdgeSet("sub3", edgeSelection);
+
+            RootGraph subclone = sub.Clone("subclone");
+            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(sub, subclone, log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub, root, log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub, sub2, log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub, sub3, log));
+
+            RootGraph sub2clone = sub2.Clone("sub2clone");
+            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(sub2, sub2clone, log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub2, root, log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub2, sub, log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub2, sub3, log));
+
+            RootGraph sub3clone = sub3.Clone("sub3clone");
+            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(sub3, sub3clone, log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub3, root, log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub3, sub, log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub3, sub2, log));
+        }
+
         /// <summary>
         /// This test fails if the locking doesn't work, and the GC runs async.
         /// </summary>
