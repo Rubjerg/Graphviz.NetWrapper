@@ -7,7 +7,8 @@ Graphviz.NetWrapper
 ## Supported platforms
 
 At the moment, `Rubjerg.Graphviz` ships with a bunch of precompiled Graphviz dlls built for
-Windows. In the future support may be extended to other platforms.
+64 bit Windows with .NET Framework version 4.5 and higher.
+In the future support may be extended to other platforms.
 
 ## Contributing
 
