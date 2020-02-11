@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz
@@ -146,12 +145,6 @@ namespace Rubjerg.Graphviz
             }
 
             return 0;
-        }
-
-        public Color GetColor()
-        {
-            string colorstring = SafeGetAttribute("color", "Black");
-            return Color.FromName(colorstring);
         }
 
         public bool HasPosition()

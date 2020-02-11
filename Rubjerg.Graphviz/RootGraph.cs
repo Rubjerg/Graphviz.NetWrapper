@@ -59,7 +59,7 @@ namespace Rubjerg.Graphviz
         public static RootGraph FromDotFile(string filename)
         {
             string input;
-            using (var sr = new StreamReader(filename))
+            using (var sr = File.OpenText(filename))
                 input = sr.ReadToEnd();
 
             return FromDotString(input);

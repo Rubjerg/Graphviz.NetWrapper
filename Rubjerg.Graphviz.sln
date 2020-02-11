@@ -3,10 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rubjerg.Graphviz", "Rubjerg.Graphviz\Rubjerg.Graphviz.csproj", "{66D83B79-08D5-4590-90E3-8F6CDF108D5E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{F9BC5523-352D-469F-8DBB-97ECA9D70648} = {F9BC5523-352D-469F-8DBB-97ECA9D70648}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubjerg.Graphviz", "Rubjerg.Graphviz\Rubjerg.Graphviz.csproj", "{B05B07EC-03C8-4662-906D-03006F3E41C8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphvizWrapper", "GraphvizWrapper\GraphvizWrapper.vcxproj", "{F9BC5523-352D-469F-8DBB-97ECA9D70648}"
 EndProject
@@ -18,10 +15,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{66D83B79-08D5-4590-90E3-8F6CDF108D5E}.Debug|x64.ActiveCfg = Debug|x64
-		{66D83B79-08D5-4590-90E3-8F6CDF108D5E}.Debug|x64.Build.0 = Debug|x64
-		{66D83B79-08D5-4590-90E3-8F6CDF108D5E}.Release|x64.ActiveCfg = Release|x64
-		{66D83B79-08D5-4590-90E3-8F6CDF108D5E}.Release|x64.Build.0 = Release|x64
 		{F9BC5523-352D-469F-8DBB-97ECA9D70648}.Debug|x64.ActiveCfg = Debug|x64
 		{F9BC5523-352D-469F-8DBB-97ECA9D70648}.Debug|x64.Build.0 = Debug|x64
 		{F9BC5523-352D-469F-8DBB-97ECA9D70648}.Release|x64.ActiveCfg = Release|x64
@@ -35,6 +28,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {C3E34AE1-9B7D-4D90-9007-A063FEBB8BF1}
+		SolutionGuid = {A3B072D8-BD7C-4C3D-837B-D581B281B949}
 	EndGlobalSection
 EndGlobal

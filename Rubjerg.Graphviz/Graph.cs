@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -439,7 +438,7 @@ namespace Rubjerg.Graphviz
         {
             int layout_rc = GvLayout(GVC, _ptr, engine);
             if (layout_rc != 0)
-                throw new ApplicationException($"Graphviz layout returned error code {layout_rc}");
+                throw new GraphvizException($"Graphviz layout returned error code {layout_rc}");
 
             // Calling gvRender this way sets attributes to the graph etc
             // The engine specified here doesn't have to be the same as the above.
@@ -447,7 +446,7 @@ namespace Rubjerg.Graphviz
             // to ensure a consistent attribute layout.
             int render_rc = GvRender(GVC, _ptr, "dot", IntPtr.Zero);
             if (render_rc != 0)
-                throw new ApplicationException($"Graphviz render returned error code {render_rc}");
+                throw new GraphvizException($"Graphviz render returned error code {render_rc}");
         }
 
         /// <summary>
@@ -460,7 +459,7 @@ namespace Rubjerg.Graphviz
         {
             var free_rc = GvFreeLayout(GVC, _ptr);
             if (free_rc != 0)
-                throw new ApplicationException($"Graphviz render returned error code {free_rc}");
+                throw new GraphvizException($"Graphviz render returned error code {free_rc}");
         }
 
         /// <summary>
@@ -470,7 +469,7 @@ namespace Rubjerg.Graphviz
         {
             var render_rc = GvRenderFilename(GVC, _ptr, "svg", filename);
             if (render_rc != 0)
-                throw new ApplicationException($"Graphviz render returned error code {render_rc}");
+                throw new GraphvizException($"Graphviz render returned error code {render_rc}");
         }
 
         public void ToDotFile(string filename)
