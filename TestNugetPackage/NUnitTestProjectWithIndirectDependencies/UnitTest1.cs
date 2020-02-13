@@ -2,6 +2,7 @@ using NUnit.Framework;
 
 namespace NUnitTestProjectWithIndirectDependencies
 {
+    [TestFixture]
     public class Tests
     {
         [Test]
