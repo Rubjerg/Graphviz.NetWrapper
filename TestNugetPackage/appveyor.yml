@@ -1,4 +1,4 @@
 before_build:
-  - nuget restore
+  - nuget restore TestNugetPackage\TestNugetPackage.sln
 build_script:
-  - msbuild TestNugetPackage.sln
+  - msbuild TestNugetPackage\TestNugetPackage.sln
