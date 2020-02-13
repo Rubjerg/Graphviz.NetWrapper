@@ -61,6 +61,9 @@
       <AdditionalIncludeDirectories>include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>xcopy /y /d /s /e  "graphvizfiles" "$(OutDir)"</Command>
+    </PostBuildEvent>
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;cgraph.lib;gvc.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -81,6 +84,9 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>xcopy /y /d /s /e  "graphvizfiles" "$(OutDir)"</Command>
+    </PostBuildEvent>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
@@ -91,17 +97,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-  </ItemGroup>
-  <Target Name="BeforeBuild">
-    <Message Importance="High" Text="Copying Graphviz Files to NativeFiles/..." />
-  </Target>
-  <ItemGroup>
-    <GraphvizLibs Include="graphvizfiles\*.dll" />
-    <GraphvizConfig Include="graphvizfiles\config6" />
-    <None Include="@(GraphvizLibs);@(GraphvizConfig)">
-      <Link>%(FileName)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

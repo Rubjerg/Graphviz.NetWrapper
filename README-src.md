@@ -7,7 +7,8 @@ Graphviz.NetWrapper
 ## Supported platforms
 
 At the moment, `Rubjerg.Graphviz` ships with a bunch of precompiled Graphviz dlls built for
-Windows. In the future support may be extended to other platforms.
+64 bit Windows with .NET Framework version 4.5 and higher.
+In the future support may be extended to other platforms.
 
 ## Contributing
 
@@ -26,8 +27,8 @@ your project.
 
 ### Adding the Rubjerg.Graphviz code to your project or solution
 1. Make this code available to your own code, e.g. by adding this repository as a git submodule to your own repository.
-2. Add the project Rubjerg.Graphviz to your solution.
-3. To use Rubjerg.Graphviz within a project, simply add a project reference to it.
+2. Add the projects Rubjerg.Graphviz and GraphvizWrapper to your solution.
+3. To use Rubjerg.Graphviz within a project of yours, simply add a project reference to it.
 
 When building your project, you should now see all the Graphviz binaries show up in your output
 folder.
