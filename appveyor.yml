@@ -1,5 +1,7 @@
 before_build:
   - nuget restore
+build_script:
+  - msbuild Rubjerg.Graphviz.sln
 test_script:
 - .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register -target:"packages\NUnit.ConsoleRunner.3.4.1\tools\nunit3-console.exe" -targetargs:"Rubjerg.Graphviz.Test\bin\Debug\Rubjerg.Graphviz.Test.dll --where cat!=Slow" -output:".\coverage.xml" -filter:"+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*"
 after_test:
