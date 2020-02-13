@@ -2,7 +2,7 @@
 <package>
     <metadata>
         <id>Rubjerg.Graphviz</id>
-        <version>1.0.3</version>
+        <version>1.0.4</version>
         <authors>Chiel ten Brinke</authors>
         <owners>Chiel ten Brinke</owners>
         <licenseUrl>https://github.com/Rubjerg/Graphviz.NetWrapper/blob/master/LICENSE</licenseUrl>
