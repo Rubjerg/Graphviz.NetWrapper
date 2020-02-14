@@ -3,4 +3,4 @@ before_build:
 build_script:
   - msbuild TestNugetPackage\TestNugetPackage.sln
 test_script:
-- nunit3-console "TestNugetPackage\NUnitTestProjectWithIndirectDependencies\bin\Debug\netcoreapp3.0\NUnitTestProjectWithIndirectDependencies.dll" --result=myresults.xml;format=AppVeyor
+  - dotnet test TestNugetPackage\NUnitTestProjectWithIndirectDependencies\NUnitTestProjectWithIndirectDependencies.csproj
