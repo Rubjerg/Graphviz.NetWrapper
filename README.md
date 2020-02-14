@@ -22,6 +22,8 @@ project reference.
 
 ### Adding as a Nuget package
 
+[![Build status](https://ci.appveyor.com/api/projects/status/wiicawl3fxrib6v6?svg=true)](https://ci.appveyor.com/project/Chiel92/graphviz-netwrapper-t3344)
+
 Add the [Rubjerg.Graphviz nuget package](https://www.nuget.org/packages/Rubjerg.Graphviz/) to
 your project.
 
