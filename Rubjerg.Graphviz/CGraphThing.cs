@@ -38,6 +38,8 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public void SafeSetAttribute(string name, string value, string deflt)
         {
+            if (deflt == null)
+                throw new ArgumentNullException(nameof(deflt));
             Agsafeset(_ptr, name, value, deflt);
         }
 

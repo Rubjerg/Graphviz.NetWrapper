@@ -34,6 +34,8 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public static void IntroduceAttribute(RootGraph root, string name, string deflt)
         {
+            if (deflt == null)
+                throw new ArgumentNullException(nameof(deflt));
             Agattr(root._ptr, 2, name, deflt);
         }
 
