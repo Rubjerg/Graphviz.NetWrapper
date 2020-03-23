@@ -106,29 +106,6 @@ namespace Rubjerg.Graphviz
         }
 
         /// <summary>
-        /// Delete self, and add a new edge with the same name, but opposite direction.
-        /// Return the new edge wrapper. Also copy attributes.
-        /// NB: the older edge wrapper is invalid after calling this function!
-        /// NB: doesn't work with strict graphs!
-        /// </summary>
-        public Edge FlipDirection()
-        {
-            Node tail = Tail();
-            Node head = Head();
-            RootGraph root = MyRootGraph;
-            Debug.Assert(!root.IsStrict());
-            string name = GetName();
-            string tmp_guid = Guid.NewGuid().ToString();
-            Edge tmp = root.GetOrAddEdge(head, tail, tmp_guid);
-            CopyAttributesTo(tmp);
-            root.Delete(this);
-            Edge result = root.GetOrAddEdge(head, tail, name);
-            tmp.CopyAttributesTo(result);
-            root.Delete(tmp);
-            return result;
-        }
-
-        /// <summary>
         /// The splines contain 3n+1 points, just like expected by .net drawing methods.
         /// Sometimes there are multiple splines per edge. However, this is not always correct:
         /// https://github.com/ellson/graphviz/issues/1277
@@ -184,8 +161,10 @@ namespace Rubjerg.Graphviz
         /// <returns></returns>
         public void SetLogicalTail(SubGraph ltail)
         {
-            Debug.Assert(ltail.IsCluster(), "ltail must be a cluster");
-            Debug.Assert(MyRootGraph.IsCompound(), "rootgraph must be compound for lheads/ltails to be used");
+            if (!ltail.IsCluster())
+                throw new InvalidOperationException("ltail must be a cluster");
+            if (!MyRootGraph.IsCompound())
+                throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
             string ltailname = ltail.GetName();
             SafeSetAttribute("ltail", ltailname, "");
         }
@@ -196,8 +175,10 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public void SetLogicalHead(SubGraph lhead)
         {
-            Debug.Assert(lhead.IsCluster(), "lhead must be a cluster");
-            Debug.Assert(MyRootGraph.IsCompound(), "rootgraph must be compound for lheads/ltails to be used");
+            if (!lhead.IsCluster())
+                throw new InvalidOperationException("ltail must be a cluster");
+            if (!MyRootGraph.IsCompound())
+                throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
             string lheadname = lhead.GetName();
             SafeSetAttribute("lhead", lheadname, "");
         }
@@ -208,7 +189,8 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public SubGraph LogicalTail()
         {
-            Debug.Assert(MyRootGraph.IsCompound(), "rootgraph must be compound for lheads/ltails to be used");
+            if (!MyRootGraph.IsCompound())
+                throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
             string ltailname = GetAttribute("ltail");
             if (ltailname == null)
                 return null;
@@ -221,7 +203,8 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public SubGraph LogicalHead()
         {
-            Debug.Assert(MyRootGraph.IsCompound(), "rootgraph must be compound for lheads/ltails to be used");
+            if (!MyRootGraph.IsCompound())
+                throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
             string lheadname = GetAttribute("lhead");
             if (lheadname == null)
                 return null;
