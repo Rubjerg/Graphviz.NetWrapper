@@ -5,7 +5,7 @@ using static Rubjerg.Graphviz.ForeignFunctionInterface;
 namespace Rubjerg.Graphviz
 {
     /// <summary>
-    /// In GraphViz the way coordinates of bounding boxes are represented may differ.
+    /// In Graphviz the way coordinates of bounding boxes are represented may differ.
     /// We want to provide a uniform API with bottom left coords only, so we use this enum to
     /// keep track of the current internal representation and convert if needed.
     /// </summary>
@@ -18,7 +18,7 @@ namespace Rubjerg.Graphviz
     /// <summary>
     /// Wraps a graphviz label for any kind of graphviz object.
     /// </summary>
-    public class GraphVizLabel : GraphVizThing
+    public class GraphvizLabel : GraphvizThing
     {
         private readonly BoundingBoxCoords representation;
         private readonly PointF offset;
@@ -27,7 +27,7 @@ namespace Rubjerg.Graphviz
         /// Unfortunately the way the bounding box is stored differs per object that the label belongs to.
         /// Therefore some extra information is needed to uniformly define a Label object.
         /// </summary>
-        internal GraphVizLabel(IntPtr ptr, BoundingBoxCoords representation, PointF offset = default(PointF))
+        internal GraphvizLabel(IntPtr ptr, BoundingBoxCoords representation, PointF offset = default(PointF))
             : base(ptr)
         {
             this.representation = representation;

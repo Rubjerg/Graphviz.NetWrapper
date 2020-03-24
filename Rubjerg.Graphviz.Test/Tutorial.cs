@@ -33,7 +33,7 @@ namespace Rubjerg.Graphviz.Test
             // We can attach attributes to nodes, edges and graphs to store information and instruct
             // graphviz by specifying layout parameters. At the moment we only support string
             // attributes. Cgraph assumes that all objects of a given kind (graphs/subgraphs, nodes,
-            // or edges) have the same attributesThe attributes first have to be introduced for a
+            // or edges) have the same attributes. The attributes first have to be introduced for a
             // certain kind, before we can use it.
             Node.IntroduceAttribute(root, "my attribute", "defaultvalue");
             nodeA.SetAttribute("my attribute", "othervalue");
@@ -63,9 +63,11 @@ namespace Rubjerg.Graphviz.Test
             PointF position = nodeA.Position();
             Assert.AreEqual("{X=43, Y=192.1739}", position.ToString());
 
+            // Like a bounding box of an object
             RectangleF nodeboundingbox = nodeA.BoundingBox();
             Assert.AreEqual("{X=16,Y=171.3391,Width=54,Height=41.66957}", nodeboundingbox.ToString());
 
+            // Or splines between nodes
             Node nodeB = root.GetNode("B");
             Edge edge = root.GetEdge(nodeA, nodeB, "Some edge name");
             PointF[] spline = edge.FirstSpline();
@@ -74,7 +76,7 @@ namespace Rubjerg.Graphviz.Test
                 + " {X=43, Y=154.26}, {X=43, Y=145.63}";
             Assert.AreEqual(expectedSplineString, splineString);
 
-            GraphVizLabel nodeLabel = nodeA.GetLabel();
+            GraphvizLabel nodeLabel = nodeA.GetLabel();
             Assert.AreEqual("{X=36.25977,Y=181.4415,Width=13.48047,Height=21.46484}",
                 nodeLabel.BoundingBox().ToString());
             Assert.AreEqual("Times-Roman", nodeLabel.FontName().ToString());

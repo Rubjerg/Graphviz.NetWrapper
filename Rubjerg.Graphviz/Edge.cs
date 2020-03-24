@@ -90,7 +90,7 @@ namespace Rubjerg.Graphviz
 
         // Because there are two valid pointers to each edge, we have to override the default equals behaviour
         // which simply compares the wrapped pointers.
-        public override bool Equals(GraphVizThing obj)
+        public override bool Equals(GraphvizThing obj)
         {
             if (obj is Edge)
                 return Ageqedge(_ptr, obj._ptr);
