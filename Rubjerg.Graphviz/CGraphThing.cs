@@ -12,7 +12,7 @@ namespace Rubjerg.Graphviz
     // - there’s no notion of subtyping within attributes. Information about attributes is stored in data dictionaries.
     // Each graph has three (for graphs/subgraphs, nodes, and edges) for which you'll need the predefined constants
     // AGRAPH, AGNODE and AGEDGE in calls to create, search and walk these dictionaries.
-    public abstract class CGraphThing : GraphVizThing
+    public abstract class CGraphThing : GraphvizThing
     {
         public readonly RootGraph MyRootGraph;
 
