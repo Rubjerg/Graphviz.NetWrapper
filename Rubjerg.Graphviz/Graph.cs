@@ -495,12 +495,12 @@ namespace Rubjerg.Graphviz
             return new RectangleF(x, y, w, h);
         }
 
-        public GraphVizLabel GetLabel()
+        public GraphvizLabel GetLabel()
         {
             IntPtr labelptr = GraphLabel(_ptr);
             if (labelptr == IntPtr.Zero)
                 return null;
-            return new GraphVizLabel(labelptr, BoundingBoxCoords.Centered);
+            return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered);
         }
 
         public bool IsCluster()

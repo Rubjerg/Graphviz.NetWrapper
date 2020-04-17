@@ -71,10 +71,10 @@
     <Compile Include="SubGraph.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GraphVizThing.cs" />
+    <Compile Include="GraphvizThing.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GraphVizLabel.cs" />
+    <Compile Include="GraphvizLabel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GraphvizWrapper\GraphvizWrapper.vcxproj">
