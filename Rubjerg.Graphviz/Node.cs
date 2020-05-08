@@ -165,12 +165,12 @@ namespace Rubjerg.Graphviz
         /// Return null if label not set.
         /// </summary>
         /// <returns></returns>
-        public GraphVizLabel GetLabel()
+        public GraphvizLabel GetLabel()
         {
             IntPtr labelptr = NodeLabel(_ptr);
             if (labelptr == IntPtr.Zero)
                 return null;
-            return new GraphVizLabel(labelptr, BoundingBoxCoords.Centered, new PointF(0, 0));
+            return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered, new PointF(0, 0));
         }
 
         public PointF Position()

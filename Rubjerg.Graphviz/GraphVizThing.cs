@@ -16,11 +16,11 @@ namespace Rubjerg.Graphviz
     /// 
     /// Invariant: ptr member is never 0.
     /// </summary>
-    public abstract class GraphVizThing
+    public abstract class GraphvizThing
     {
         internal readonly IntPtr _ptr;
 
-        protected GraphVizThing(IntPtr ptr)
+        protected GraphvizThing(IntPtr ptr)
         {
             if (ptr == IntPtr.Zero)
                 throw new ArgumentException("Can't have a null pointer.");
@@ -29,10 +29,10 @@ namespace Rubjerg.Graphviz
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as GraphVizThing);
+            return Equals(obj as GraphvizThing);
         }
 
-        public virtual bool Equals(GraphVizThing obj)
+        public virtual bool Equals(GraphvizThing obj)
         {
             return obj != null && _ptr == obj._ptr;
         }
@@ -42,18 +42,18 @@ namespace Rubjerg.Graphviz
             return _ptr.GetHashCode();
         }
 
-        public static bool operator ==(GraphVizThing a, GraphVizThing b)
+        public static bool operator ==(GraphvizThing a, GraphvizThing b)
         {
             return Equals(a, b);
         }
 
-        public static bool operator !=(GraphVizThing a, GraphVizThing b)
+        public static bool operator !=(GraphvizThing a, GraphvizThing b)
         {
             return !(a == b);
         }
 
         /// <summary>
-        /// A GraphVizContext is used to store various layout
+        /// A GraphvizContext is used to store various layout
         /// information that is independent of a particular graph and
         /// its attributes.  It holds the data associated with plugins,
         /// parsed - command lines, script engines, and anything else

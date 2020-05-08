@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rubjerg.Graphviz</RootNamespace>
     <AssemblyName>Rubjerg.Graphviz</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -23,7 +23,6 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\Release\</OutputPath>
@@ -71,10 +70,10 @@
     <Compile Include="SubGraph.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GraphVizThing.cs" />
+    <Compile Include="GraphvizThing.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GraphVizLabel.cs" />
+    <Compile Include="GraphvizLabel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GraphvizWrapper\GraphvizWrapper.vcxproj">
