@@ -177,53 +177,5 @@ namespace Rubjerg.Graphviz
         {
             return new PointF(Convert.ToSingle(NodeX(_ptr)), Convert.ToSingle(NodeY(_ptr)));
         }
-
-        /// <summary>
-        /// We always have an invisible node inside a cluster, which we call the basenode for that cluster.
-        /// This is to make certain things easier to do in graphviz, like drawing edges between clusters.
-        /// Drawing edges is not supported by graphviz, but can be faked by defining an edge between two nodes inside
-        /// the two clusters, and then setting the LogicalHead and LogicalTail of that edge.
-        /// </summary>
-        public string GetClusterNameForBaseNode()
-        {
-            return "cluster_" + GetName();
-        }
-
-        /// <summary>
-        /// Introduce a cluster subgraph from this node, and add the node and all neighbors over edges with given edgename.
-        /// The logical heads or tails of all remaining edges are set to the newly created cluster.
-        /// The name of the new cluster is of the form cluster_nodename.
-        /// FIXME: creating nested clusters doesn't work properly yet.
-        /// </summary>
-        public SubGraph CreateOrUpdateClusterByEdgeName(string edgename, Graph graph = null)
-        {
-            graph = graph ?? MyRootGraph;
-            string clustername = GetClusterNameForBaseNode();
-            SubGraph cluster = graph.GetOrAddSubgraph(clustername);
-            cluster.AddExisting(this);
-            // Before we manipulate the context of edges, we freeze the list, just for safety
-            var edges = Edges().ToList();
-            foreach (var edge in edges)
-            {
-                var opposite_endpoint = edge.OppositeEndpoint(this);
-                if (edge.GetName() == edgename)
-                {
-                    edge.SetAttribute("constraint", "false");
-                    cluster.AddExisting(opposite_endpoint);
-                    // If the edge connects a cluster, add that cluster as a sub cluster.
-                    var logical_endpoint = edge.OppositeLogicalEndpoint(this);
-                    if (logical_endpoint != null)
-                        cluster.AddExisting(logical_endpoint);
-                }
-                else
-                {
-                    if (this == edge.Tail())
-                        edge.SetLogicalTail(cluster);
-                    else
-                        edge.SetLogicalHead(cluster);
-                }
-            }
-            return cluster;
-        }
     }
 }
