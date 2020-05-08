@@ -67,7 +67,6 @@
     <Compile Include="CGraphIntegrationTests.cs" />
     <Compile Include="Tutorial.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ClusterCreation.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
