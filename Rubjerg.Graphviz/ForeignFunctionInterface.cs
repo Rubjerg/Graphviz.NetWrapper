@@ -10,6 +10,7 @@ namespace Rubjerg.Graphviz
     internal static class ForeignFunctionInterface
     {
         private static object Mutex = new object();
+        private const string LabelKey = "label";
 
         public static IntPtr GvContext()
         {
@@ -137,13 +138,41 @@ namespace Rubjerg.Graphviz
                 agattr(graph, type, name, deflt);
             }
         }
+
         public static void Agset(IntPtr obj, string name, string value)
         {
             lock (Mutex)
             {
-                agset(obj, name, value);
+                if (name.Equals(LabelKey, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    AgsetLabel(obj, value);
+                }
+                else
+                {
+                    agset(obj, name, value);
+                }
+            }
+        }   
+        
+        private static void AgsetLabel(IntPtr obj, string value)
+        {
+            lock (Mutex)
+            {
+                const string htmlStartDelimeter = "<";
+                const string htmlEndDelimeter = ">";
+
+                if (value.StartsWith(htmlStartDelimeter) && value.EndsWith(htmlEndDelimeter))
+                {
+                    var ptr = agstrdup_html(agroot(obj), value);
+                    agset(obj, LabelKey, ptr);
+                }
+                else
+                {
+                    agset(obj, LabelKey, value);
+                }
             }
         }
+
         public static void Agsafeset(IntPtr obj, string name, string val, string deflt)
         {
             lock (Mutex)
@@ -524,6 +553,10 @@ namespace Rubjerg.Graphviz
         private static extern void agattr(IntPtr graph, int type, [MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string deflt);
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void agset(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string value);
+        [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void agset(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr value);
+        [DllImport("cgraph.dll", SetLastError = false, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr agstrdup_html(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string html);
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void agsafeset(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string val, [MarshalAs(UnmanagedType.LPStr)] string deflt);
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]

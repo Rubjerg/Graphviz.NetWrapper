@@ -57,6 +57,30 @@ digraph test {
         }
 
         [Test()]
+        public void TestHtmlLabels()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+            const string labelKey = "label";
+            Node.IntroduceAttribute(root, labelKey, "");
+
+            Node n1 = root.GetOrAddNode("1");
+            Node n2 = root.GetOrAddNode("2");
+
+            n1.SetAttribute(labelKey, "raw text");
+            n2.SetAttribute(labelKey, "<html text>");
+
+            var result = root.ToDotString();
+
+            Assert.That(result, Does.Contain("\"raw text\""));
+
+            // Html labels are not string quoted in dot file
+            Assert.That(result, Does.Not.Contain("\"<html text>\""));
+            Assert.That(result, Does.Not.Contain("\"<<html text>>\""));
+            // Htmls labels have additional angel bracket delimeters added
+            Assert.That(result, Does.Contain("<<html text>>"));
+        }
+
+        [Test()]
         public void TestDeletions()
         {
             RootGraph root = Utils.CreateUniqueTestGraph();
