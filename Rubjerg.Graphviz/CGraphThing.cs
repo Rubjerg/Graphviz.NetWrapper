@@ -49,6 +49,11 @@ namespace Rubjerg.Graphviz
         public void SetAttribute(string name, string value)
         {
             Agset(_ptr, name, value);
+        }    
+        
+        public void SetLabel(string value)
+        {
+            AgreLabelNode(_ptr, value);
         }
 
         /// <summary>
