@@ -41,6 +41,6 @@ jobs:
     - name: Upload Coverage data
       run: |
         echo "C:\msys64\usr\bin" >> $GITHUB_PATH
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/codecov/codecov-bash/4fc96d82072423ac6f1eafb8efdc2114c35b8139/codecov' -OutFile codecov.sh
+        Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
         bash codecov.sh -f "coverage.xml"
 
