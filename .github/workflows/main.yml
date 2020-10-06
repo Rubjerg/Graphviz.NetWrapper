@@ -15,22 +15,26 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
- 
+
     runs-on: windows-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - uses: actions/checkout@v1
       name: Checkout Code
-     
+
     - name: Setup MSBuild Path
       uses: warrenbuckley/Setup-MSBuild@v1
-       
+
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.2
-     
+
     - name: Restore NuGet Packages
       run: nuget restore Rubjerg.Graphviz.sln
- 
-    - name: Build and Publish Web App
+
+    - name: Build App
       run: msbuild Rubjerg.Graphviz.sln /p:Configuration=Release
+
+    - name: Run Unittests
+      run: .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register -target:"packages\NUnit.ConsoleRunner.3.4.1\tools\nunit3-console.exe" -targetargs:"Rubjerg.Graphviz.Test\bin\Debug\Rubjerg.Graphviz.Test.dll --where cat!=Slow" -output:".\coverage.xml" -filter:"+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*"
+
