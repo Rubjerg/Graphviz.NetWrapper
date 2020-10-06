@@ -35,6 +35,9 @@ jobs:
     - name: Build App
       run: msbuild Rubjerg.Graphviz.sln /p:Configuration=Release
 
+    - name: Check if README is up-to-date
+      run: git diff --exit-code -- README.md
+
     - name: Run Unittests
       run: .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register -target:"packages\NUnit.ConsoleRunner.3.4.1\tools\nunit3-console.exe" -targetargs:"Rubjerg.Graphviz.Test\bin\Debug\Rubjerg.Graphviz.Test.dll --where cat!=Slow" -output:".\coverage.xml" -filter:"+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*"
 
