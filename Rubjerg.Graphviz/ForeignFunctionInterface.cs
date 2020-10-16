@@ -171,6 +171,26 @@ namespace Rubjerg.Graphviz
                     agset(obj, LabelKey, value);
                 }
             }
+        }   
+        
+        public static void AgreLabelNode(IntPtr obj, string value)
+        {
+            lock (Mutex)
+            {
+                const string labelKey = "label";
+                const string htmlStartDelimeter = "<";
+                const string htmlEndDelimeter = ">";
+
+                if (value.StartsWith(htmlStartDelimeter) && value.EndsWith(htmlEndDelimeter))
+                {
+                    var ptr = agstrdup_html(agroot(obj), value);
+                    agset(obj, labelKey, ptr);
+                }
+                else
+                {
+                    agset(obj, labelKey, value);
+                }
+            }
         }
 
         public static void Agsafeset(IntPtr obj, string name, string val, string deflt)
