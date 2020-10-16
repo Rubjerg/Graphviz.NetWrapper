@@ -1,9 +1,0 @@
-before_build:
-  - nuget restore
-test_script:
-- .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register -target:"packages\NUnit.ConsoleRunner.3.4.1\tools\nunit3-console.exe" -targetargs:"Rubjerg.Graphviz.Test\bin\Debug\Rubjerg.Graphviz.Test.dll --where cat!=Slow" -output:".\coverage.xml" -filter:"+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*"
-after_test:
-  - ps: |
-      $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
-      Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
-      bash codecov.sh -f "coverage.xml"
