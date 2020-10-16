@@ -173,7 +173,7 @@ namespace Rubjerg.Graphviz
             }
         }   
         
-        public static void AgreLabelNode(IntPtr obj, string value)
+        public static void AddLabel(IntPtr obj, string value)
         {
             lock (Mutex)
             {
