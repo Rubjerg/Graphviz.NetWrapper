@@ -145,30 +145,11 @@ namespace Rubjerg.Graphviz
             {
                 if (name.Equals(LabelKey, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    AgsetLabel(obj, value);
+                    AddLabel(obj, value);
                 }
                 else
                 {
                     agset(obj, name, value);
-                }
-            }
-        }   
-        
-        private static void AgsetLabel(IntPtr obj, string value)
-        {
-            lock (Mutex)
-            {
-                const string htmlStartDelimeter = "<";
-                const string htmlEndDelimeter = ">";
-
-                if (value.StartsWith(htmlStartDelimeter) && value.EndsWith(htmlEndDelimeter))
-                {
-                    var ptr = agstrdup_html(agroot(obj), value);
-                    agset(obj, LabelKey, ptr);
-                }
-                else
-                {
-                    agset(obj, LabelKey, value);
                 }
             }
         }   
