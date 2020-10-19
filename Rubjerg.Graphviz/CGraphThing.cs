@@ -49,8 +49,8 @@ namespace Rubjerg.Graphviz
         public void SetAttribute(string name, string value)
         {
             Agset(_ptr, name, value);
-        }
-
+        }    
+        
         /// <summary>
         /// Precondition: the attribute has been introduced for this kind.
         /// </summary>
