@@ -158,18 +158,17 @@ namespace Rubjerg.Graphviz
         {
             lock (Mutex)
             {
-                const string labelKey = "label";
                 const string htmlStartDelimeter = "<";
                 const string htmlEndDelimeter = ">";
 
                 if (value.StartsWith(htmlStartDelimeter) && value.EndsWith(htmlEndDelimeter))
                 {
                     var ptr = agstrdup_html(agroot(obj), value);
-                    agset(obj, labelKey, ptr);
+                    agset(obj, LabelKey, ptr);
                 }
                 else
                 {
-                    agset(obj, labelKey, value);
+                    agset(obj, LabelKey, value);
                 }
             }
         }
