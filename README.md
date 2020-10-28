@@ -86,6 +86,16 @@ namespace Rubjerg.Graphviz.Test
             edgeAB.SafeSetAttribute("color", "red", "black");
             edgeBC.SafeSetAttribute("arrowsize", "2.0", "1.0");
 
+            // Graphviz does not really support edges from and to clusters. However, by adding an
+            // invisible dummynode and setting the ltail or lhead attributes of an edge this
+            // behavior can be faked. Graphviz will then draw an edge to the dummy node but clip it
+            // at the border of the cluster. We provide convenience methods for this.
+            // To enable this feature, Graphviz requires us to set the "compound" attribute to "true".
+            Graph.IntroduceAttribute(root, "compound", "true"); // Allow lhead/ltail
+            root.GetOrAddEdge(nodeA, cluster, "edge to a cluster");
+            root.GetOrAddEdge(cluster, nodeD, "edge from a cluster");
+            root.GetOrAddEdge(cluster, cluster, "edge between clusters");
+
             // We can simply export this graph to a text file in dot format
             root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
         }
