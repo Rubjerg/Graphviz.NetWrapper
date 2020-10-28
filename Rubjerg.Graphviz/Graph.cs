@@ -541,7 +541,7 @@ namespace Rubjerg.Graphviz
             // cluster. Otherwise the edge will overlap with other edges too much, because if the
             // invisible node takes no space it will be squeezed against another node.
             var invisibleHead = CreateInvisibleDummyNode();
-            var edge = gvCluster.MyRootGraph.GetOrAddEdge(gvNode, invisibleHead, edgeName);
+            var edge = GetOrAddEdge(gvNode, invisibleHead, edgeName);
             edge.SetLogicalHead(gvCluster);
             return edge;
         }
@@ -552,7 +552,7 @@ namespace Rubjerg.Graphviz
         public Edge GetOrAddEdge(SubGraph gvCluster, Node gvNode, string edgeName)
         {
             var invisibleTail = CreateInvisibleDummyNode();
-            var edge = gvCluster.MyRootGraph.GetOrAddEdge(invisibleTail, gvNode, edgeName);
+            var edge = GetOrAddEdge(invisibleTail, gvNode, edgeName);
             edge.SetLogicalTail(gvCluster);
             return edge;
         }
@@ -564,7 +564,7 @@ namespace Rubjerg.Graphviz
         {
             var invisibleTail = CreateInvisibleDummyNode();
             var invisibleHead = CreateInvisibleDummyNode();
-            var edge = gvClusterTail.MyRootGraph.GetOrAddEdge(invisibleTail, invisibleHead, edgeName);
+            var edge = GetOrAddEdge(invisibleTail, invisibleHead, edgeName);
             edge.SetLogicalTail(gvClusterTail);
             edge.SetLogicalHead(gvClusterHead);
             return edge;
