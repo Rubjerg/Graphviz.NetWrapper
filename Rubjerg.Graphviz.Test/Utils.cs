@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Text.RegularExpressions;
 
 namespace Rubjerg.Graphviz.Test
 {
@@ -42,10 +43,14 @@ namespace Rubjerg.Graphviz.Test
             return root;
         }
 
-
         public static void log(string message)
         {
             TestContext.WriteLine(message);
+        }
+
+        public static void AssertPattern(string expectedRegex, string actual)
+        {
+            Assert.IsTrue(Regex.IsMatch(actual, expectedRegex));
         }
     }
 }

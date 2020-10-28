@@ -86,6 +86,16 @@ namespace Rubjerg.Graphviz.Test
             edgeAB.SafeSetAttribute("color", "red", "black");
             edgeBC.SafeSetAttribute("arrowsize", "2.0", "1.0");
 
+            // Graphviz does not really support edges from and to clusters. However, by adding an
+            // invisible dummynode and setting the ltail or lhead attributes of an edge this
+            // behavior can be faked. Graphviz will then draw an edge to the dummy node but clip it
+            // at the border of the cluster. We provide convenience methods for this.
+            // To enable this feature, Graphviz requires us to set the "compound" attribute to "true".
+            Graph.IntroduceAttribute(root, "compound", "true"); // Allow lhead/ltail
+            root.GetOrAddEdge(nodeA, cluster, "edge to a cluster");
+            root.GetOrAddEdge(cluster, nodeD, "edge from a cluster");
+            root.GetOrAddEdge(cluster, cluster, "edge between clusters");
+
             // We can simply export this graph to a text file in dot format
             root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
         }
@@ -105,31 +115,32 @@ namespace Rubjerg.Graphviz.Test
             // Or programatically read out the layout attributes
             Node nodeA = root.GetNode("A");
             PointF position = nodeA.Position();
-            Assert.AreEqual("{X=43, Y=192.1739}", position.ToString());
+            Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+}", position.ToString());
 
             // Like a bounding box of an object
             RectangleF nodeboundingbox = nodeA.BoundingBox();
-            Assert.AreEqual("{X=16,Y=171.3391,Width=54,Height=41.66957}", nodeboundingbox.ToString());
+            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", nodeboundingbox.ToString());
 
             // Or splines between nodes
             Node nodeB = root.GetNode("B");
             Edge edge = root.GetEdge(nodeA, nodeB, "Some edge name");
             PointF[] spline = edge.FirstSpline();
             string splineString = string.Join(", ", spline.Select(p => p.ToString()));
-            string expectedSplineString = "{X=0, Y=0}, {X=43, Y=171.29}, {X=43, Y=163.45},"
-                + " {X=43, Y=154.26}, {X=43, Y=145.63}";
-            Assert.AreEqual(expectedSplineString, splineString);
+            string expectedSplinePattern =
+                @"{X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+},"
+                + @" {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}";
+            Utils.AssertPattern(expectedSplinePattern, splineString);
 
             GraphvizLabel nodeLabel = nodeA.GetLabel();
-            Assert.AreEqual("{X=36.25977,Y=181.4415,Width=13.48047,Height=21.46484}",
+            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}",
                 nodeLabel.BoundingBox().ToString());
-            Assert.AreEqual("Times-Roman", nodeLabel.FontName().ToString());
+            Utils.AssertPattern(@"Times-Roman", nodeLabel.FontName().ToString());
 
             SubGraph cluster = root.GetSubgraph("cluster_1");
             RectangleF clusterbox = cluster.BoundingBox();
             RectangleF rootgraphbox = root.BoundingBox();
-            Assert.AreEqual("{X=8,Y=8,Width=70,Height=135.34}", clusterbox.ToString());
-            Assert.AreEqual("{X=0,Y=0,Width=142,Height=213.01}", rootgraphbox.ToString());
+            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", clusterbox.ToString());
+            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", rootgraphbox.ToString());
 
             // Once all layout information is obtained from the graph, the resources should be
             // reclaimed. To do this, the application should call the cleanup routine associated

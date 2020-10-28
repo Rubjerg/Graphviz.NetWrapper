@@ -515,5 +515,59 @@ namespace Rubjerg.Graphviz
         {
             return GetAttribute("compound") == "true";
         }
+
+        public SubGraph GetOrCreateCluster(string name)
+        {
+            string clustername = "cluster_" + name;
+            SubGraph gvCluster = GetOrAddSubgraph(clustername);
+            return gvCluster;
+        }
+
+        public Node CreateInvisibleDummyNode()
+        {
+            var result = GetOrAddNode("dummynode-" + Guid.NewGuid().ToString());
+            result.MakeInvisible();
+            return result;
+        }
+
+        /// <summary>
+        /// Creates an invisble dummy node as landingpoint for the cluster.
+        /// </summary>
+        public Edge GetOrAddEdge(Node gvNode, SubGraph gvCluster, string edgeName)
+        {
+            // If there are any edges to a cluster, we need the an invisble dummy node as endpoint,
+            // because Graphviz does not support edges to clusters. We make it invisible but still
+            // take it up some space because there needs to be space for the edge to land on the
+            // cluster. Otherwise the edge will overlap with other edges too much, because if the
+            // invisible node takes no space it will be squeezed against another node.
+            var invisibleHead = CreateInvisibleDummyNode();
+            var edge = gvCluster.MyRootGraph.GetOrAddEdge(gvNode, invisibleHead, edgeName);
+            edge.SetLogicalHead(gvCluster);
+            return edge;
+        }
+
+        /// <summary>
+        /// Creates an invisble dummy node as landingpoint for the cluster.
+        /// </summary>
+        public Edge GetOrAddEdge(SubGraph gvCluster, Node gvNode, string edgeName)
+        {
+            var invisibleTail = CreateInvisibleDummyNode();
+            var edge = gvCluster.MyRootGraph.GetOrAddEdge(invisibleTail, gvNode, edgeName);
+            edge.SetLogicalTail(gvCluster);
+            return edge;
+        }
+
+        /// <summary>
+        /// Creates an invisble dummy node as landingpoint for the cluster.
+        /// </summary>
+        public Edge GetOrAddEdge(SubGraph gvClusterTail, SubGraph gvClusterHead, string edgeName)
+        {
+            var invisibleTail = CreateInvisibleDummyNode();
+            var invisibleHead = CreateInvisibleDummyNode();
+            var edge = gvClusterTail.MyRootGraph.GetOrAddEdge(invisibleTail, invisibleHead, edgeName);
+            edge.SetLogicalTail(gvClusterTail);
+            edge.SetLogicalHead(gvClusterHead);
+            return edge;
+        }
     }
 }
