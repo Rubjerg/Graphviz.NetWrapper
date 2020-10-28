@@ -67,17 +67,6 @@ namespace Rubjerg.Graphviz
             return node == tail ? head : tail;
         }
 
-        /// <summary>
-        /// May return null‚ if no logical endpoint is set.
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
-        public SubGraph OppositeLogicalEndpoint(Node node)
-        {
-            Debug.Assert(node == Tail() || node == Head());
-            return node == Tail() ? LogicalHead() : LogicalTail();
-        }
-
         public bool IsAdjacentTo(Node node)
         {
             return node.Equals(Head()) || node.Equals(Tail());
@@ -181,40 +170,6 @@ namespace Rubjerg.Graphviz
                 throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
             string lheadname = lhead.GetName();
             SafeSetAttribute("lhead", lheadname, "");
-        }
-
-        /// <summary>
-        /// An edge can define a cluster as logical tail.
-        /// This is used to fake edges to and from clusters by clipping the edge on the borders of the logical tail.
-        /// </summary>
-        public SubGraph LogicalTail()
-        {
-            if (!MyRootGraph.IsCompound())
-                throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
-            string ltailname = GetAttribute("ltail");
-            if (ltailname == null)
-                return null;
-            return MyRootGraph.GetSubgraph(ltailname);
-        }
-
-        /// <summary>
-        /// An edge can define a cluster as logical head.
-        /// This is used to fake edges to and from clusters by clipping the edge on the borders of the logical head.
-        /// </summary>
-        public SubGraph LogicalHead()
-        {
-            if (!MyRootGraph.IsCompound())
-                throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
-            string lheadname = GetAttribute("lhead");
-            if (lheadname == null)
-                return null;
-            return MyRootGraph.GetSubgraph(lheadname);
-        }
-
-        public SubGraph OppositeLogicalEndpoint(SubGraph s)
-        {
-            Debug.Assert(s == LogicalTail() || s == LogicalHead());
-            return s == LogicalTail() ? LogicalHead() : LogicalTail();
         }
     }
 }
