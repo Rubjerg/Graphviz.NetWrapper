@@ -523,24 +523,41 @@ namespace Rubjerg.Graphviz
             return gvCluster;
         }
 
+        private static int _dummyNodeIdCounter = 0;
+        private int GetNextDummyNodeId()
+        {
+            return _dummyNodeIdCounter++;
+        }
+
         public Node CreateInvisibleDummyNode()
         {
-            var result = GetOrAddNode("dummynode-" + Guid.NewGuid().ToString());
+            var result = GetOrAddNode("dummynode-" + GetNextDummyNodeId().ToString());
             result.MakeInvisible();
+            return result;
+        }
+
+        public Node CreateSmallInvisibleDummyNode()
+        {
+            var result = GetOrAddNode("dummynode-" + GetNextDummyNodeId().ToString());
+            result.MakeInvisibleAndSmall();
             return result;
         }
 
         /// <summary>
         /// Creates an invisble dummy node as landingpoint for the cluster.
         /// </summary>
-        public Edge GetOrAddEdge(Node gvNode, SubGraph gvCluster, string edgeName)
+        public Edge GetOrAddEdge(Node gvNode, SubGraph gvCluster, bool makeLandingSpace, string edgeName)
         {
             // If there are any edges to a cluster, we need the an invisble dummy node as endpoint,
             // because Graphviz does not support edges to clusters. We make it invisible but still
             // take it up some space because there needs to be space for the edge to land on the
             // cluster. Otherwise the edge will overlap with other edges too much, because if the
             // invisible node takes no space it will be squeezed against another node.
-            var invisibleHead = CreateInvisibleDummyNode();
+            Node invisibleHead;
+            if (makeLandingSpace)
+                invisibleHead = gvCluster.CreateInvisibleDummyNode();
+            else
+                invisibleHead = gvCluster.CreateSmallInvisibleDummyNode();
             var edge = GetOrAddEdge(gvNode, invisibleHead, edgeName);
             edge.SetLogicalHead(gvCluster);
             return edge;
@@ -549,9 +566,13 @@ namespace Rubjerg.Graphviz
         /// <summary>
         /// Creates an invisble dummy node as landingpoint for the cluster.
         /// </summary>
-        public Edge GetOrAddEdge(SubGraph gvCluster, Node gvNode, string edgeName)
+        public Edge GetOrAddEdge(SubGraph gvCluster, Node gvNode, bool makeLandingSpace, string edgeName)
         {
-            var invisibleTail = CreateInvisibleDummyNode();
+            Node invisibleTail;
+            if (makeLandingSpace)
+                invisibleTail = gvCluster.CreateInvisibleDummyNode();
+            else
+                invisibleTail = gvCluster.CreateSmallInvisibleDummyNode();
             var edge = GetOrAddEdge(invisibleTail, gvNode, edgeName);
             edge.SetLogicalTail(gvCluster);
             return edge;
@@ -560,10 +581,20 @@ namespace Rubjerg.Graphviz
         /// <summary>
         /// Creates an invisble dummy node as landingpoint for the cluster.
         /// </summary>
-        public Edge GetOrAddEdge(SubGraph gvClusterTail, SubGraph gvClusterHead, string edgeName)
+        public Edge GetOrAddEdge(SubGraph gvClusterTail, SubGraph gvClusterHead, bool makeLandingSpace, string edgeName)
         {
-            var invisibleTail = CreateInvisibleDummyNode();
-            var invisibleHead = CreateInvisibleDummyNode();
+            Node invisibleTail;
+            Node invisibleHead;
+            if (makeLandingSpace)
+            {
+                invisibleTail = gvClusterTail.CreateInvisibleDummyNode();
+                invisibleHead = gvClusterHead.CreateInvisibleDummyNode();
+            }
+            else
+            {
+                invisibleTail = gvClusterTail.CreateSmallInvisibleDummyNode();
+                invisibleHead = gvClusterHead.CreateSmallInvisibleDummyNode();
+            }
             var edge = GetOrAddEdge(invisibleTail, invisibleHead, edgeName);
             edge.SetLogicalTail(gvClusterTail);
             edge.SetLogicalHead(gvClusterHead);
