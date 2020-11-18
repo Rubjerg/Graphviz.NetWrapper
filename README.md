@@ -92,9 +92,11 @@ namespace Rubjerg.Graphviz.Test
             // at the border of the cluster. We provide convenience methods for this.
             // To enable this feature, Graphviz requires us to set the "compound" attribute to "true".
             Graph.IntroduceAttribute(root, "compound", "true"); // Allow lhead/ltail
-            root.GetOrAddEdge(nodeA, cluster, "edge to a cluster");
-            root.GetOrAddEdge(cluster, nodeD, "edge from a cluster");
-            root.GetOrAddEdge(cluster, cluster, "edge between clusters");
+            // The boolean indicates whether the dummy node should take up any space. When you pass
+            // false and you have a lot of edges, the edges may start to overlap a lot.
+            root.GetOrAddEdge(nodeA, cluster, false, "edge to a cluster");
+            root.GetOrAddEdge(cluster, nodeD, false, "edge from a cluster");
+            root.GetOrAddEdge(cluster, cluster, false, "edge between clusters");
 
             // We can simply export this graph to a text file in dot format
             root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
