@@ -68,7 +68,7 @@
       <HintPath>$(SolutionDir)\packages\NUnit.3.7.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Rubjerg.Graphviz, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Rubjerg.Graphviz.1.0.5\lib\Rubjerg.Graphviz.dll</HintPath>
+      <HintPath>..\packages\Rubjerg.Graphviz.1.0.6\lib\Rubjerg.Graphviz.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -96,12 +96,12 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Rubjerg.Graphviz.1.0.5\build\Rubjerg.Graphviz.targets" Condition="Exists('..\packages\Rubjerg.Graphviz.1.0.5\build\Rubjerg.Graphviz.targets')" />
+  <Import Project="..\packages\Rubjerg.Graphviz.1.0.6\build\Rubjerg.Graphviz.targets" Condition="Exists('..\packages\Rubjerg.Graphviz.1.0.6\build\Rubjerg.Graphviz.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Rubjerg.Graphviz.1.0.5\build\Rubjerg.Graphviz.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Rubjerg.Graphviz.1.0.5\build\Rubjerg.Graphviz.targets'))" />
+    <Error Condition="!Exists('..\packages\Rubjerg.Graphviz.1.0.6\build\Rubjerg.Graphviz.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Rubjerg.Graphviz.1.0.6\build\Rubjerg.Graphviz.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
