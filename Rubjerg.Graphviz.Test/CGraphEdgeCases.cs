@@ -39,6 +39,34 @@ namespace Rubjerg.Graphviz.Test
         }
 
         [Test()]
+        public void TestAttributeDefaults()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+
+            // This is not the case for nodes
+            Node before = root.GetOrAddNode("before");
+            Node.IntroduceAttribute(root, "label", "");
+            Node after = root.GetOrAddNode("after");
+            before.SetAttribute("label", "1");
+            Assert.AreEqual("1", before.GetAttribute("label"));
+            Assert.AreEqual("", after.GetAttribute("label"));
+
+            root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
+            var root2 = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
+            Node before2 = root2.GetNode("before");
+            Node after2 = root2.GetNode("after");
+            Assert.AreEqual("1", before2.GetAttribute("label"));
+            Assert.AreEqual("", after2.GetAttribute("label"));
+
+            root2.ComputeLayout();
+            Assert.AreEqual("1", before2.GetAttribute("label"));
+            Assert.AreEqual("", after2.GetAttribute("label"));
+            root2.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/out.svg");
+            // FIXME: figure out why dot.exe gives a different result
+            // Could be a version difference, or that dot.exe behaves different w.r.t. defaults.
+        }
+
+        [Test()]
         public void TestCopyUnintroducedAttributes()
         {
             RootGraph root = Utils.CreateUniqueTestGraph();

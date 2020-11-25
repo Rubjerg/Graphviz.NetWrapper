@@ -163,20 +163,12 @@ namespace Rubjerg.Graphviz
 
         public void MakeInvisible()
         {
-            SafeSetAttribute("style", "invis", "normal");
-        }
-
-        public void MakeInvisibleAndSmall()
-        {
-            SafeSetAttribute("style", "invis", "normal");
-            SafeSetAttribute("margin", "0", "");
-            SafeSetAttribute("width", "0", "");
-            SafeSetAttribute("height", "0", "");
+            SafeSetAttribute("style", "invis", "");
         }
 
         public bool IsInvisible()
         {
-            return SafeGetAttribute("style", "normal") == "invis";
+            return SafeGetAttribute("style", "") == "invis";
         }
     }
 }

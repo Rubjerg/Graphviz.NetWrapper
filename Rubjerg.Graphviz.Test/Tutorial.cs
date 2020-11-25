@@ -26,9 +26,11 @@ namespace Rubjerg.Graphviz.Test
 
             // When a subgraph name is prefixed with cluster,
             // the dot layout engine will render it as a box around the containing nodes.
-            SubGraph cluster = root.GetOrAddSubgraph("cluster_1");
-            cluster.AddExisting(nodeB);
-            cluster.AddExisting(nodeC);
+            SubGraph cluster1 = root.GetOrAddSubgraph("cluster_1");
+            cluster1.AddExisting(nodeB);
+            cluster1.AddExisting(nodeC);
+            SubGraph cluster2 = root.GetOrAddSubgraph("cluster_2");
+            cluster2.AddExisting(nodeD);
 
             // We can attach attributes to nodes, edges and graphs to store information and instruct
             // graphviz by specifying layout parameters. At the moment we only support string
@@ -50,9 +52,12 @@ namespace Rubjerg.Graphviz.Test
             Graph.IntroduceAttribute(root, "compound", "true"); // Allow lhead/ltail
             // The boolean indicates whether the dummy node should take up any space. When you pass
             // false and you have a lot of edges, the edges may start to overlap a lot.
-            root.GetOrAddEdge(nodeA, cluster, false, "edge to a cluster");
-            root.GetOrAddEdge(cluster, nodeD, false, "edge from a cluster");
-            root.GetOrAddEdge(cluster, cluster, false, "edge between clusters");
+            root.GetOrAddEdge(nodeA, cluster1, false, "edge to a cluster");
+            root.GetOrAddEdge(cluster1, nodeD, false, "edge from a cluster");
+            root.GetOrAddEdge(cluster1, cluster2, false, "edge between clusters");
+
+            nodeA.SafeSetAttribute("shape", "record", "");
+            nodeA.SafeSetAttribute("label", "1 | 2 | {3|4}", "\\N");
 
             // We can simply export this graph to a text file in dot format
             root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
@@ -61,7 +66,7 @@ namespace Rubjerg.Graphviz.Test
         [Test, Order(2)]
         public void Layouting()
         {
-            // If we have a given dot file, we can also simply read it back in
+            // If we have a given dot file (in this case the one we generated above), we can also read it back in
             RootGraph root = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
 
             // Let's have graphviz compute a dot layout for us

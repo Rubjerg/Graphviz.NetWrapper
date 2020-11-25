@@ -177,5 +177,14 @@ namespace Rubjerg.Graphviz
         {
             return new PointF(Convert.ToSingle(NodeX(_ptr)), Convert.ToSingle(NodeY(_ptr)));
         }
+
+        public void MakeInvisibleAndSmall()
+        {
+            SafeSetAttribute("style", "invis", "");
+            SafeSetAttribute("margin", "0", "");
+            SafeSetAttribute("width", "0", "");
+            SafeSetAttribute("height", "0", "");
+            SafeSetAttribute("shape", "point", "");
+        }
     }
 }
