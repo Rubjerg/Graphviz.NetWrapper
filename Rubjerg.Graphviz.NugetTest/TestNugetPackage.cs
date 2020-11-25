@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace Rubjerg.Graphviz.Test
+namespace Rubjerg.Graphviz.NugetTest
 {
     [TestFixture()]
     public class TestNugetPackage

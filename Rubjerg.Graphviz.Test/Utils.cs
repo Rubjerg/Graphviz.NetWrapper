@@ -43,9 +43,11 @@ namespace Rubjerg.Graphviz.Test
             return root;
         }
 
-        public static void log(string message)
+        public static void Log(string message)
         {
+#if debug
             TestContext.WriteLine(message);
+#endif
         }
 
         public static void AssertPattern(string expectedRegex, string actual)
