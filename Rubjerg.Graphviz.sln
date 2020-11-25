@@ -12,6 +12,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphvizWrapper", "Graphviz
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rubjerg.Graphviz.Test", "Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj", "{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rubjerg.Graphviz.NugetTest", "Rubjerg.Graphviz.NugetTest\Rubjerg.Graphviz.NugetTest.csproj", "{8AF7A4E8-17D2-43E8-91FA-8EF1E4D75F0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -30,6 +32,10 @@ Global
 		{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}.Debug|x64.Build.0 = Debug|x64
 		{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}.Release|x64.ActiveCfg = Release|x64
 		{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}.Release|x64.Build.0 = Release|x64
+		{8AF7A4E8-17D2-43E8-91FA-8EF1E4D75F0E}.Debug|x64.ActiveCfg = Debug|x64
+		{8AF7A4E8-17D2-43E8-91FA-8EF1E4D75F0E}.Debug|x64.Build.0 = Debug|x64
+		{8AF7A4E8-17D2-43E8-91FA-8EF1E4D75F0E}.Release|x64.ActiveCfg = Release|x64
+		{8AF7A4E8-17D2-43E8-91FA-8EF1E4D75F0E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -15,7 +15,7 @@ namespace Rubjerg.Graphviz.Test
         public void TestTopologicalEqualsIdentity(int nodes, int degree)
         {
             var root = CreateRandomConnectedGraph(nodes * SizeMultiplier, degree);
-            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(root, root, log));
+            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(root, root, Log));
         }
 
         [TestCase(10, 5)]
@@ -23,7 +23,7 @@ namespace Rubjerg.Graphviz.Test
         {
             var root = CreateRandomConnectedGraph(nodes * SizeMultiplier, degree);
             var clone = root.Clone(root.GetName() + "clone");
-            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(root, clone, log));
+            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(root, clone, Log));
         }
 
         [TestCase(10, 5)]
@@ -42,22 +42,22 @@ namespace Rubjerg.Graphviz.Test
             var sub3 = root.AddSubgraphFromEdgeSet("sub3", edgeSelection);
 
             RootGraph subclone = sub.Clone("subclone");
-            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(sub, subclone, log));
-            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub, root, log));
-            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub, sub2, log));
-            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub, sub3, log));
+            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(sub, subclone, Log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub, root, Log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub, sub2, Log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub, sub3, Log));
 
             RootGraph sub2clone = sub2.Clone("sub2clone");
-            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(sub2, sub2clone, log));
-            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub2, root, log));
-            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub2, sub, log));
-            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub2, sub3, log));
+            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(sub2, sub2clone, Log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub2, root, Log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub2, sub, Log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub2, sub3, Log));
 
             RootGraph sub3clone = sub3.Clone("sub3clone");
-            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(sub3, sub3clone, log));
-            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub3, root, log));
-            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub3, sub, log));
-            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub3, sub2, log));
+            Assert.IsTrue(GraphComparer.CheckTopologicallyEquals(sub3, sub3clone, Log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub3, root, Log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub3, sub, Log));
+            Assert.IsFalse(GraphComparer.CheckTopologicallyEquals(sub3, sub2, Log));
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Rubjerg.Graphviz.Test
             }
             watch.Stop();
             var elapsedms = watch.ElapsedMilliseconds;
-            log($"Elapsed ms: {elapsedms}");
+            Log($"Elapsed ms: {elapsedms}");
             Assert.AreEqual(initcount + addcount, root.Nodes().Count());
         }
 
@@ -115,7 +115,7 @@ namespace Rubjerg.Graphviz.Test
             }
             watch.Stop();
             var elapsedms = watch.ElapsedMilliseconds;
-            log($"Elapsed ms: {elapsedms}");
+            Log($"Elapsed ms: {elapsedms}");
             Assert.AreEqual(initcount - delcount, root.Nodes().Count());
         }
 
@@ -145,7 +145,7 @@ namespace Rubjerg.Graphviz.Test
 
             watch.Stop();
             var elapsedms = watch.ElapsedMilliseconds;
-            log($"Elapsed ms: {elapsedms}");
+            Log($"Elapsed ms: {elapsedms}");
             Assert.AreEqual(initcount, visited.Count);
         }
     }
