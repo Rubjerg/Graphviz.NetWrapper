@@ -39,6 +39,12 @@ jobs:
       run: git diff --exit-code -- README.md
 
     - name: Run Unittests
+      run: packages\NUnit.ConsoleRunner.3.4.1\tools\nunit3-console.exe Rubjerg.Graphviz.Test\bin\Release\Rubjerg.Graphviz.Test.dll --where cat!=Slow
+
+    - name: Run Nuget Tests
+      run: packages\NUnit.ConsoleRunner.3.4.1\tools\nunit3-console.exe Rubjerg.Graphviz.NugetTest\bin\Release\Rubjerg.Graphviz.NugetTest.dll
+
+    - name: Run Unittests Coverage (Separate step because OpenCover doesn't seem to propagate return codes)
       run: .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register -target:"packages\NUnit.ConsoleRunner.3.4.1\tools\nunit3-console.exe" -targetargs:"Rubjerg.Graphviz.Test\bin\Release\Rubjerg.Graphviz.Test.dll --where cat!=Slow" -output:".\coverage.xml" -filter:"+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*"
 
     - name: Upload Coverage data
