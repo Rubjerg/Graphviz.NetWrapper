@@ -257,6 +257,7 @@ CGRAPH_API Agraph_t *agopen(char *name, Agdesc_t desc, Agdisc_t * disc);
 CGRAPH_API int agclose(Agraph_t * g);
 CGRAPH_API Agraph_t *agread(void *chan, Agdisc_t * disc);
 CGRAPH_API Agraph_t *agmemread(const char *cp);
+CGRAPH_API Agraph_t *agmemconcat(Agraph_t *g, const char *cp);
 CGRAPH_API void agreadline(int);
 CGRAPH_API void agsetfile(char *);
 CGRAPH_API Agraph_t *agconcat(Agraph_t * g, void *chan, Agdisc_t * disc);
@@ -299,7 +300,7 @@ CGRAPH_API char *agnameof(void *);
 CGRAPH_API int agrelabel(void *obj, char *name);	/* scary */
 CGRAPH_API int agrelabel_node(Agnode_t * n, char *newname);
 CGRAPH_API int agdelete(Agraph_t * g, void *obj);
-CGRAPH_API long agdelsubg(Agraph_t * g, Agraph_t * sub);	/* could be agclose */
+CGRAPH_API int agdelsubg(Agraph_t * g, Agraph_t * sub);	/* could be agclose */
 CGRAPH_API int agdelnode(Agraph_t * g, Agnode_t * arg_n);
 CGRAPH_API int agdeledge(Agraph_t * g, Agedge_t * arg_e);
 CGRAPH_API int agobjkind(void *);
@@ -376,7 +377,6 @@ CGRAPH_API void *agalloc(Agraph_t * g, size_t size);
 CGRAPH_API void *agrealloc(Agraph_t * g, void *ptr, size_t oldsize,
 		       size_t size);
 CGRAPH_API void agfree(Agraph_t * g, void *ptr);
-CGRAPH_API struct _vmalloc_s *agheap(Agraph_t * g);
 
 /* an engineering compromise is a joy forever */
 CGRAPH_API void aginternalmapclearlocalnames(Agraph_t * g);
@@ -384,17 +384,27 @@ CGRAPH_API void aginternalmapclearlocalnames(Agraph_t * g);
 #define agnew(g,t)		((t*)agalloc(g,sizeof(t)))
 #define agnnew(g,n,t)	((t*)agalloc(g,(n)*sizeof(t)))
 
+/* support for extra API misuse warnings if available */
+#ifdef __GNUC__
+  #define PRINTF_LIKE(index, first) __attribute__((format(printf, index, first)))
+#else
+  #define PRINTF_LIKE(index, first) /* nothing */
+#endif
+
 /* error handling */
 typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
 typedef int (*agusererrf) (char*);
 CGRAPH_API agerrlevel_t agseterr(agerrlevel_t);
 CGRAPH_API char *aglasterr(void);
-CGRAPH_API int agerr(agerrlevel_t level, const char *fmt, ...);
-CGRAPH_API void agerrorf(const char *fmt, ...);
-CGRAPH_API void agwarningf(const char *fmt, ...);
+CGRAPH_API int agerr(agerrlevel_t level, const char *fmt, ...)
+  PRINTF_LIKE(2, 3);
+CGRAPH_API void agerrorf(const char *fmt, ...) PRINTF_LIKE(1, 2);
+CGRAPH_API void agwarningf(const char *fmt, ...) PRINTF_LIKE(1, 2);
 CGRAPH_API int agerrors(void);
 CGRAPH_API int agreseterrors(void);
 CGRAPH_API agusererrf agseterrf(agusererrf);
+
+#undef PRINTF_LIKE
 
 /* data access macros */
 /* this assumes that e[0] is out and e[1] is inedge, see edgepair in edge.c  */

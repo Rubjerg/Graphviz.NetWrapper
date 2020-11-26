@@ -210,7 +210,7 @@ CDT_API unsigned int	dtstrhash(unsigned int, void*, int);
 
 #define _DTCMP(dt,k1,k2,dc,cmpf,sz) \
 			(cmpf ? (*cmpf)(dt,k1,k2,dc) : \
-			 (sz <= 0 ? strcmp(k1,k2) : memcmp(k1,k2,sz)) )
+			 (sz <= 0 ? strcmp(k1,k2) : memcmp(k1,k2,(size_t)sz)) )
 #define _DTHSH(dt,ky,dc,sz) (dc->hashf ? (*dc->hashf)(dt,ky,dc) : dtstrhash(0,ky,sz) )
 
 /* special search function for tree structure only */

@@ -50,9 +50,6 @@ typedef struct { pointf LL, UR; } boxf;
 /* expand box b0 as needed to enclose box b1 */
 #define EXPANDBB(b0, b1) ((b0).LL.x = MIN((b0).LL.x, (b1).LL.x), (b0).LL.y = MIN((b0).LL.y, (b1).LL.y), (b0).UR.x = MAX((b0).UR.x, (b1).UR.x), (b0).UR.y = MAX((b0).UR.y, (b1).UR.y))
 
-/* clip box b0 to fit box b1 */
-#define CLIPBB(b0, b1) ((b0).LL.x = MAX((b0).LL.x, (b1).LL.x), (b0).LL.y = MAX((b0).LL.y, (b1).LL.y), (b0).UR.x = MIN((b0).UR.x, (b1).UR.x), (b0).UR.y = MIN((b0).UR.y, (b1).UR.y))
-
 #define LEN2(a,b)		(SQR(a) + SQR(b))
 #define LEN(a,b)		(sqrt(LEN2((a),(b))))
 
@@ -74,12 +71,10 @@ typedef struct { pointf LL, UR; } boxf;
 #define B2BF(b,bf)		(P2PF((b).LL,(bf).LL),P2PF((b).UR,(bf).UR))
 #define BF2B(bf,b)		(PF2P((bf).LL,(b).LL),PF2P((bf).UR,(b).UR))
 
-#define APPROXEQ(a,b,tol)	(ABS((a) - (b)) < (tol))
 #define APPROXEQPT(p,q,tol)	(DIST2((p),(q)) < SQR(tol))
 
-/* some common tolerance values */
+/* common tolerance value */
 #define MILLIPOINT .001
-#define MICROPOINT .000001
 
 #ifdef __cplusplus
 }
