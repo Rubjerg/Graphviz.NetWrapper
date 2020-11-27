@@ -44,21 +44,6 @@ namespace Rubjerg.Graphviz.Test
             edgeAB.SafeSetAttribute("color", "red", "black");
             edgeBC.SafeSetAttribute("arrowsize", "2.0", "1.0");
 
-            // Graphviz does not really support edges from and to clusters. However, by adding an
-            // invisible dummynode and setting the ltail or lhead attributes of an edge this
-            // behavior can be faked. Graphviz will then draw an edge to the dummy node but clip it
-            // at the border of the cluster. We provide convenience methods for this.
-            // To enable this feature, Graphviz requires us to set the "compound" attribute to "true".
-            Graph.IntroduceAttribute(root, "compound", "true"); // Allow lhead/ltail
-            // The boolean indicates whether the dummy node should take up any space. When you pass
-            // false and you have a lot of edges, the edges may start to overlap a lot.
-            root.GetOrAddEdge(nodeA, cluster1, false, "edge to a cluster");
-            root.GetOrAddEdge(cluster1, nodeD, false, "edge from a cluster");
-            root.GetOrAddEdge(cluster1, cluster2, false, "edge between clusters");
-
-            nodeA.SafeSetAttribute("shape", "record", "");
-            nodeA.SafeSetAttribute("label", "1 | 2 | {3|4}", "\\N");
-
             // We can simply export this graph to a text file in dot format
             root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
         }
@@ -116,6 +101,36 @@ namespace Rubjerg.Graphviz.Test
             // We can use layout engines other than dot by explicitly passing the engine we want
             root.ComputeLayout(LayoutEngines.Neato);
             root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/neato_out.svg");
+        }
+
+        [Test, Order(2)]
+        public void AdvancedFeatures()
+        {
+            RootGraph root = RootGraph.CreateNew("Another Unique Identifier", GraphType.Directed);
+            Node nodeA = root.GetOrAddNode("A");
+            Node nodeB = root.GetOrAddNode("B");
+            Node nodeC = root.GetOrAddNode("C");
+            Node nodeD = root.GetOrAddNode("D");
+            SubGraph cluster = root.GetOrAddSubgraph("cluster_1");
+            cluster.AddExisting(nodeB);
+            cluster.AddExisting(nodeC);
+
+            // COMPOUND EDGES
+            // Graphviz does not really support edges from and to clusters. However, by adding an
+            // invisible dummynode and setting the ltail or lhead attributes of an edge this
+            // behavior can be faked. Graphviz will then draw an edge to the dummy node but clip it
+            // at the border of the cluster. We provide convenience methods for this.
+            // To enable this feature, Graphviz requires us to set the "compound" attribute to "true".
+            Graph.IntroduceAttribute(root, "compound", "true"); // Allow lhead/ltail
+            // The boolean indicates whether the dummy node should take up any space. When you pass
+            // false and you have a lot of edges, the edges may start to overlap a lot.
+            root.GetOrAddEdge(nodeA, cluster, false, "edge to a cluster");
+            root.GetOrAddEdge(cluster, nodeD, false, "edge from a cluster");
+            root.GetOrAddEdge(cluster, cluster, false, "edge between clusters");
+
+            // RECORD SHAPES
+            nodeA.SafeSetAttribute("shape", "record", "");
+            nodeA.SafeSetAttribute("label", "1 | 2 | {3|4}", "\\N");
         }
     }
 }
