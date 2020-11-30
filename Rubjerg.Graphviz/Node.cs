@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
@@ -185,6 +186,29 @@ namespace Rubjerg.Graphviz
             SafeSetAttribute("width", "0", "");
             SafeSetAttribute("height", "0", "");
             SafeSetAttribute("shape", "point", "");
+        }
+
+        /// <summary>
+        /// If the shape of this node was set to 'record', this method allows you to retrieve the
+        /// resulting rectangles.
+        /// </summary>
+        public IEnumerable<RectangleF> GetRecordRectangles()
+        {
+            if (!HasAttribute("rects"))
+                yield break;
+
+            foreach (string rect in GetAttribute("rects").Split(' '))
+                yield return ParseRect(rect);
+        }
+
+        private RectangleF ParseRect(string rect)
+        {
+            string[] points = rect.Split(',');
+            float leftX = float.Parse(points[0], NumberStyles.Any, CultureInfo.InvariantCulture);
+            float upperY = float.Parse(points[1], NumberStyles.Any, CultureInfo.InvariantCulture);
+            float rightX = float.Parse(points[2], NumberStyles.Any, CultureInfo.InvariantCulture);
+            float lowerY = float.Parse(points[3], NumberStyles.Any, CultureInfo.InvariantCulture);
+            return new RectangleF(leftX, upperY, rightX - leftX, lowerY - upperY);
         }
     }
 }

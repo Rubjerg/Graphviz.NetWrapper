@@ -61,6 +61,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="GraphvizBasicOperations.cs" />
     <Compile Include="CGraphBasicOperations.cs" />
     <Compile Include="CGraphEdgeCases.cs" />
     <Compile Include="CGraphStressTests.cs" />

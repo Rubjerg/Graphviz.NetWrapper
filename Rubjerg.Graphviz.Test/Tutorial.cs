@@ -103,7 +103,7 @@ namespace Rubjerg.Graphviz.Test
             root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/neato_out.svg");
         }
 
-        [Test, Order(2)]
+        [Test, Order(3)]
         public void AdvancedFeatures()
         {
             RootGraph root = RootGraph.CreateNew("Another Unique Identifier", GraphType.Directed);
@@ -128,9 +128,16 @@ namespace Rubjerg.Graphviz.Test
             root.GetOrAddEdge(cluster, nodeD, false, "edge from a cluster");
             root.GetOrAddEdge(cluster, cluster, false, "edge between clusters");
 
+
             // RECORD SHAPES
             nodeA.SafeSetAttribute("shape", "record", "");
-            nodeA.SafeSetAttribute("label", "1 | 2 | {3|4}", "\\N");
+            nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+
+            root.ComputeLayout();
+
+            // The order of the list matches the order in which the labels occur in the label string above.
+            var rects = nodeA.GetRecordRectangles().ToList();
+            Assert.That(rects.Count, Is.EqualTo(9));
         }
     }
 }
