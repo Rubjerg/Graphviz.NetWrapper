@@ -71,14 +71,6 @@ namespace Rubjerg.Graphviz.Test
             Edge edgeBC = root.GetOrAddEdge(nodeB, nodeC, "Some edge name");
             Edge anotherEdgeBC = root.GetOrAddEdge(nodeB, nodeC, "Another edge name");
 
-            // When a subgraph name is prefixed with cluster,
-            // the dot layout engine will render it as a box around the containing nodes.
-            SubGraph cluster1 = root.GetOrAddSubgraph("cluster_1");
-            cluster1.AddExisting(nodeB);
-            cluster1.AddExisting(nodeC);
-            SubGraph cluster2 = root.GetOrAddSubgraph("cluster_2");
-            cluster2.AddExisting(nodeD);
-
             // We can attach attributes to nodes, edges and graphs to store information and instruct
             // graphviz by specifying layout parameters. At the moment we only support string
             // attributes. Cgraph assumes that all objects of a given kind (graphs/subgraphs, nodes,
@@ -131,12 +123,6 @@ namespace Rubjerg.Graphviz.Test
                 nodeLabel.BoundingBox().ToString());
             Utils.AssertPattern(@"Times-Roman", nodeLabel.FontName().ToString());
 
-            SubGraph cluster = root.GetSubgraph("cluster_1");
-            RectangleF clusterbox = cluster.BoundingBox();
-            RectangleF rootgraphbox = root.BoundingBox();
-            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", clusterbox.ToString());
-            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", rootgraphbox.ToString());
-
             // Once all layout information is obtained from the graph, the resources should be
             // reclaimed. To do this, the application should call the cleanup routine associated
             // with the layout algorithm used to draw the graph. This is done by a call to
@@ -151,16 +137,21 @@ namespace Rubjerg.Graphviz.Test
         }
 
         [Test, Order(3)]
-        public void AdvancedFeatures()
+        public void Clusters()
         {
-            RootGraph root = RootGraph.CreateNew("Another Unique Identifier", GraphType.Directed);
+            RootGraph root = RootGraph.CreateNew("Graph with clusters", GraphType.Directed);
             Node nodeA = root.GetOrAddNode("A");
             Node nodeB = root.GetOrAddNode("B");
             Node nodeC = root.GetOrAddNode("C");
             Node nodeD = root.GetOrAddNode("D");
-            SubGraph cluster = root.GetOrAddSubgraph("cluster_1");
-            cluster.AddExisting(nodeB);
-            cluster.AddExisting(nodeC);
+
+            // When a subgraph name is prefixed with cluster,
+            // the dot layout engine will render it as a box around the containing nodes.
+            SubGraph cluster1 = root.GetOrAddSubgraph("cluster_1");
+            cluster1.AddExisting(nodeB);
+            cluster1.AddExisting(nodeC);
+            SubGraph cluster2 = root.GetOrAddSubgraph("cluster_2");
+            cluster2.AddExisting(nodeD);
 
             // COMPOUND EDGES
             // Graphviz does not really support edges from and to clusters. However, by adding an
@@ -171,12 +162,24 @@ namespace Rubjerg.Graphviz.Test
             Graph.IntroduceAttribute(root, "compound", "true"); // Allow lhead/ltail
             // The boolean indicates whether the dummy node should take up any space. When you pass
             // false and you have a lot of edges, the edges may start to overlap a lot.
-            root.GetOrAddEdge(nodeA, cluster, false, "edge to a cluster");
-            root.GetOrAddEdge(cluster, nodeD, false, "edge from a cluster");
-            root.GetOrAddEdge(cluster, cluster, false, "edge between clusters");
+            root.GetOrAddEdge(nodeA, cluster1, false, "edge to a cluster");
+            root.GetOrAddEdge(cluster1, nodeD, false, "edge from a cluster");
+            root.GetOrAddEdge(cluster1, cluster1, false, "edge between clusters");
 
+            root.ComputeLayout();
 
-            // RECORD SHAPES
+            SubGraph cluster = root.GetSubgraph("cluster_1");
+            RectangleF clusterbox = cluster.BoundingBox();
+            RectangleF rootgraphbox = root.BoundingBox();
+            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", clusterbox.ToString());
+            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", rootgraphbox.ToString());
+        }
+
+        [Test, Order(4)]
+        public void Records()
+        {
+            RootGraph root = RootGraph.CreateNew("Graph with records", GraphType.Directed);
+            Node nodeA = root.GetOrAddNode("A");
             nodeA.SafeSetAttribute("shape", "record", "");
             nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
 
