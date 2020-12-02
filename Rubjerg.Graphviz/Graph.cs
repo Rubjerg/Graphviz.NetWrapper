@@ -458,9 +458,9 @@ namespace Rubjerg.Graphviz
 
             // Calling gvRender this way sets attributes to the graph etc
             // The engine specified here doesn't have to be the same as the above.
-            // We always want to use dot here, independently of the layout algorithm,
+            // We always want to use xdot here, independently of the layout algorithm,
             // to ensure a consistent attribute layout.
-            int render_rc = GvRender(GVC, _ptr, "dot", IntPtr.Zero);
+            int render_rc = GvRender(GVC, _ptr, "xdot", IntPtr.Zero);
             if (render_rc != 0)
                 throw new ApplicationException($"Graphviz render returned error code {render_rc}");
         }
