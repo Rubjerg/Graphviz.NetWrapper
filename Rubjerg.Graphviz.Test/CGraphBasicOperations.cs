@@ -15,17 +15,18 @@ digraph test {
     A;
     B;
     B -> B;
-    A -> B[name = edgename];
-    A -> B[name = edgename];
-    A -> B[name = edgename];
+    A -> B[key = edgename];
+    A -> B;
+    A -> B;
 }
 ");
             var edges = root.Edges().ToList();
             var names = edges.Select(e => e.GetName());
-            // There seems to be no way to influence the edge name from dot
-            Assert.IsTrue(names.All(n => string.IsNullOrWhiteSpace(n)));
+            // The attribute 'key' maps to the edgename
+            Assert.IsTrue(names.Any(n => n == "edgename"));
+            Assert.IsTrue(names.All(n => n == "edgename" || string.IsNullOrEmpty(n)));
 
-            // However, it is strange that all edges seem to have te same name, namely ""
+            // However, it is strange that the other two edges both seem to have the same name, namely ""
             // According to the documentation, the name is used to distinguish between multi-edges
             var A = root.GetNode("A");
             var B = root.GetNode("B");

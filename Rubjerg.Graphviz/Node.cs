@@ -189,6 +189,22 @@ namespace Rubjerg.Graphviz
         }
 
         /// <summary>
+        /// Port names cannot contain certain characters.
+        /// This function converts a string to an ID that is valid as a port name.
+        /// It makes sure there are no collisions.
+        /// </summary>
+        public static string ConvertUidToPortName(string id)
+        {
+            string result = id;
+            foreach (char c in new[] { '<', '>', ':' })
+            {
+                result = result.Replace("+", "[+]");
+                result = result.Replace(c, '+');
+            }
+            return result;
+        }
+
+        /// <summary>
         /// If the shape of this node was set to 'record', this method allows you to retrieve the
         /// resulting rectangles.
         /// </summary>

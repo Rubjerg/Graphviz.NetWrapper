@@ -32,7 +32,7 @@ namespace Rubjerg.Graphviz.Test
         }
 
         [Test()]
-        public void TestRecordShapes()
+        public void TestRecordShapeOrder()
         {
             RootGraph root = Utils.CreateUniqueTestGraph();
             Node nodeA = root.GetOrAddNode("A");
@@ -50,6 +50,41 @@ namespace Rubjerg.Graphviz.Test
             // Because Graphviz uses a lower-left originated coordinate system, we need to flip the y coordinates
             Utils.AssertOrder(rects, r => (r.Left, -r.Top));
             Assert.That(rects.Count, Is.EqualTo(9));
+        }
+
+        [Test()]
+        public void TestRecordShapeAlignment()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+            // Margin between label and node boundary in inches
+            Node.IntroduceAttribute(root, "margin", "0.01");
+
+            Node nodeA = root.GetOrAddNode("A");
+
+            nodeA.SafeSetAttribute("shape", "record", "");
+            nodeA.SafeSetAttribute("label", "{20 VH|{1|2}}", "");
+
+            root.ComputeLayout();
+
+            var rects = nodeA.GetRecordRectangles().ToList();
+
+            //root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/dot_out.svg");
+            //root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/dot_out.dot");
+
+            Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
+        }
+
+
+
+        [Test()]
+        public void TestPortNames()
+        {
+            Assert.That(Node.ConvertUidToPortName("a:b"), Is.EqualTo(Node.ConvertUidToPortName("a:b")));
+            Assert.That(Node.ConvertUidToPortName(":"), Is.Not.EqualTo(Node.ConvertUidToPortName("+")));
+            Assert.That(Node.ConvertUidToPortName("<a>:h|b"), Is.Not.EqualTo(Node.ConvertUidToPortName("<a>:h+b")));
+            Assert.That(Node.ConvertUidToPortName("<a>:h|b"), Does.Not.Contain("<"));
+            Assert.That(Node.ConvertUidToPortName("<a>:h|b"), Does.Not.Contain(">"));
+            Assert.That(Node.ConvertUidToPortName("<a>:h|b"), Does.Not.Contain(":"));
         }
     }
 }
