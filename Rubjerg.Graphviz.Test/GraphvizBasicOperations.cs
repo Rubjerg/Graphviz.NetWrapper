@@ -117,5 +117,10 @@ namespace Rubjerg.Graphviz.Test
             root2.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/out.svg");
             root2.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
         }
+
+        [Test()]
+        public void TestLibcgraphVsDot()
+        {
+        }
     }
 }

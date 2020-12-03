@@ -178,14 +178,14 @@ gvplugin_gdiplus.dll gdiplus {
 		tiff:gdiplus 8
 	}
 	device {
-#FAILS		bmp:cairo 8
-#FAILS		gif:cairo 8
-#FAILS		jpe:cairo 8
-#FAILS		jpeg:cairo 8
-#FAILS		jpg:cairo 8
-#FAILS		png:cairo 8
-#FAILS		tif:cairo 8
-#FAILS		tiff:cairo 8
+		bmp:cairo 8
+		gif:cairo 8
+		jpe:cairo 8
+		jpeg:cairo 8
+		jpg:cairo 8
+		png:cairo 8
+		tif:cairo 8
+		tiff:cairo 8
 	}
 }
 gvplugin_neato_layout.dll neato_layout {
@@ -200,5 +200,25 @@ gvplugin_neato_layout.dll neato_layout {
 		nop 0
 		nop1 0
 		nop2 0
+	}
+}
+gvplugin_pango.dll cairo {
+	render {
+		cairo 10
+	}
+	textlayout {
+		textlayout 10
+	}
+	loadimage {
+		png:cairo 1
+#FAILS		png:lasi 2
+		png:ps 2
+	}
+	device {
+		png:cairo 10
+		ps:cairo -10
+		eps:cairo -10
+		pdf:cairo 10
+		svg:cairo -10
 	}
 }
