@@ -74,17 +74,48 @@ namespace Rubjerg.Graphviz.Test
             Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
         }
 
-
-
         [Test()]
-        public void TestPortNames()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestPortNames(bool escape)
         {
-            Assert.That(Node.ConvertUidToPortName("a:b"), Is.EqualTo(Node.ConvertUidToPortName("a:b")));
-            Assert.That(Node.ConvertUidToPortName(":"), Is.Not.EqualTo(Node.ConvertUidToPortName("+")));
-            Assert.That(Node.ConvertUidToPortName("<a>:h|b"), Is.Not.EqualTo(Node.ConvertUidToPortName("<a>:h+b")));
-            Assert.That(Node.ConvertUidToPortName("<a>:h|b"), Does.Not.Contain("<"));
-            Assert.That(Node.ConvertUidToPortName("<a>:h|b"), Does.Not.Contain(">"));
-            Assert.That(Node.ConvertUidToPortName("<a>:h|b"), Does.Not.Contain(":"));
+            RootGraph root = Utils.CreateUniqueTestGraph();
+
+            string port1 = ":A<\\|:x";
+            string port2 = "B:y";
+            if (escape)
+            {
+                port1 = Node.ConvertUidToPortName(port1);
+                port2 = Node.ConvertUidToPortName(port2);
+            }
+            string label = $"{{<{port1}>1|<{port2}>2}}";
+
+            {
+                Node node = root.GetOrAddNode("N");
+                node.SafeSetAttribute("shape", "record", "");
+                node.SafeSetAttribute("label", label, "");
+                Edge edge = root.GetOrAddEdge(node, node, "");
+                edge.SafeSetAttribute("tailport", port1 + ":n", "");
+                edge.SafeSetAttribute("headport", port2 + ":s", "");
+            }
+
+            root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.gv");
+            var root2 = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "/out.gv");
+            //var dot = root.ToDotString();
+            //var root2 = RootGraph.FromDotString(dot);
+
+            {
+                Node node = root2.GetNode("N");
+                Assert.That(node.GetAttribute("label") == label, Is.EqualTo(escape));
+                Edge edge = root2.Edges().First();
+                Assert.That(edge.GetAttribute("tailport") == port1 + ":n", Is.EqualTo(escape));
+                Assert.That(edge.GetAttribute("headport") == port2 + ":s", Is.EqualTo(escape));
+
+            }
+
+            root2.ComputeLayout();
+            root2.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/out.svg");
+            root2.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
         }
     }
 }
