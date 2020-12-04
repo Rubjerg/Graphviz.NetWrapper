@@ -189,6 +189,32 @@ namespace Rubjerg.Graphviz.Test
             var rects = nodeA.GetRecordRectangles().ToList();
             Assert.That(rects.Count, Is.EqualTo(9));
         }
+
+        [Test, Order(5)]
+        public void StringEscaping()
+        {
+            RootGraph root = RootGraph.CreateNew("Graph with escaped strings", GraphType.Directed);
+            Node.IntroduceAttribute(root, "label", "\\N");
+            Node nodeA = root.GetOrAddNode("A");
+
+            // Several characters and character sequences can have special meanings in labels, like \N.
+            // When you want to have a literal string in a label, we provide a convenience function for you to do just that.
+            nodeA.SetAttribute("label", CGraphThing.EscapeLabel("Some string literal \\N \\n |}>"));
+
+            root.ComputeLayout();
+
+            // When defining portnames, some characters, like ':' and '|', are not allowed and they can't be escaped either.
+            // This can be troubling if you have an externally defined ID for such a port.
+            // We provide a function that maps strings to valid portnames.
+            var somePortId = "port id with :| special characters";
+            var validPortName = Edge.ConvertUidToPortName(somePortId);
+            Node nodeB = root.GetOrAddNode("B");
+            nodeB.SafeSetAttribute("shape", "record", "");
+            nodeB.SafeSetAttribute("label", $"<{validPortName}>1|2", "\\N");
+
+            // The function makes sure different strings don't accidentally map onto the same portname
+            Assert.That(Edge.ConvertUidToPortName(":"), Is.Not.EqualTo(Edge.ConvertUidToPortName("|")));
+        }
     }
 }
 ```

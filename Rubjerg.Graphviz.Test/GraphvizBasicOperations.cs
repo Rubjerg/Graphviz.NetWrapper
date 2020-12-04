@@ -80,7 +80,6 @@ namespace Rubjerg.Graphviz.Test
             nodeA.SafeSetAttribute("label", "||||", "");
 
             root.ComputeLayout();
-            root.ToSvgFile(GetTestFilePath("out.svg"));
 
             var rects = nodeA.GetRecordRectangles().ToList();
             Assert.That(rects.Count, Is.EqualTo(5));
