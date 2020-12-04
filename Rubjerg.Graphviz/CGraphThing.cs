@@ -172,6 +172,11 @@ namespace Rubjerg.Graphviz
         }
 
         /// <summary>
+        /// Some characters and character sequences have a special meaning.
+        /// If you intend to display a literal string, use this function to properly escape the string.
+        /// See also
+        /// https://www.graphviz.org/doc/info/shapes.html#record
+        /// https://www.graphviz.org/doc/info/attrs.html#k:escString
         /// </summary>
         public static string EscapeLabel(string label)
         {
@@ -180,7 +185,7 @@ namespace Rubjerg.Graphviz
             // you wish them to appear as a literal character. Spaces are interpreted as separators
             // between tokens, so they must be escaped if you want spaces in the text.
             string result = label;
-            foreach (char c in new[] { '\\', '<', '>', '{', '}', '|' })
+            foreach (char c in new[] { '\\', '<', '>', '{', '}', ' ', '|' })
             {
                 result = result.Replace(c.ToString(), "\\" + c);
             }

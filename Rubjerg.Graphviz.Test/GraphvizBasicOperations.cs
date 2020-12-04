@@ -132,5 +132,59 @@ namespace Rubjerg.Graphviz.Test
                     Assert.That(rects.Count, Is.EqualTo(3));
             }
         }
+
+        [Test()]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestLabelEscaping(bool escape)
+        {
+            string label1 = "|";
+            string label2 = @"\N\n\L";
+            string label3 = "3";
+            if (escape)
+            {
+                label1 = CGraphThing.EscapeLabel(label1);
+                label2 = CGraphThing.EscapeLabel(label2);
+            }
+
+            {
+                RootGraph root = CreateUniqueTestGraph();
+                Node node1 = root.GetOrAddNode("1");
+                node1.SafeSetAttribute("shape", "record", "");
+                node1.SafeSetAttribute("label", label1, "");
+                Node node2 = root.GetOrAddNode("2");
+                node2.SafeSetAttribute("label", label2, "");
+                Node node3 = root.GetOrAddNode("3");
+                node3.SafeSetAttribute("label", label3, "");
+                root.ToDotFile(GetTestFilePath("out.gv"));
+            }
+
+            {
+                var root = RootGraph.FromDotFile(GetTestFilePath("out.gv"));
+
+                Node node1 = root.GetNode("1");
+                Assert.That(node1.GetAttribute("label"), Is.EqualTo(label1));
+                Node node2 = root.GetNode("2");
+                Assert.That(node2.GetAttribute("label"), Is.EqualTo(label2));
+                Node node3 = root.GetNode("3");
+                Assert.That(node3.GetAttribute("label"), Is.EqualTo(label3));
+
+                root.ComputeLayout();
+                root.ToSvgFile(GetTestFilePath("out.svg"));
+                root.ToDotFile(GetTestFilePath("out.dot"));
+
+                var rects = node1.GetRecordRectangles();
+                if (escape)
+                {
+                    Assert.That(rects.Count, Is.EqualTo(1));
+                    Assert.That(node2.BoundingBox().Height, Is.EqualTo(node3.BoundingBox().Height));
+                }
+                else
+                {
+                    Assert.That(rects.Count, Is.EqualTo(2));
+                    Assert.That(node2.BoundingBox().Height, Is.Not.EqualTo(node3.BoundingBox().Height));
+                }
+            }
+        }
     }
 }
