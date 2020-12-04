@@ -189,38 +189,6 @@ namespace Rubjerg.Graphviz
         }
 
         /// <summary>
-        /// Port names cannot contain certain characters, and other characters must be escaped.
-        /// This function converts a string to an ID that is valid as a port name.
-        /// It makes sure there are no collisions.
-        /// </summary>
-        public static string ConvertUidToPortName(string id)
-        {
-            string result = id;
-            foreach (char c in new[] { '\\', '<', '>', '{', '}', '|', ':' })
-            {
-                result = result.Replace("+", "[+]");
-                result = result.Replace(c, '+');
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// </summary>
-        public static string EscapeLabel(string label)
-        {
-            // From the graphviz docs:
-            // Braces, vertical bars and angle brackets must be escaped with a backslash character if
-            // you wish them to appear as a literal character. Spaces are interpreted as separators
-            // between tokens, so they must be escaped if you want spaces in the text.
-            string result = label;
-            foreach (char c in new[] { '\\', '<', '>', '{', '}', '|' })
-            {
-                result = result.Replace(c.ToString(), "\\" + c);
-            }
-            return result;
-        }
-
-        /// <summary>
         /// If the shape of this node was set to 'record', this method allows you to retrieve the
         /// resulting rectangles.
         /// </summary>

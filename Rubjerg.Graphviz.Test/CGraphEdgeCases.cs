@@ -41,29 +41,34 @@ namespace Rubjerg.Graphviz.Test
         [Test()]
         public void TestAttributeDefaults()
         {
-            RootGraph root = Utils.CreateUniqueTestGraph();
+            {
+                RootGraph root = Utils.CreateUniqueTestGraph();
+                Node.IntroduceAttribute(root, "label", "");
+                Node nodeA = root.GetOrAddNode("A");
+                Node nodeB = root.GetOrAddNode("B");
+                nodeA.SetAttribute("label", "1");
+                Assert.AreEqual("1", nodeA.GetAttribute("label"));
+                Assert.AreEqual("", nodeB.GetAttribute("label"));
+                root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.gv");
+            }
 
-            // This is not the case for nodes
-            Node before = root.GetOrAddNode("before");
-            Node.IntroduceAttribute(root, "label", "");
-            Node after = root.GetOrAddNode("after");
-            before.SetAttribute("label", "1");
-            Assert.AreEqual("1", before.GetAttribute("label"));
-            Assert.AreEqual("", after.GetAttribute("label"));
+            {
+                var root = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "/out.gv");
+                Node nodeA = root.GetNode("A");
+                Node nodeB = root.GetNode("B");
+                Assert.AreEqual("1", nodeA.GetAttribute("label"));
+                Assert.AreEqual("", nodeB.GetAttribute("label"));
 
-            root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
-            var root2 = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
-            Node before2 = root2.GetNode("before");
-            Node after2 = root2.GetNode("after");
-            Assert.AreEqual("1", before2.GetAttribute("label"));
-            Assert.AreEqual("", after2.GetAttribute("label"));
-
-            root2.ComputeLayout();
-            Assert.AreEqual("1", before2.GetAttribute("label"));
-            Assert.AreEqual("", after2.GetAttribute("label"));
-            root2.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/out.svg");
-            // FIXME: figure out why dot.exe gives a different result
-            // Could be a version difference, or that dot.exe behaves different w.r.t. defaults.
+                root.ComputeLayout();
+                Assert.AreEqual("1", nodeA.GetAttribute("label"));
+                Assert.AreEqual("", nodeB.GetAttribute("label"));
+                root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/out.svg");
+            }
+            // The empty label default is not exported, but that appears to be no problem here. The
+            // default seems to become the empty string. However, dot.exe gives a different result.
+            // When applying dot.exe on out.gv the default label is set to \N, which gives different
+            // results entirely.
+            // Related issue: https://gitlab.com/graphviz/graphviz/-/issues/1887
         }
 
         [Test()]

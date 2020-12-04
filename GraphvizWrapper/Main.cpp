@@ -188,24 +188,8 @@ int echoint(int arg)
     return arg;
 }
 
-
 void imdebug()
 {
-    auto root = agopen("graphname", Agdirected, &memDisc);
-    //agattr(root, 1, "shape", "record");
-    //agattr(root, 1, "label", "");
-    auto nodeA = agnode(root, "A", 1);
-    //agset(nodeA, "label", "{1234|{1|2}}");
-
-    ostringstream os;
-    agwrite(root, &os);
-
-    auto gvc = gvContext();
-    gvLayout(gvc, root, "dot");
-    gvRender(gvc, root, "xdot", 0);
-    agwrite(root, &os);
-
-    cout << os.str() << endl;
 }
 
 int main()

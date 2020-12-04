@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Framework;
+using static Rubjerg.Graphviz.Test.Utils;
 
 namespace Rubjerg.Graphviz.Test
 {
@@ -10,7 +11,7 @@ namespace Rubjerg.Graphviz.Test
         [Test()]
         public void TestHtmlLabels()
         {
-            RootGraph root = Utils.CreateUniqueTestGraph();
+            RootGraph root = CreateUniqueTestGraph();
             const string labelKey = "label";
             Node.IntroduceAttribute(root, labelKey, "");
 
@@ -34,7 +35,7 @@ namespace Rubjerg.Graphviz.Test
         [Test()]
         public void TestRecordShapeOrder()
         {
-            RootGraph root = Utils.CreateUniqueTestGraph();
+            RootGraph root = CreateUniqueTestGraph();
             Node nodeA = root.GetOrAddNode("A");
 
             nodeA.SafeSetAttribute("shape", "record", "");
@@ -44,18 +45,18 @@ namespace Rubjerg.Graphviz.Test
 
             var rects = nodeA.GetRecordRectangles().ToList();
 
-            //root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/dot_out.svg");
-            //root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/dot_out.dot");
-
             // Because Graphviz uses a lower-left originated coordinate system, we need to flip the y coordinates
             Utils.AssertOrder(rects, r => (r.Left, -r.Top));
             Assert.That(rects.Count, Is.EqualTo(9));
         }
 
+        /// <summary>
+        /// This test used to fail: https://gitlab.com/graphviz/graphviz/-/issues/1894
+        /// </summary>
         [Test()]
         public void TestRecordShapeAlignment()
         {
-            RootGraph root = Utils.CreateUniqueTestGraph();
+            RootGraph root = CreateUniqueTestGraph();
             // Margin between label and node boundary in inches
             Node.IntroduceAttribute(root, "margin", "0.01");
 
@@ -67,20 +68,30 @@ namespace Rubjerg.Graphviz.Test
             root.ComputeLayout();
 
             var rects = nodeA.GetRecordRectangles().ToList();
-
-            //root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/dot_out.svg");
-            //root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/dot_out.dot");
-
             Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
         }
 
         [Test()]
-        [TestCase(true)]
+        public void TestEmptyRecordShapes()
+        {
+            RootGraph root = CreateUniqueTestGraph();
+            Node nodeA = root.GetOrAddNode("A");
+            nodeA.SafeSetAttribute("shape", "record", "");
+            nodeA.SafeSetAttribute("label", "||||", "");
+
+            root.ComputeLayout();
+            root.ToSvgFile(GetTestFilePath("out.svg"));
+
+            var rects = nodeA.GetRecordRectangles().ToList();
+            Assert.That(rects.Count, Is.EqualTo(5));
+            root.ToSvgFile(GetTestFilePath("out.svg"));
+        }
+
+        [Test()]
+        //[TestCase(true)]
         [TestCase(false)]
         public void TestPortNames(bool escape)
         {
-            RootGraph root = Utils.CreateUniqueTestGraph();
-
             string port1 = ":A<\\|:x";
             string port2 = "B:y";
             if (escape)
@@ -91,36 +102,28 @@ namespace Rubjerg.Graphviz.Test
             string label = $"{{<{port1}>1|<{port2}>2}}";
 
             {
+                RootGraph root = CreateUniqueTestGraph();
                 Node node = root.GetOrAddNode("N");
                 node.SafeSetAttribute("shape", "record", "");
                 node.SafeSetAttribute("label", label, "");
                 Edge edge = root.GetOrAddEdge(node, node, "");
                 edge.SafeSetAttribute("tailport", port1 + ":n", "");
                 edge.SafeSetAttribute("headport", port2 + ":s", "");
+                root.ToDotFile(GetTestFilePath("out.gv"));
             }
-
-            root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.gv");
-            var root2 = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "/out.gv");
-            //var dot = root.ToDotString();
-            //var root2 = RootGraph.FromDotString(dot);
 
             {
-                Node node = root2.GetNode("N");
+                var root = RootGraph.FromDotFile(GetTestFilePath("out.gv"));
+                root.ComputeLayout();
+                root.ToSvgFile(GetTestFilePath("out.svg"));
+                root.ToDotFile(GetTestFilePath("out.dot"));
+
+                Node node = root.GetNode("N");
                 Assert.That(node.GetAttribute("label") == label, Is.EqualTo(escape));
-                Edge edge = root2.Edges().First();
+                Edge edge = root.Edges().First();
                 Assert.That(edge.GetAttribute("tailport") == port1 + ":n", Is.EqualTo(escape));
                 Assert.That(edge.GetAttribute("headport") == port2 + ":s", Is.EqualTo(escape));
-
             }
-
-            root2.ComputeLayout();
-            root2.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/out.svg");
-            root2.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
-        }
-
-        [Test()]
-        public void TestLibcgraphVsDot()
-        {
         }
     }
 }

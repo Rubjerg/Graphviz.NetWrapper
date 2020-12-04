@@ -170,5 +170,21 @@ namespace Rubjerg.Graphviz
         {
             return SafeGetAttribute("style", "") == "invis";
         }
+
+        /// <summary>
+        /// </summary>
+        public static string EscapeLabel(string label)
+        {
+            // From the graphviz docs:
+            // Braces, vertical bars and angle brackets must be escaped with a backslash character if
+            // you wish them to appear as a literal character. Spaces are interpreted as separators
+            // between tokens, so they must be escaped if you want spaces in the text.
+            string result = label;
+            foreach (char c in new[] { '\\', '<', '>', '{', '}', '|' })
+            {
+                result = result.Replace(c.ToString(), "\\" + c);
+            }
+            return result;
+        }
     }
 }

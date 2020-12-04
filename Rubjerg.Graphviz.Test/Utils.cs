@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace Rubjerg.Graphviz.Test
 {
-    static class Utils
+    public static class Utils
     {
         private static readonly Random rand = new Random();
 
@@ -16,9 +16,14 @@ namespace Rubjerg.Graphviz.Test
             return RootGraph.CreateNew("test graph " + RootGraphCounter.ToString(), GraphType.Directed);
         }
 
+        public static string GetTestFilePath(string fileName)
+        {
+            return $"{TestContext.CurrentContext.TestDirectory}/{fileName}";
+        }
+
         public static RootGraph CreateRandomConnectedGraph(int size, double out_degree)
         {
-            RootGraph root = Utils.CreateUniqueTestGraph();
+            RootGraph root = CreateUniqueTestGraph();
 
             // First generate a star of requested size
             Node centernode = root.GetOrAddNode(0.ToString());

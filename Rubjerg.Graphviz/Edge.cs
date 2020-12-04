@@ -171,5 +171,21 @@ namespace Rubjerg.Graphviz
             string lheadname = lhead.GetName();
             SafeSetAttribute("lhead", lheadname, "");
         }
+
+        /// <summary>
+        /// Port names cannot contain certain characters, and other characters must be escaped.
+        /// This function converts a string to an ID that is valid as a port name.
+        /// It makes sure there are no collisions.
+        /// </summary>
+        public static string ConvertUidToPortName(string id)
+        {
+            string result = id;
+            foreach (char c in new[] { '\\', '<', '>', '{', '}', '|', ':' })
+            {
+                result = result.Replace("+", "[+]");
+                result = result.Replace(c, '+');
+            }
+            return result;
+        }
     }
 }
