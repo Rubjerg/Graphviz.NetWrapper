@@ -180,7 +180,7 @@ namespace Rubjerg.Graphviz
         public static string ConvertUidToPortName(string id)
         {
             string result = id;
-            foreach (char c in new[] { '\\', '<', '>', '{', '}', '|', ':' })
+            foreach (char c in new[] { '<', '>', '{', '}', '|', ':' })
             {
                 result = result.Replace("+", "[+]");
                 result = result.Replace(c, '+');

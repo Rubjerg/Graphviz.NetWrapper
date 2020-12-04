@@ -88,12 +88,12 @@ namespace Rubjerg.Graphviz.Test
         }
 
         [Test()]
-        //[TestCase(true)]
+        [TestCase(true)]
         [TestCase(false)]
-        public void TestPortNames(bool escape)
+        public void TestPortNameConversion(bool escape)
         {
-            string port1 = ":A<\\|:x";
-            string port2 = "B:y";
+            string port1 = ">|<";
+            string port2 = "B";
             if (escape)
             {
                 port1 = Edge.ConvertUidToPortName(port1);
@@ -114,15 +114,22 @@ namespace Rubjerg.Graphviz.Test
 
             {
                 var root = RootGraph.FromDotFile(GetTestFilePath("out.gv"));
+
+                Node node = root.GetNode("N");
+                Assert.That(node.GetAttribute("label"), Is.EqualTo(label));
+                Edge edge = root.Edges().First();
+                Assert.That(edge.GetAttribute("tailport"), Is.EqualTo(port1 + ":n"));
+                Assert.That(edge.GetAttribute("headport"), Is.EqualTo(port2 + ":s"));
+
                 root.ComputeLayout();
                 root.ToSvgFile(GetTestFilePath("out.svg"));
                 root.ToDotFile(GetTestFilePath("out.dot"));
 
-                Node node = root.GetNode("N");
-                Assert.That(node.GetAttribute("label") == label, Is.EqualTo(escape));
-                Edge edge = root.Edges().First();
-                Assert.That(edge.GetAttribute("tailport") == port1 + ":n", Is.EqualTo(escape));
-                Assert.That(edge.GetAttribute("headport") == port2 + ":s", Is.EqualTo(escape));
+                var rects = node.GetRecordRectangles();
+                if (escape)
+                    Assert.That(rects.Count, Is.EqualTo(2));
+                else
+                    Assert.That(rects.Count, Is.EqualTo(3));
             }
         }
     }
