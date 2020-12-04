@@ -96,8 +96,8 @@ namespace Rubjerg.Graphviz.Test
             string port2 = "B:y";
             if (escape)
             {
-                port1 = Node.ConvertUidToPortName(port1);
-                port2 = Node.ConvertUidToPortName(port2);
+                port1 = Edge.ConvertUidToPortName(port1);
+                port2 = Edge.ConvertUidToPortName(port2);
             }
             string label = $"{{<{port1}>1|<{port2}>2}}";
 
