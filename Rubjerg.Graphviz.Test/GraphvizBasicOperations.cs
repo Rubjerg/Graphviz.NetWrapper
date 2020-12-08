@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using static Rubjerg.Graphviz.Test.Utils;
@@ -68,6 +69,8 @@ namespace Rubjerg.Graphviz.Test
             root.ComputeLayout();
 
             var rects = nodeA.GetRecordRectangles().ToList();
+            TestContext.Write(File.ReadAllText(GetTestFilePath("config6")));
+            TestContext.Write(root.ToDotString());
             Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
         }
 
