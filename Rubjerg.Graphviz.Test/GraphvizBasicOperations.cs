@@ -59,18 +59,18 @@ namespace Rubjerg.Graphviz.Test
         {
             RootGraph root = CreateUniqueTestGraph();
             // Margin between label and node boundary in inches
-            Node.IntroduceAttribute(root, "margin", "0.01");
+            Node.IntroduceAttribute(root, "margin", "0.02");
 
             Node nodeA = root.GetOrAddNode("A");
 
             nodeA.SafeSetAttribute("shape", "record", "");
             nodeA.SafeSetAttribute("label", "{20 VH|{1|2}}", "");
 
+            TestContext.Write(root.ToDotString());
             root.ComputeLayout();
+            TestContext.Write(root.ToDotString());
 
             var rects = nodeA.GetRecordRectangles().ToList();
-            TestContext.Write(File.ReadAllText(GetTestFilePath("config6")));
-            TestContext.Write(root.ToDotString());
             Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
         }
 
