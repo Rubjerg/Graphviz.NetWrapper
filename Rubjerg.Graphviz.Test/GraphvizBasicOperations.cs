@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -55,11 +56,18 @@ namespace Rubjerg.Graphviz.Test
         /// This test used to fail: https://gitlab.com/graphviz/graphviz/-/issues/1894
         /// </summary>
         [Test()]
-        public void TestRecordShapeAlignment()
+        [TestCase("Times-Roman", 7, 0.01)]
+        [TestCase("Courier", 7, 0.01)]
+        [TestCase("Courier", 3, 0.01)]
+        [TestCase("Courier", 3, 0.5)]
+        [TestCase("Courier", 7, 0.5)]
+        public void TestRecordShapeAlignment(string fontname, double fontsize, double margin)
         {
             RootGraph root = CreateUniqueTestGraph();
             // Margin between label and node boundary in inches
-            //Node.IntroduceAttribute(root, "margin", "0.02");
+            Node.IntroduceAttribute(root, "margin", margin.ToString(CultureInfo.InvariantCulture));
+            Node.IntroduceAttribute(root, "fontsize", fontsize.ToString(CultureInfo.InvariantCulture));
+            Node.IntroduceAttribute(root, "fontname", fontname);
 
             Node nodeA = root.GetOrAddNode("A");
 
