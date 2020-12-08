@@ -59,7 +59,7 @@ namespace Rubjerg.Graphviz.Test
         {
             RootGraph root = CreateUniqueTestGraph();
             // Margin between label and node boundary in inches
-            Node.IntroduceAttribute(root, "margin", "0.02");
+            //Node.IntroduceAttribute(root, "margin", "0.02");
 
             Node nodeA = root.GetOrAddNode("A");
 
