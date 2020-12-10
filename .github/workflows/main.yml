@@ -30,7 +30,7 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.5
 
     - name: Restore NuGet Packages
-      run: nuget restore Rubjerg.Graphviz.sln --packages packages
+      run: nuget restore -PackagesDirectory packages Rubjerg.Graphviz.sln
 
     - name: Build App
       run: msbuild Rubjerg.Graphviz.sln /p:Configuration=Release
