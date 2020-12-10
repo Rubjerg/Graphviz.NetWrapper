@@ -94,6 +94,7 @@ namespace Rubjerg.Graphviz.Test
             var rects = nodeA.GetRecordRectangles().ToList();
             Assert.That(rects.Count, Is.EqualTo(5));
             root.ToSvgFile(GetTestFilePath("out.svg"));
+            Assert.That(false);
         }
 
         [Test()]
