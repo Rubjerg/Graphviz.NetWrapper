@@ -41,15 +41,15 @@ jobs:
     - name: Run Unittests
       run: .\packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe Rubjerg.Graphviz.Test\bin\Release\Rubjerg.Graphviz.Test.dll --where 'cat!=Slow and cat!=Flaky'
 
-    - name: Run Nuget Tests
-      run: packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe Rubjerg.Graphviz.NugetTest\bin\Release\Rubjerg.Graphviz.NugetTest.dll
-
     - name: Run Unittests Coverage (Separate step because OpenCover doesn't seem to propagate return codes)
-      run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -register -target:"packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe" -targetargs:"Rubjerg.Graphviz.Test\bin\Release\Rubjerg.Graphviz.Test.dll --where 'cat!=Slow and cat!=Flaky'" -output:".\coverage.xml" -filter:"+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*"
+      run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register "-target:packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe" -targetargs:"Rubjerg.Graphviz.Test\bin\Release\Rubjerg.Graphviz.Test.dll --where \"cat!=Slow and cat!=Flaky" "  "-filter:+[Rubjerg*]*-[Rubjerg.Graphviz.Test*]*"
 
     - name: Upload Coverage data
       run: |
         echo "C:\msys64\usr\bin" >> $GITHUB_PATH
         Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
-        bash codecov.sh -f "coverage.xml"
+        bash codecov.sh -f "results.xml"
+
+    - name: Run Nuget Tests
+      run: packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe Rubjerg.Graphviz.NugetTest\bin\Release\Rubjerg.Graphviz.NugetTest.dll
 
