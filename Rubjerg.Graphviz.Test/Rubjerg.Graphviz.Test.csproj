@@ -84,6 +84,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <PropertyGroup>
+    <RestorePackagesPath>.\packages</RestorePackagesPath>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NUnit">
       <Version>3.12.0</Version>

@@ -67,6 +67,9 @@
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
   </ItemGroup>
+  <PropertyGroup>
+    <RestorePackagesPath>.\packages</RestorePackagesPath>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NUnit">
       <Version>3.12.0</Version>
