@@ -30,7 +30,7 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.5
 
     - name: Restore NuGet Packages
-      run: nuget restore -PackagesDirectory packages Rubjerg.Graphviz.sln
+      run: nuget restore Rubjerg.Graphviz.sln
 
     - name: Build App
       run: msbuild Rubjerg.Graphviz.sln /p:Configuration=Release
@@ -39,7 +39,7 @@ jobs:
       run: git diff --exit-code -- README.md
 
     - name: Run Unittests
-      run: packages\NUnit.ConsoleRunner.3.11.1\tools\nunit3-console.exe Rubjerg.Graphviz.Test\bin\Release\Rubjerg.Graphviz.Test.dll --where cat!=Slow and cat!=Flaky
+      run: .\packages\nunit.consolerunner.3.11.1\tools\nunit3-console.exe Rubjerg.Graphviz.Test\bin\Release\Rubjerg.Graphviz.Test.dll --where cat!=Slow and cat!=Flaky
 
     - name: Run Nuget Tests
       run: packages\NUnit.ConsoleRunner.3.11.1\tools\nunit3-console.exe Rubjerg.Graphviz.NugetTest\bin\Release\Rubjerg.Graphviz.NugetTest.dll
