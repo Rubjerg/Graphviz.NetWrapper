@@ -38,9 +38,6 @@ jobs:
     - name: Check if README is up-to-date
       run: git diff --exit-code -- README.md
 
-    #- name: Run Unittests
-      #run: .\packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe Rubjerg.Graphviz.Test\bin\Release\Rubjerg.Graphviz.Test.dll --where 'cat!=Slow and cat!=Flaky'
-
     - name: Run Unittests With Coverage Calculation
       run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register '-target:packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe' -targetargs:'Rubjerg.Graphviz.Test\bin\Release\Rubjerg.Graphviz.Test.dll --where \"cat!=Slow and cat!=Flaky\" '  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
 

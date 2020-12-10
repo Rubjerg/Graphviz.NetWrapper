@@ -73,9 +73,9 @@ namespace Rubjerg.Graphviz.Test
             nodeA.SafeSetAttribute("shape", "record", "");
             nodeA.SafeSetAttribute("label", "{20 VH|{1|2}}", "");
 
-            TestContext.Write(root.ToDotString());
+            //TestContext.Write(root.ToDotString());
             root.ComputeLayout();
-            TestContext.Write(root.ToDotString());
+            //TestContext.Write(root.ToDotString());
 
             var rects = nodeA.GetRecordRectangles().ToList();
             Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
@@ -94,7 +94,6 @@ namespace Rubjerg.Graphviz.Test
             var rects = nodeA.GetRecordRectangles().ToList();
             Assert.That(rects.Count, Is.EqualTo(5));
             root.ToSvgFile(GetTestFilePath("out.svg"));
-            Assert.That(false);
         }
 
         [Test()]
