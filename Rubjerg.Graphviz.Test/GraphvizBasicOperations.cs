@@ -58,7 +58,7 @@ namespace Rubjerg.Graphviz.Test
         [Test()]
         [TestCase("Times-Roman", 7, 0.01)]
         [TestCase("Times-Roman", 7, 0.5)]
-        [Category("Flaky")]
+        //[Category("Flaky")]
         public void TestRecordShapeAlignment(string fontname, double fontsize, double margin)
         {
             RootGraph root = CreateUniqueTestGraph();
