@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace Rubjerg.Graphviz.Test
@@ -90,6 +91,35 @@ namespace Rubjerg.Graphviz.Test
             }
 
             return true;
+        }
+
+
+        /// <summary>
+        /// Launch the application with some options set.
+        /// </summary>
+        public static void LaunchCommandLineApp(string name, string args)
+        {
+            // Use ProcessStartInfo class
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.CreateNoWindow = false;
+            startInfo.UseShellExecute = false;
+            startInfo.FileName = name;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.Arguments = args;
+
+            try
+            {
+                // Start the process with the info we specified.
+                // Call WaitForExit and then the using statement will close.
+                using (Process exeProcess = Process.Start(startInfo))
+                {
+                    exeProcess.WaitForExit();
+                }
+            }
+            catch (Exception e)
+            {
+                TestContext.WriteLine(e.Message);
+            }
         }
     }
 }

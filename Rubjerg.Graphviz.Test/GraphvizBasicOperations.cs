@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -73,13 +72,31 @@ namespace Rubjerg.Graphviz.Test
             nodeA.SafeSetAttribute("shape", "record", "");
             nodeA.SafeSetAttribute("label", "{20 VH|{1|2}}", "");
 
-            //TestContext.Write(root.ToDotString());
+            TestContext.Write(root.ToDotString());
             root.ComputeLayout();
-            //TestContext.Write(root.ToDotString());
+            TestContext.Write(root.ToDotString());
 
             var rects = nodeA.GetRecordRectangles().ToList();
             Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
         }
+
+//        [Test()]
+//        public void TestFoo()
+//        {
+//            File.WriteAllText("test.gv",
+//                @"
+//digraph 'test graph 1' {
+
+//    node[fontname = 'Times-Roman',
+//        fontsize = 7,
+//        margin = 0.01
+//    ];
+//            A[label = '{20 VH|{1|2}}',
+//                shape = record];
+//        }");
+//            LaunchCommandLineApp("dot.exe", "-Tsvg -o");
+
+//        }
 
         [Test()]
         public void TestEmptyRecordShapes()
