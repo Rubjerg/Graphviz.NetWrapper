@@ -80,23 +80,29 @@ namespace Rubjerg.Graphviz.Test
             Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
         }
 
-//        [Test()]
-//        public void TestFoo()
-//        {
-//            File.WriteAllText("test.gv",
-//                @"
-//digraph 'test graph 1' {
+        [Test()]
+        public void TestFoo()
+        {
+            var dir = TestContext.CurrentContext.TestDirectory + "\\";
+            File.WriteAllText(dir + "test.gv",
+                @"
+digraph ""test graph 1"" {
 
-//    node[fontname = 'Times-Roman',
-//        fontsize = 7,
-//        margin = 0.01
-//    ];
-//            A[label = '{20 VH|{1|2}}',
-//                shape = record];
-//        }");
-//            LaunchCommandLineApp("dot.exe", "-Tsvg -o");
+    node[fontname = ""Times-Roman"",
+        fontsize = 7,
+        margin = 0.01
+    ];
+    A[label = ""{20 VH|{1|2}}"",
+        shape = record];
+}");
+            LaunchCommandLineApp(dir + "dot.exe", dir + "test.gv -Txdot -O");
 
-//        }
+            var result = File.ReadAllText(dir + "test.gv.xdot");
+            TestContext.Out.WriteLine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+            TestContext.Out.WriteLine(result);
+            TestContext.Out.WriteLine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+
+        }
 
         [Test()]
         public void TestEmptyRecordShapes()
