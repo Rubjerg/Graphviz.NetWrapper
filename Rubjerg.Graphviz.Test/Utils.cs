@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Rubjerg.Graphviz.Test
 {
-    static class Utils
+    public static class Utils
     {
         private static readonly Random rand = new Random();
 
@@ -15,9 +16,14 @@ namespace Rubjerg.Graphviz.Test
             return RootGraph.CreateNew("test graph " + RootGraphCounter.ToString(), GraphType.Directed);
         }
 
+        public static string GetTestFilePath(string fileName)
+        {
+            return $"{TestContext.CurrentContext.TestDirectory}/{fileName}";
+        }
+
         public static RootGraph CreateRandomConnectedGraph(int size, double out_degree)
         {
-            RootGraph root = Utils.CreateUniqueTestGraph();
+            RootGraph root = CreateUniqueTestGraph();
 
             // First generate a star of requested size
             Node centernode = root.GetOrAddNode(0.ToString());
@@ -53,6 +59,37 @@ namespace Rubjerg.Graphviz.Test
         public static void AssertPattern(string expectedRegex, string actual)
         {
             Assert.IsTrue(Regex.IsMatch(actual, expectedRegex));
+        }
+
+        public static void AssertOrder<T, TKey>(this IEnumerable<T> source, Func<T, TKey> keySelector)
+        {
+            Assert.IsTrue(IsOrdered(source, keySelector));
+        }
+
+        public static bool IsOrdered<T, TKey>(this IEnumerable<T> source, Func<T, TKey> keySelector)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            var comparer = Comparer<TKey>.Default;
+            using (var iterator = source.GetEnumerator())
+            {
+                if (!iterator.MoveNext())
+                    return true;
+
+                TKey current = keySelector(iterator.Current);
+
+                while (iterator.MoveNext())
+                {
+                    TKey next = keySelector(iterator.Current);
+                    if (comparer.Compare(current, next) > 0)
+                        return false;
+
+                    current = next;
+                }
+            }
+
+            return true;
         }
     }
 }

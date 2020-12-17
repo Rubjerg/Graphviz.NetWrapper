@@ -163,20 +163,33 @@ namespace Rubjerg.Graphviz
 
         public void MakeInvisible()
         {
-            SafeSetAttribute("style", "invis", "normal");
-        }
-
-        public void MakeInvisibleAndSmall()
-        {
-            SafeSetAttribute("style", "invis", "normal");
-            SafeSetAttribute("margin", "0", "");
-            SafeSetAttribute("width", "0", "");
-            SafeSetAttribute("height", "0", "");
+            SafeSetAttribute("style", "invis", "");
         }
 
         public bool IsInvisible()
         {
-            return SafeGetAttribute("style", "normal") == "invis";
+            return SafeGetAttribute("style", "") == "invis";
+        }
+
+        /// <summary>
+        /// Some characters and character sequences have a special meaning.
+        /// If you intend to display a literal string, use this function to properly escape the string.
+        /// See also
+        /// https://www.graphviz.org/doc/info/shapes.html#record
+        /// https://www.graphviz.org/doc/info/attrs.html#k:escString
+        /// </summary>
+        public static string EscapeLabel(string label)
+        {
+            // From the graphviz docs:
+            // Braces, vertical bars and angle brackets must be escaped with a backslash character if
+            // you wish them to appear as a literal character. Spaces are interpreted as separators
+            // between tokens, so they must be escaped if you want spaces in the text.
+            string result = label;
+            foreach (char c in new[] { '\\', '<', '>', '{', '}', ' ', '|' })
+            {
+                result = result.Replace(c.ToString(), "\\" + c);
+            }
+            return result;
         }
     }
 }

@@ -11,8 +11,11 @@ In the future support may be extended to other platforms.
 
 ## Contributing
 
-This project aims to provide a thin .NET layer around the Graphviz C++ libraries. Pull request
-that fall within the scope of this project are welcome.
+This project aims to provide a thin .NET shell around the Graphviz C libraries,
+together with some convenience functionality that helps abstracting away some
+of the peculiarities of the Graphviz library and make it easier to integrate in
+an application.
+Pull request that fall within the scope of this project are welcome.
 
 ## Installation
 

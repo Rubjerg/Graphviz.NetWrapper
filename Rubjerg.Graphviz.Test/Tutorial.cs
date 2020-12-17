@@ -24,12 +24,6 @@ namespace Rubjerg.Graphviz.Test
             Edge edgeBC = root.GetOrAddEdge(nodeB, nodeC, "Some edge name");
             Edge anotherEdgeBC = root.GetOrAddEdge(nodeB, nodeC, "Another edge name");
 
-            // When a subgraph name is prefixed with cluster,
-            // the dot layout engine will render it as a box around the containing nodes.
-            SubGraph cluster = root.GetOrAddSubgraph("cluster_1");
-            cluster.AddExisting(nodeB);
-            cluster.AddExisting(nodeC);
-
             // We can attach attributes to nodes, edges and graphs to store information and instruct
             // graphviz by specifying layout parameters. At the moment we only support string
             // attributes. Cgraph assumes that all objects of a given kind (graphs/subgraphs, nodes,
@@ -42,18 +36,6 @@ namespace Rubjerg.Graphviz.Test
             edgeAB.SafeSetAttribute("color", "red", "black");
             edgeBC.SafeSetAttribute("arrowsize", "2.0", "1.0");
 
-            // Graphviz does not really support edges from and to clusters. However, by adding an
-            // invisible dummynode and setting the ltail or lhead attributes of an edge this
-            // behavior can be faked. Graphviz will then draw an edge to the dummy node but clip it
-            // at the border of the cluster. We provide convenience methods for this.
-            // To enable this feature, Graphviz requires us to set the "compound" attribute to "true".
-            Graph.IntroduceAttribute(root, "compound", "true"); // Allow lhead/ltail
-            // The boolean indicates whether the dummy node should take up any space. When you pass
-            // false and you have a lot of edges, the edges may start to overlap a lot.
-            root.GetOrAddEdge(nodeA, cluster, false, "edge to a cluster");
-            root.GetOrAddEdge(cluster, nodeD, false, "edge from a cluster");
-            root.GetOrAddEdge(cluster, cluster, false, "edge between clusters");
-
             // We can simply export this graph to a text file in dot format
             root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
         }
@@ -61,7 +43,7 @@ namespace Rubjerg.Graphviz.Test
         [Test, Order(2)]
         public void Layouting()
         {
-            // If we have a given dot file, we can also simply read it back in
+            // If we have a given dot file (in this case the one we generated above), we can also read it back in
             RootGraph root = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
 
             // Let's have graphviz compute a dot layout for us
@@ -94,12 +76,6 @@ namespace Rubjerg.Graphviz.Test
                 nodeLabel.BoundingBox().ToString());
             Utils.AssertPattern(@"Times-Roman", nodeLabel.FontName().ToString());
 
-            SubGraph cluster = root.GetSubgraph("cluster_1");
-            RectangleF clusterbox = cluster.BoundingBox();
-            RectangleF rootgraphbox = root.BoundingBox();
-            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", clusterbox.ToString());
-            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", rootgraphbox.ToString());
-
             // Once all layout information is obtained from the graph, the resources should be
             // reclaimed. To do this, the application should call the cleanup routine associated
             // with the layout algorithm used to draw the graph. This is done by a call to
@@ -111,6 +87,86 @@ namespace Rubjerg.Graphviz.Test
             // We can use layout engines other than dot by explicitly passing the engine we want
             root.ComputeLayout(LayoutEngines.Neato);
             root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/neato_out.svg");
+        }
+
+        [Test, Order(3)]
+        public void Clusters()
+        {
+            RootGraph root = RootGraph.CreateNew("Graph with clusters", GraphType.Directed);
+            Node nodeA = root.GetOrAddNode("A");
+            Node nodeB = root.GetOrAddNode("B");
+            Node nodeC = root.GetOrAddNode("C");
+            Node nodeD = root.GetOrAddNode("D");
+
+            // When a subgraph name is prefixed with cluster,
+            // the dot layout engine will render it as a box around the containing nodes.
+            SubGraph cluster1 = root.GetOrAddSubgraph("cluster_1");
+            cluster1.AddExisting(nodeB);
+            cluster1.AddExisting(nodeC);
+            SubGraph cluster2 = root.GetOrAddSubgraph("cluster_2");
+            cluster2.AddExisting(nodeD);
+
+            // COMPOUND EDGES
+            // Graphviz does not really support edges from and to clusters. However, by adding an
+            // invisible dummynode and setting the ltail or lhead attributes of an edge this
+            // behavior can be faked. Graphviz will then draw an edge to the dummy node but clip it
+            // at the border of the cluster. We provide convenience methods for this.
+            // To enable this feature, Graphviz requires us to set the "compound" attribute to "true".
+            Graph.IntroduceAttribute(root, "compound", "true"); // Allow lhead/ltail
+            // The boolean indicates whether the dummy node should take up any space. When you pass
+            // false and you have a lot of edges, the edges may start to overlap a lot.
+            root.GetOrAddEdge(nodeA, cluster1, false, "edge to a cluster");
+            root.GetOrAddEdge(cluster1, nodeD, false, "edge from a cluster");
+            root.GetOrAddEdge(cluster1, cluster1, false, "edge between clusters");
+
+            root.ComputeLayout();
+
+            SubGraph cluster = root.GetSubgraph("cluster_1");
+            RectangleF clusterbox = cluster.BoundingBox();
+            RectangleF rootgraphbox = root.BoundingBox();
+            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", clusterbox.ToString());
+            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", rootgraphbox.ToString());
+        }
+
+        [Test, Order(4)]
+        public void Records()
+        {
+            RootGraph root = RootGraph.CreateNew("Graph with records", GraphType.Directed);
+            Node nodeA = root.GetOrAddNode("A");
+            nodeA.SafeSetAttribute("shape", "record", "");
+            nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+
+            root.ComputeLayout();
+
+            // The order of the list matches the order in which the labels occur in the label string above.
+            var rects = nodeA.GetRecordRectangles().ToList();
+            Assert.That(rects.Count, Is.EqualTo(9));
+        }
+
+        [Test, Order(5)]
+        public void StringEscaping()
+        {
+            RootGraph root = RootGraph.CreateNew("Graph with escaped strings", GraphType.Directed);
+            Node.IntroduceAttribute(root, "label", "\\N");
+            Node nodeA = root.GetOrAddNode("A");
+
+            // Several characters and character sequences can have special meanings in labels, like \N.
+            // When you want to have a literal string in a label, we provide a convenience function for you to do just that.
+            nodeA.SetAttribute("label", CGraphThing.EscapeLabel("Some string literal \\N \\n |}>"));
+
+            root.ComputeLayout();
+
+            // When defining portnames, some characters, like ':' and '|', are not allowed and they can't be escaped either.
+            // This can be troubling if you have an externally defined ID for such a port.
+            // We provide a function that maps strings to valid portnames.
+            var somePortId = "port id with :| special characters";
+            var validPortName = Edge.ConvertUidToPortName(somePortId);
+            Node nodeB = root.GetOrAddNode("B");
+            nodeB.SafeSetAttribute("shape", "record", "");
+            nodeB.SafeSetAttribute("label", $"<{validPortName}>1|2", "\\N");
+
+            // The function makes sure different strings don't accidentally map onto the same portname
+            Assert.That(Edge.ConvertUidToPortName(":"), Is.Not.EqualTo(Edge.ConvertUidToPortName("|")));
         }
     }
 }

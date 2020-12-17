@@ -1,6 +1,6 @@
 .vs
 packages/
 TestResult.xml
-coverage.xml
+results.xml
 *.nupkg
 NativeFiles

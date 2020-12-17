@@ -160,9 +160,22 @@ namespace Rubjerg.Graphviz
             return $"Graph {GetName()} with {Nodes().Count()} nodes.";
         }
 
+        /// <summary>
+        /// Attributes with the empty string as default are not correctly exported.
+        /// https://gitlab.com/graphviz/graphviz/-/issues/1887
+        /// </summary>
         public string ToDotString()
         {
             return Imagmemwrite(_ptr);
+        }
+
+        /// <summary>
+        /// Attributes with the empty string as default are not correctly exported.
+        /// https://gitlab.com/graphviz/graphviz/-/issues/1887
+        /// </summary>
+        public void ToDotFile(string filename)
+        {
+            File.WriteAllText(filename, ToDotString());
         }
 
         /// <summary>
@@ -445,9 +458,9 @@ namespace Rubjerg.Graphviz
 
             // Calling gvRender this way sets attributes to the graph etc
             // The engine specified here doesn't have to be the same as the above.
-            // We always want to use dot here, independently of the layout algorithm,
+            // We always want to use xdot here, independently of the layout algorithm,
             // to ensure a consistent attribute layout.
-            int render_rc = GvRender(GVC, _ptr, "dot", IntPtr.Zero);
+            int render_rc = GvRender(GVC, _ptr, "xdot", IntPtr.Zero);
             if (render_rc != 0)
                 throw new ApplicationException($"Graphviz render returned error code {render_rc}");
         }
@@ -473,11 +486,6 @@ namespace Rubjerg.Graphviz
             var render_rc = GvRenderFilename(GVC, _ptr, "svg", filename);
             if (render_rc != 0)
                 throw new ApplicationException($"Graphviz render returned error code {render_rc}");
-        }
-
-        public void ToDotFile(string filename)
-        {
-            File.WriteAllText(filename, ToDotString());
         }
 
         public RectangleF BoundingBox()
