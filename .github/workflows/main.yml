@@ -39,7 +39,7 @@ jobs:
       run: git diff --exit-code -- README.md
 
     - name: Run Unittests With Coverage Calculation
-      run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register '-target:packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe' -targetargs:'Rubjerg.Graphviz.Test\bin\Release\Rubjerg.Graphviz.Test.dll --where \"cat!=Slow and cat!=Flaky\" '  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
+      run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register '-target:packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe' -targetargs:'Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll --where \"cat!=Slow and cat!=Flaky\" '  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
 
     - name: Upload Coverage data
       run: |
@@ -48,5 +48,5 @@ jobs:
         bash codecov.sh -f "results.xml"
 
     - name: Run Nuget Tests
-      run: packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe Rubjerg.Graphviz.NugetTest\bin\Release\Rubjerg.Graphviz.NugetTest.dll
+      run: packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe Rubjerg.Graphviz.NugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.NugetTest.dll
 
