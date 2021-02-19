@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <ProjectReference Include="..\Rubjerg.Graphviz\Rubjerg.Graphviz.csproj"/>
+      <ProjectReference Include="..\Rubjerg.Graphviz\Rubjerg.Graphviz.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,7 +31,8 @@
   <PropertyGroup>
     <PowerShell># 2&gt;nul || type %~df0|find /v "setlocal"|find /v "errorlevel"|powershell.exe -noninteractive -&amp; exit %errorlevel% || #</PowerShell>
   </PropertyGroup>
-  <Target Name="AfterBuild">
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <PropertyGroup>
       <GenerateReadme>$(PowerShell)
         Write-Host "Generating README.md"
