@@ -3,4 +3,3 @@ packages/
 TestResult.xml
 results.xml
 *.nupkg
-NativeFiles

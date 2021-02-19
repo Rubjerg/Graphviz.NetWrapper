@@ -79,11 +79,6 @@
       <Name>Rubjerg.Graphviz</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="postbuildtrigger.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <PropertyGroup>
     <RestorePackagesPath>..\packages</RestorePackagesPath>
   </PropertyGroup>
