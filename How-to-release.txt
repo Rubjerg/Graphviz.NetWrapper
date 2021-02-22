@@ -1,0 +1,4 @@
+- Add a release tag to the commit point that is to be released.
+- Do a Release build of that commit and upload the generated .nupkg file to nuget.org.
+- Bump the version number for the next release and update the version of the referenced Nuget
+  package in the NugetTest project to the newly released version.
