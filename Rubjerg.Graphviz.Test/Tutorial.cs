@@ -115,9 +115,9 @@ namespace Rubjerg.Graphviz.Test
             Graph.IntroduceAttribute(root, "compound", "true"); // Allow lhead/ltail
             // The boolean indicates whether the dummy node should take up any space. When you pass
             // false and you have a lot of edges, the edges may start to overlap a lot.
-            root.GetOrAddEdge(nodeA, cluster1, false, "edge to a cluster");
-            root.GetOrAddEdge(cluster1, nodeD, false, "edge from a cluster");
-            root.GetOrAddEdge(cluster1, cluster1, false, "edge between clusters");
+            _ = root.GetOrAddEdge(nodeA, cluster1, false, "edge to a cluster");
+            _ = root.GetOrAddEdge(cluster1, nodeD, false, "edge from a cluster");
+            _ = root.GetOrAddEdge(cluster1, cluster1, false, "edge between clusters");
 
             root.ComputeLayout();
 

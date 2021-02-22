@@ -25,7 +25,7 @@ namespace Rubjerg.Graphviz
         {
             if (added_pressure > 0)
                 GC.RemoveMemoryPressure(added_pressure);
-            Agclose(_ptr);
+            _ = Agclose(_ptr);
         }
 
         /// <summary>

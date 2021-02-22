@@ -23,7 +23,7 @@ digraph test {
             Assert.AreEqual(3, A.EdgesOut().Count());
 
             var B = root.GetNode("B");
-            root.GetOrAddEdge(A, B, "");
+            _ = root.GetOrAddEdge(A, B, "");
             Assert.AreEqual(4, A.EdgesOut().Count());
         }
     }

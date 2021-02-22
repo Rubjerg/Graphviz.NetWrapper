@@ -9,7 +9,7 @@ namespace Rubjerg.Graphviz
     /// </summary>
     internal static class ForeignFunctionInterface
     {
-        private static object Mutex = new object();
+        private static readonly object Mutex = new object();
         private const string LabelKey = "label";
 
         public static IntPtr GvContext()

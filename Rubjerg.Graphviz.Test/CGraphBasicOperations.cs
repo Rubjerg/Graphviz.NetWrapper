@@ -33,9 +33,9 @@ digraph test {
             Assert.AreEqual(3, A.EdgesOut().Count());
 
             // The documentation seem to be correct for edges that are added through the C interface
-            root.GetOrAddEdge(A, B, "");
+            _ = root.GetOrAddEdge(A, B, "");
             Assert.AreEqual(4, A.EdgesOut().Count());
-            root.GetOrAddEdge(A, B, "");
+            _ = root.GetOrAddEdge(A, B, "");
             Assert.AreEqual(4, A.EdgesOut().Count());
         }
 

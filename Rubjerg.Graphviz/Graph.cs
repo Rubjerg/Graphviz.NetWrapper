@@ -236,7 +236,7 @@ namespace Rubjerg.Graphviz
                     Debug.Assert(filteredparent != null);
                 }
 
-                filteredparent.AddSubgraphFilteredByNodes(filteredsubgraphname, subgraph, nodes);
+                _ = filteredparent.AddSubgraphFilteredByNodes(filteredsubgraphname, subgraph, nodes);
             }
 
             Debug.Assert(result.Nodes().Count() == nodes.Count());
@@ -285,7 +285,7 @@ namespace Rubjerg.Graphviz
             foreach (var node in origin.Nodes().Where(filter.Contains))
                 result.AddExisting(node);
 
-            origin.CopyAttributesTo(result);
+            _ = origin.CopyAttributesTo(result);
             return result;
         }
 
@@ -299,7 +299,7 @@ namespace Rubjerg.Graphviz
         public RootGraph Clone(string resultname)
         {
             RootGraph result = RootGraph.CreateNew(resultname, GetGraphType());
-            CopyAttributesTo(result);
+            _ = CopyAttributesTo(result);
             CloneInto(result);
             result.UpdateMemoryPressure();
             return result;
@@ -326,9 +326,9 @@ namespace Rubjerg.Graphviz
 
                     string edgename = edge.GetName();
                     Edge newedge = target.GetOrAddEdge(newtail, newhead, edgename);
-                    edge.CopyAttributesTo(newedge);
+                    _ = edge.CopyAttributesTo(newedge);
                 }
-                node.CopyAttributesTo(newnode);
+                _ = node.CopyAttributesTo(newnode);
             }
 
             // Copy all subgraphs
@@ -346,7 +346,7 @@ namespace Rubjerg.Graphviz
                     Debug.Assert(newparent != null);
                 }
                 SubGraph newsubgraph = newparent.GetOrAddSubgraph(subgraphname);
-                subgraph.CopyAttributesTo(newsubgraph);
+                _ = subgraph.CopyAttributesTo(newsubgraph);
 
                 // Add the (already created) nodes and edges to newly created subgraph
                 foreach (var node in subgraph.Nodes())
@@ -371,7 +371,7 @@ namespace Rubjerg.Graphviz
                         Edge newedge = target.GetEdge(newtail, newhead, edgename);
                         newsubgraph.AddExisting(newedge);
                     }
-                    node.CopyAttributesTo(newnode);
+                    _ = node.CopyAttributesTo(newnode);
                 }
             }
         }
@@ -409,8 +409,8 @@ namespace Rubjerg.Graphviz
         public Node Contract(Node node1, Node node2, string targetname)
         {
             Node target = MyRootGraph.GetOrAddNode(targetname);
-            node1.CopyAttributesTo(target);
-            node2.CopyAttributesTo(target);
+            _ = node1.CopyAttributesTo(target);
+            _ = node2.CopyAttributesTo(target);
             Merge(node1, target);
             Merge(node2, target);
             return target;
@@ -492,7 +492,7 @@ namespace Rubjerg.Graphviz
         {
             string bb_string = Imagget(_ptr, "bb");
             if (string.IsNullOrEmpty(bb_string))
-                return default(RectangleF);
+                return default;
             // x and y are the topleft point of the bb
             char sep = ',';
             string[] bb = bb_string.Split(sep);

@@ -28,12 +28,12 @@ namespace Rubjerg.Graphviz
 
         public void AddExisting(Node node)
         {
-            Agsubnode(_ptr, node._ptr, 1);
+            _ = Agsubnode(_ptr, node._ptr, 1);
         }
 
         public void AddExisting(Edge edge)
         {
-            Agsubedge(_ptr, edge._ptr, 1);
+            _ = Agsubedge(_ptr, edge._ptr, 1);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public void AddExisting(SubGraph subgraph)
         {
-            Agsubg(_ptr, subgraph.GetName(), 1);
+            _ = Agsubg(_ptr, subgraph.GetName(), 1);
         }
 
         public void AddExisting(IEnumerable<Node> nodes)
@@ -60,7 +60,7 @@ namespace Rubjerg.Graphviz
 
         public void Delete()
         {
-            Agclose(_ptr);
+            _ = Agclose(_ptr);
         }
     }
 }
