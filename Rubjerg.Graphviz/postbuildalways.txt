@@ -1,4 +1,0 @@
-﻿This file only exists to work around a visual studio glitch which causes the post build event not to be triggered always.
-https://stackoverflow.com/questions/12084133/vs2012-post-build-event-not-firing
-In particular it makes sure Visual Studio doesn't remove the transitively acquired artifacts when doing a partial build.
-I.e. it works around this issue: https://github.com/Microsoft/msbuild/issues/1054

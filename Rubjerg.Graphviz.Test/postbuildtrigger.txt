@@ -1,2 +1,0 @@
-﻿﻿This file only exists to work around a visual studio glitch which causes the post build event not to be triggered always.
-https://stackoverflow.com/questions/12084133/vs2012-post-build-event-not-firing

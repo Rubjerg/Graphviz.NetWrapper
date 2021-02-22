@@ -1,6 +1,0 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Target Name="BeforeBuild">
-    <Message Importance="High" Text="Importing Rubjerg.Graphviz.targets..." />
-  </Target>
-  <Import Project="$([MSBuild]::GetPathOfFileAbove('Rubjerg.Graphviz.targets', '$(MSBuildThisFileDirectory)../'))" />
-</Project>
