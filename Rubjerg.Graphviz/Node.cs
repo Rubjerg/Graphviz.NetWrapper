@@ -124,7 +124,7 @@ namespace Rubjerg.Graphviz
         public Node CopyToOtherRoot(RootGraph destination)
         {
             Node result = destination.GetOrAddNode(GetName());
-            CopyAttributesTo(result);
+            _ = CopyAttributesTo(result);
             return result;
         }
 

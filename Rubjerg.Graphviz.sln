@@ -3,16 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rubjerg.Graphviz", "Rubjerg.Graphviz\Rubjerg.Graphviz.csproj", "{66D83B79-08D5-4590-90E3-8F6CDF108D5E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubjerg.Graphviz", "Rubjerg.Graphviz\Rubjerg.Graphviz.csproj", "{66D83B79-08D5-4590-90E3-8F6CDF108D5E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F9BC5523-352D-469F-8DBB-97ECA9D70648} = {F9BC5523-352D-469F-8DBB-97ECA9D70648}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphvizWrapper", "GraphvizWrapper\GraphvizWrapper.vcxproj", "{F9BC5523-352D-469F-8DBB-97ECA9D70648}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rubjerg.Graphviz.Test", "Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj", "{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubjerg.Graphviz.Test", "Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj", "{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rubjerg.Graphviz.NugetTest", "Rubjerg.Graphviz.NugetTest\Rubjerg.Graphviz.NugetTest.csproj", "{8AF7A4E8-17D2-43E8-91FA-8EF1E4D75F0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubjerg.Graphviz.NugetTest", "Rubjerg.Graphviz.NugetTest\Rubjerg.Graphviz.NugetTest.csproj", "{8AF7A4E8-17D2-43E8-91FA-8EF1E4D75F0E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AD0D286A-6205-449D-AF8A-E9CA8066F6E0}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

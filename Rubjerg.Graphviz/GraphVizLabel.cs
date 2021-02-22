@@ -27,7 +27,7 @@ namespace Rubjerg.Graphviz
         /// Unfortunately the way the bounding box is stored differs per object that the label belongs to.
         /// Therefore some extra information is needed to uniformly define a Label object.
         /// </summary>
-        internal GraphvizLabel(IntPtr ptr, BoundingBoxCoords representation, PointF offset = default(PointF))
+        internal GraphvizLabel(IntPtr ptr, BoundingBoxCoords representation, PointF offset = default)
             : base(ptr)
         {
             this.representation = representation;

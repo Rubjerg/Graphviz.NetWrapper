@@ -8,7 +8,7 @@ namespace Rubjerg.Graphviz
     {
         public static void CreateConsole()
         {
-            AllocConsole();
+            _ = AllocConsole();
 
             // stdout's handle seems to always be equal to 7
             IntPtr defaultStdout = new IntPtr(7);
@@ -25,11 +25,11 @@ namespace Rubjerg.Graphviz
         }
 
         // P/Invoke required:
-        private const UInt32 StdOutputHandle = 0xFFFFFFF5;
+        private const uint StdOutputHandle = 0xFFFFFFF5;
         [DllImport("kernel32.dll")]
-        private static extern IntPtr GetStdHandle(UInt32 nStdHandle);
+        private static extern IntPtr GetStdHandle(uint nStdHandle);
         [DllImport("kernel32.dll")]
-        private static extern void SetStdHandle(UInt32 nStdHandle, IntPtr handle);
+        private static extern void SetStdHandle(uint nStdHandle, IntPtr handle);
         [DllImport("kernel32")]
         static extern bool AllocConsole();
     }

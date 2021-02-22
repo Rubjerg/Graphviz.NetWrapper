@@ -71,12 +71,12 @@ namespace Rubjerg.Graphviz.Test
                 var pre = CreateUniqueTestGraph();
                 for (int i = 0; i < 10; i++)
                 {
-                    pre.GetOrAddNode(i.ToString());
+                    _ = pre.GetOrAddNode(i.ToString());
                 }
             }
 
             var root = CreateUniqueTestGraph();
-            root.GetOrAddNode("node1");
+            _ = root.GetOrAddNode("node1");
             for (int i = 0; i < get_attempts * SizeMultiplier; i++)
             {
                 var node = root.GetNode("node1");
@@ -93,7 +93,7 @@ namespace Rubjerg.Graphviz.Test
             var watch = System.Diagnostics.Stopwatch.StartNew();
             for (int i = initcount; i < initcount + addcount; i++)
             {
-                root.GetOrAddNode(i.ToString());
+                _ = root.GetOrAddNode(i.ToString());
             }
             watch.Stop();
             var elapsedms = watch.ElapsedMilliseconds;
@@ -137,7 +137,7 @@ namespace Rubjerg.Graphviz.Test
                 {
                     if (!visited.Contains(n))
                     {
-                        visited.Add(n);
+                        _ = visited.Add(n);
                         front.Enqueue(n);
                     }
                 }
