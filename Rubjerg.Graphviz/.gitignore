@@ -6,3 +6,5 @@ obj/
 *.lib
 *.pdb
 config6
+*.ipdb
+*.iobj
