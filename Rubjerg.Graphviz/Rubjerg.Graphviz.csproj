@@ -19,7 +19,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GraphvizWrapper\GraphvizWrapper.vcxproj" PrivateAssets="All" />
+    <ProjectReference Include="..\GraphvizWrapper\GraphvizWrapper.vcxproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
