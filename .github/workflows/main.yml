@@ -50,3 +50,9 @@ jobs:
     - name: Run Nuget Tests
       run: packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe Rubjerg.Graphviz.NugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.NugetTest.dll
 
+    - name: Run Transitive Tests
+      run: packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe Rubjerg.Graphviz.TransitiveTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveTest.dll
+
+    - name: Run Transitive Nuget Tests
+      run: packages\nunit.consolerunner\3.11.1\tools\nunit3-console.exe Rubjerg.Graphviz.TransitiveNugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveNugetTest.dll
+
