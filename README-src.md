@@ -32,8 +32,11 @@ your project.
 2. Add the projects Rubjerg.Graphviz and GraphvizWrapper to your solution.
 3. To use Rubjerg.Graphviz within a project of yours, simply add a project reference to it.
 
-When building your project, you should now see all the Graphviz binaries show up in your output
-folder.
+When building your project, you should now see all the Graphviz binaries show
+up in your output folder. If you don't, you might try reordering the projects
+in your solution, such that GraphvizWrapper and Rubjerg.Graphviz are at the
+top. There is an [outstanding issue for
+this](https://github.com/Rubjerg/Graphviz.NetWrapper/issues/36).
 
 ## Documentation
 
