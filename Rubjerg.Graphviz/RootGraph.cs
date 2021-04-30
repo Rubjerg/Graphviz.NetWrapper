@@ -68,6 +68,8 @@ namespace Rubjerg.Graphviz
         public static RootGraph FromDotString(string graph)
         {
             IntPtr ptr = Imagmemread(graph);
+            if (ptr == IntPtr.Zero)
+                throw new ArgumentException($"Argument {nameof(graph)} cannot be parsed into a graph: {graph}");
             var result = new RootGraph(ptr);
             result.UpdateMemoryPressure();
             return result;
