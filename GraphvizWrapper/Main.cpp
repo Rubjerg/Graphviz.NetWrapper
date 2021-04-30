@@ -190,6 +190,28 @@ int echoint(int arg)
 
 void imdebug()
 {
+    // Create reproduction dot file
+    FILE *file;
+    file = fopen("input.dot", "w");
+    fprintf(file, "digraph \"problem graph\" { node[fontname = \"Times-Roman\", fontsize = 7, margin = 0.01 ]; A[label = \"{20 VH|{1|2}}\", shape = record]; }");
+    fclose(file);
+
+    // Compute layout using library calls
+    ifstream input("input.dot", ios::in);
+    auto root = agread(&input, &memDisc);
+    input.close();
+    auto gvc = gvContext();
+    gvLayout(gvc, root, "dot");
+    gvRender(gvc, root, "xdot", NULL);
+    ofstream output("lib-output.dot", ios::out);
+    agwrite(root, &output);
+    output.close();
+    printf("\nUsing library calls: \n");
+    system("cat lib-output.dot");
+
+    // Compute layout using dot.exe
+    printf("\nUsing dot.exe: \n");
+    system("dot.exe -Txdot input.dot");
 }
 
 int main()

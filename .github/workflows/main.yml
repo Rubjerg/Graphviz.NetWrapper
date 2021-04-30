@@ -35,24 +35,27 @@ jobs:
     - name: Build App
       run: msbuild Rubjerg.Graphviz.sln /p:Configuration=Release
 
-    - name: Check if README is up-to-date
-      run: git diff --exit-code -- README.md
+    - name: Run Recordshape test
+      run: Rubjerg.Graphviz\GraphvizWrapper.exe
 
-    - name: Run Unittests With Coverage Calculation
-      run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register '-target:bash.exe' -targetargs:'testrunner.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
+    # - name: Check if README is up-to-date
+    #   run: git diff --exit-code -- README.md
 
-    - name: Upload Coverage data
-      run: |
-        echo "C:\msys64\usr\bin" >> $GITHUB_PATH
-        Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
-        bash codecov.sh -f "results.xml"
+    # - name: Run Unittests With Coverage Calculation
+    #   run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register '-target:bash.exe' -targetargs:'testrunner.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
 
-    - name: Run Nuget Tests
-      run: bash testrunner.sh Rubjerg.Graphviz.NugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.NugetTest.dll
+    # - name: Upload Coverage data
+    #   run: |
+    #     echo "C:\msys64\usr\bin" >> $GITHUB_PATH
+    #     Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
+    #     bash codecov.sh -f "results.xml"
 
-    - name: Run Transitive Tests
-      run: bash testrunner.sh Rubjerg.Graphviz.TransitiveTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveTest.dll
+    # - name: Run Nuget Tests
+    #   run: bash testrunner.sh Rubjerg.Graphviz.NugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.NugetTest.dll
 
-    - name: Run Transitive Nuget Tests
-      run: bash testrunner.sh Rubjerg.Graphviz.TransitiveNugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveNugetTest.dll
+    # - name: Run Transitive Tests
+    #   run: bash testrunner.sh Rubjerg.Graphviz.TransitiveTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveTest.dll
+
+    # - name: Run Transitive Nuget Tests
+    #   run: bash testrunner.sh Rubjerg.Graphviz.TransitiveNugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveNugetTest.dll
 

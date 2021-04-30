@@ -11,10 +11,10 @@ namespace Rubjerg.Graphviz.Test
         protected static extern void imdebug();
 
         [Test()]
-        [Ignore("For debugging")]
+        // [Ignore("For debugging")]
         public void debug()
         {
-            NativeMethods.CreateConsole();
+            // NativeMethods.CreateConsole();
             imdebug();
         }
 
