@@ -206,12 +206,12 @@ void imdebug()
     ofstream output("lib-output.dot", ios::out);
     agwrite(root, &output);
     output.close();
-    printf("\nUsing library calls: \n");
+    system("echo Using lib calls:");
     system("cat lib-output.dot");
 
     // Compute layout using dot.exe
-    printf("\nUsing dot.exe: \n");
-    system("dot.exe -Txdot input.dot");
+    system("echo Using dot.exe:");
+    system("Rubjerg.Graphviz\\dot.exe -Txdot input.dot");
 }
 
 int main()
