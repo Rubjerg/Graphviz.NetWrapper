@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="*.dll;*.lib;*.pdb;*.exp;config6">
+    <None Update="*.dll;*.lib;*.pdb;*.exp;*.exe;config6">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
