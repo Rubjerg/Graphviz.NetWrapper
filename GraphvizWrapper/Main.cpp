@@ -193,9 +193,22 @@ void imdebug()
     // Create reproduction dot file
     FILE *file;
     file = fopen("input.dot", "w");
-    fprintf(file, "digraph \"problem graph\" { node[fontname = \"Times-Roman\", fontsize = 7, margin = 0.01 ]; A[label = \"{20 VH|{1|2}}\", shape = record]; }");
+    const char* inputstr = "digraph \"problem graph\" { node[fontname = \"Times-Roman\", fontsize = 7, margin = 0.01 ]; A[label = \"{20 VH|{1|2}}\", shape = record]; }";
+    fprintf(file, inputstr);
     fclose(file);
 
+    // Compute layout using library calls
+    auto root = imagmemread(inputstr);
+    auto gvc = gvContext();
+    gvLayout(gvc, root, "dot");
+    gvRender(gvc, root, "xdot", NULL);
+    ofstream output("lib-output.dot", ios::out);
+    agwrite(root, &output);
+    output.close();
+    system("echo Using lib calls:");
+    system("cat lib-output.dot");
+
+    /*
     // Compute layout using library calls
     ifstream input("input.dot", ios::in);
     auto root = agread(&input, &memDisc);
@@ -208,6 +221,7 @@ void imdebug()
     output.close();
     system("echo Using lib calls:");
     system("cat lib-output.dot");
+    */
 
     // Compute layout using dot.exe
     system("echo Using dot.exe:");
