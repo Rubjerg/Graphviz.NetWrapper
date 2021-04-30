@@ -43,10 +43,10 @@ digraph ""problem graph {id}"" {{
 
         static int id = 0;
         [Test()]
-        [TestCase(false, false)]
-        [TestCase(true, false)]
-        // [TestCase(false, true)]
-        // [TestCase(true, true)]
+        // [TestCase(false, false)]
+        // [TestCase(true, false)]
+        [TestCase(false, true)]
+        [TestCase(true, true)]
         public void TestProblem(bool fromDotString, bool testExe)
         {
             var dir = TestContext.CurrentContext.TestDirectory + "\\";
