@@ -35,14 +35,14 @@ jobs:
     - name: Build App
       run: msbuild Rubjerg.Graphviz.sln /p:Configuration=Release
 
-    - name: Run Recordshape test
-      run: Rubjerg.Graphviz\GraphvizWrapper.exe
+    # - name: Run Recordshape test
+    #   run: Rubjerg.Graphviz\GraphvizWrapper.exe
 
     # - name: Check if README is up-to-date
     #   run: git diff --exit-code -- README.md
 
-    # - name: Run Unittests With Coverage Calculation
-    #   run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register '-target:bash.exe' -targetargs:'testrunner.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
+    - name: Run Unittests With Coverage Calculation
+      run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register '-target:bash.exe' -targetargs:'testrunner.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
 
     # - name: Upload Coverage data
     #   run: |

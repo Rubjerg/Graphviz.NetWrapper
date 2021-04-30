@@ -12,6 +12,7 @@ namespace Rubjerg.Graphviz.Test
 
         [Test()]
         // [Ignore("For debugging")]
+        [Category("Flaky")]
         public void debug()
         {
             // NativeMethods.CreateConsole();

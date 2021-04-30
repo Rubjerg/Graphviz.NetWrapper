@@ -9,7 +9,6 @@ namespace Rubjerg.Graphviz.Test
     [TestFixture()]
     public class GraphvizRecordShapeTests
     {
-
         private RootGraph GenerateProblemGraph(int id, bool fromDotString)
         {
             if (fromDotString)
@@ -42,8 +41,9 @@ digraph ""problem graph {id}"" {{
         }
 
         static int id = 0;
-        // [Test()]
-        // [TestCase(false, false)]
+        [Test()]
+        [Category("Flaky")]
+        [TestCase(false, false)]
         // [TestCase(true, false)]
         // [TestCase(false, true)]
         // [TestCase(true, true)]
