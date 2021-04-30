@@ -26,14 +26,6 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Download and install Windows SDK
-      run: |
-        import subprocess
-        import urllib.request
-        urllib.request.urlretrieve("https://go.microsoft.com/fwlink/p/?LinkId=323507", "sdksetup.exe")
-        subprocess.run(["sdksetup.exe", "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"], check=True, capture_output=True)
-      shell: python
-
     - name: Setup NuGet.exe for use with actions
       uses: NuGet/setup-nuget@v1.0.5
 
@@ -47,7 +39,7 @@ jobs:
       run: git diff --exit-code -- README.md
 
     - name: Run Unittests With Coverage Calculation
-      run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register '-target:bash' -targetargs:'testrunner.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
+      run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register '-target:bash.exe' -targetargs:'testrunner.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
 
     - name: Upload Coverage data
       run: |
