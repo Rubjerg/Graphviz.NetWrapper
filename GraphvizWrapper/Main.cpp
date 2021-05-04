@@ -15,6 +15,8 @@ extern "C" {
 	// Some wrappers around existing cgraph functions to handle string marshaling
     //__declspec(dllexport) const char* imagmemwrite(Agraph_t * g);
     //__declspec(dllexport) Agraph_t* imagmemread(const char* s);
+    __declspec(dllexport) void imagwrite();
+    __declspec(dllexport) Agraph_t* imagread(char * filename);
     __declspec(dllexport) const char* imagget(void* obj, char* name);
     __declspec(dllexport) const char* imagnameof(void* obj);
     __declspec(dllexport) Agraph_t* imagopen(char* name, int graphtype);
@@ -134,7 +136,7 @@ void imagwrite(Agraph_t * g, const char* filename)
 }
 
 // Note: for this function to work, the graph has to be created with the default io disc
-Agraph_t* imagread(const char* filename)
+Agraph_t* imagread(char* filename)
 {
     FILE *file;
     file = fopen(filename, "r");
@@ -198,6 +200,7 @@ int echoint(int arg)
 
 void imdebug()
 {
+    return;
     // Create reproduction dot file
     FILE *file;
     file = fopen("input.dot", "w");
