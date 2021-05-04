@@ -13,8 +13,8 @@ using namespace std;
 extern "C" {
 
 	// Some wrappers around existing cgraph functions to handle string marshaling
-    __declspec(dllexport) const char* imagmemwrite(Agraph_t * g);
-    __declspec(dllexport) Agraph_t* imagmemread(const char* s);
+    //__declspec(dllexport) const char* imagmemwrite(Agraph_t * g);
+    //__declspec(dllexport) Agraph_t* imagmemread(const char* s);
     __declspec(dllexport) const char* imagget(void* obj, char* name);
     __declspec(dllexport) const char* imagnameof(void* obj);
     __declspec(dllexport) Agraph_t* imagopen(char* name, int graphtype);
@@ -59,7 +59,7 @@ char* marshalCString(const char* s)
 
 static int imafread(void* stream, char* buffer, int bufsize)
 {
-    istringstream* is = (istringstream*) stream;
+    istream* is = (istream*) stream;
     is->read(buffer, bufsize);
     int result = (int) is->gcount();
     return result;
@@ -67,14 +67,14 @@ static int imafread(void* stream, char* buffer, int bufsize)
 
 static int imputstr(void* stream, const char *s)
 {
-    ostringstream* os = (ostringstream*) stream;
+    ostream* os = (ostream*) stream;
     (*os) << s;
     return 0;
 }
 
 static int imflush(void* stream)
 {
-    ostringstream* os = (ostringstream*) stream;
+    ostream* os = (ostream*) stream;
     os->flush();
     return 0;
 }
@@ -107,41 +107,49 @@ const char *imsym_key(Agsym_t *sym) { return marshalCString(sym->name); }
 Agraph_t* imagopen(char* name, int graphtype)
 {
     if (graphtype == 0)
-        return agopen(name, Agdirected, &memDisc);
+        return agopen(name, Agdirected, 0);
     if (graphtype == 1)
-		return agopen(name, Agstrictdirected, &memDisc);
+		return agopen(name, Agstrictdirected, 0);
     if (graphtype == 2)
-		return agopen(name, Agundirected, &memDisc);
+		return agopen(name, Agundirected, 0);
     if (graphtype == 3)
-		return agopen(name, Agstrictundirected, &memDisc);
+		return agopen(name, Agstrictundirected, 0);
 	return 0;
 }
 
-Agraph_t* imagmemread(const char* s)
-{
-    stringstream stream;
-    stream << s;
-    Agraph_t* g = agread(&stream, &memDisc);
-    return g;
-}
+//Agraph_t* imagmemread(const char* s)
+//{
+//    stringstream stream(s);
+//    Agraph_t* g = agread(&stream, &memDisc);
+//    return g;
+//}
 
-// Note: for this function to work, the graph has to be created with the memDisc, e.g. using imagopen
+// Note: for this function to work, the graph has to be created with the default io disc
 void imagwrite(Agraph_t * g, const char* filename)
 {
-    ostringstream os;
-    agwrite(g, &os);
-    ofstream out(filename);
-    out << os.str();
-    out.close();
+    FILE *file;
+    file = fopen(filename, "w");
+    agwrite(g, file);
+    fclose(file);
+}
+
+// Note: for this function to work, the graph has to be created with the default io disc
+Agraph_t* imagread(const char* filename)
+{
+    FILE *file;
+    file = fopen(filename, "r");
+    auto result = agread(file, 0);
+    fclose(file);
+    return result;
 }
 
 // Note: for this function to work, the graph has to be created with the memDisc, e.g. using imagopen
-const char* imagmemwrite(Agraph_t * g)
-{
-    ostringstream os;
-    agwrite(g, &os);
-    return marshalCString(os.str().c_str());
-}
+//const char* imagmemwrite(Agraph_t * g)
+//{
+//    ostringstream os;
+//    agwrite(g, &os);
+//    return marshalCString(os.str().c_str());
+//}
 
 const char* imagget(void* obj, char* name)
 {
@@ -197,8 +205,24 @@ void imdebug()
     fprintf(file, inputstr);
     fclose(file);
 
+    file = fopen("input2.dot", "w");
+    const char* inputstr2 = "digraph \"problem graph 2\" { node[fontname = \"Times-Roman\", fontsize = 7, margin = 0.01 ]; B[label = \"{20 VH|{1|2}}\", shape = record]; }";
+    fprintf(file, inputstr2);
+    fclose(file);
+
     // Compute layout using library calls
-    auto root = imagmemread(inputstr);
+    file = fopen("input.dot", "r");
+    auto root = agread(file, 0);
+    fclose(file);
+    file = fopen("input2.dot", "r");
+    auto root2 = agread(file, 0);
+    fclose(file);
+  //  if (root2 == NULL)
+  //  {
+		//cout << "4" << endl;
+  //      throw invalid_argument("Null pointer");
+  //  }
+    cout << "5" << endl;
     auto gvc = gvContext();
     gvLayout(gvc, root, "dot");
     gvRender(gvc, root, "xdot", NULL);

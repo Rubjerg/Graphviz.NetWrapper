@@ -58,22 +58,19 @@ namespace Rubjerg.Graphviz
 
         public static RootGraph FromDotFile(string filename)
         {
-            string input;
-            using (var sr = new StreamReader(filename))
-                input = sr.ReadToEnd();
-
-            return FromDotString(input);
+            var ptr = Imagread(filename);
+            return new RootGraph(ptr);
         }
 
-        public static RootGraph FromDotString(string graph)
-        {
-            IntPtr ptr = Imagmemread(graph);
-            if (ptr == IntPtr.Zero)
-                throw new ArgumentException($"Argument {nameof(graph)} cannot be parsed into a graph: {graph}");
-            var result = new RootGraph(ptr);
-            result.UpdateMemoryPressure();
-            return result;
-        }
+        //public static RootGraph FromDotString(string graph)
+        //{
+        //    IntPtr ptr = Imagmemread(graph);
+        //    if (ptr == IntPtr.Zero)
+        //        throw new ArgumentException($"Argument {nameof(graph)} cannot be parsed into a graph: {graph}");
+        //    var result = new RootGraph(ptr);
+        //    result.UpdateMemoryPressure();
+        //    return result;
+        //}
 
         public void ConvertToUndirectedGraph()
         {

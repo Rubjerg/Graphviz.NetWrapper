@@ -9,6 +9,7 @@ namespace Rubjerg.Graphviz.Test
     [TestFixture()]
     public class GraphvizRecordShapeTests
     {
+         /*
         private RootGraph GenerateProblemGraph(int id, bool fromDotString)
         {
             if (fromDotString)
@@ -70,6 +71,7 @@ digraph ""problem graph {id}"" {{
                 TestContext.Write(problem.ToDotString());
             }
         }
+         */
 
         /// <summary>
         /// This test used to fail: https://gitlab.com/graphviz/graphviz/-/issues/1894
@@ -77,8 +79,8 @@ digraph ""problem graph {id}"" {{
         /// </summary>
         [Test()]
         [TestCase("Times-Roman", 7, 0.01)]
-        // [TestCase("Times-Roman", 7, 0.5)]
-        // [Category("Flaky")]
+        [TestCase("Times-Roman", 7, 0.5)]
+        [Category("Flaky")]
         public void TestRecordShapeAlignment(string fontname, double fontsize, double margin)
         {
             RootGraph root = CreateUniqueTestGraph();
