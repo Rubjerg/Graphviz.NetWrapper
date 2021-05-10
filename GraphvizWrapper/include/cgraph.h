@@ -1,6 +1,3 @@
-/* $Id$ $Revision$ */
-/* vim:set shiftwidth=4 ts=8: */
-
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
@@ -8,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * Contributors: See CVS logs. Details at http://www.graphviz.org/
+ * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
 #ifndef ATT_GRAPH_H
@@ -358,7 +355,7 @@ CGRAPH_API int agset(void *obj, char *name, char *value);
 CGRAPH_API int agxset(void *obj, Agsym_t * sym, char *value);
 CGRAPH_API int agsafeset(void* obj, char* name, char* value, char* def);
 
-/* defintions for subgraphs */
+/* definitions for subgraphs */
 CGRAPH_API Agraph_t *agsubg(Agraph_t * g, char *name, int cflag);	/* constructor */
 CGRAPH_API Agraph_t *agidsubg(Agraph_t * g, IDTYPE id, int cflag);	/* constructor */
 CGRAPH_API Agraph_t *agfstsubg(Agraph_t * g);
