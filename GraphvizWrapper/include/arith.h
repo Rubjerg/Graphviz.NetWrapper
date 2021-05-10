@@ -49,7 +49,7 @@ extern "C" {
 #endif
 
 #ifndef MAXSHORT
-#define	MAXSHORT	(0x7fff)
+#define	MAXSHORT	0x7fff
 #endif
 
 #ifndef MAXDOUBLE
