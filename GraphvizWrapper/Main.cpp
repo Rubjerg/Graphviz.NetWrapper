@@ -126,7 +126,7 @@ Agraph_t* imagopen(char* name, int graphtype)
 //}
 
 // Note: for this function to work, the graph has to be created with the default io disc
-void imagwrite(Agraph_t * g, const char* filename)
+void imagwrite(Agraph_t * g, char* filename)
 {
     FILE *file;
     file = fopen(filename, "w");
