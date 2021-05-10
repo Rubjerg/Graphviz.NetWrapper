@@ -55,6 +55,7 @@ gvplugin_core.dll core {
 		pic:pic -1
 	}
 	device {
+		pov:pov 1
 	}
 	render {
 		dot 1
@@ -91,6 +92,7 @@ gvplugin_core.dll core {
 		pic -1
 	}
 	render {
+		pov 1
 	}
 	loadimage {
 		png:svg 1
