@@ -50,11 +50,11 @@ namespace Rubjerg.Graphviz.Test
                 nodeA.SetAttribute("label", "1");
                 Assert.AreEqual("1", nodeA.GetAttribute("label"));
                 Assert.AreEqual("", nodeB.GetAttribute("label"));
-                root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.gv");
+                root.ToDotFile(TestContext.CurrentContext.TestDirectory + "\\out.gv");
             }
 
             {
-                var root = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "/out.gv");
+                var root = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "\\out.gv");
                 Node nodeA = root.GetNode("A");
                 Node nodeB = root.GetNode("B");
                 Assert.AreEqual("1", nodeA.GetAttribute("label"));
@@ -63,7 +63,7 @@ namespace Rubjerg.Graphviz.Test
                 root.ComputeLayout();
                 Assert.AreEqual("1", nodeA.GetAttribute("label"));
                 Assert.AreEqual("", nodeB.GetAttribute("label"));
-                root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/out.svg");
+                root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "\\out.svg");
             }
             // The empty label default is not exported, but that appears to be no problem here. The
             // default seems to become the empty string. However, dot.exe gives a different result.

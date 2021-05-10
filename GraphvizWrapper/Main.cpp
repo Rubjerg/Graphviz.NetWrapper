@@ -6,7 +6,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <conio.h>
 
 using namespace std;
 
@@ -15,7 +14,7 @@ extern "C" {
 	// Some wrappers around existing cgraph functions to handle string marshaling
     //__declspec(dllexport) const char* imagmemwrite(Agraph_t * g);
     //__declspec(dllexport) Agraph_t* imagmemread(const char* s);
-    __declspec(dllexport) void imagwrite();
+    __declspec(dllexport) void imagwrite(Agraph_t * g, char* filename);
     __declspec(dllexport) Agraph_t* imagread(char * filename);
     __declspec(dllexport) const char* imagget(void* obj, char* name);
     __declspec(dllexport) const char* imagnameof(void* obj);
@@ -82,8 +81,8 @@ static int imflush(void* stream)
 }
 
 
-static Agiodisc_t memIoDisc = {imafread, imputstr, imflush};
-static Agdisc_t memDisc = {0, 0, &memIoDisc};
+//static Agiodisc_t memIoDisc = {imafread, imputstr, imflush};
+//static Agdisc_t memDisc = {0, 0, &memIoDisc};
 
 textlabel_t* node_label(Agnode_t* node) { return ND_label(node); }
 textlabel_t* edge_label(Agedge_t* edge) { return ED_label(edge); }
@@ -163,11 +162,6 @@ const char* imagnameof(void* obj)
 {
     char* result = agnameof(obj);
     return marshalCString(result);
-}
-
-Agdisc_t* getdisc()
-{
-    return &memDisc;
 }
 
 void clone_attribute_declarations(Agraph_t* from, Agraph_t* to)
