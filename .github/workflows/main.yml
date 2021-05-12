@@ -39,7 +39,7 @@ jobs:
       run: Rubjerg.Graphviz.Test\bin\x64\Release\net48\dot.exe -c ;cat Rubjerg.Graphviz.Test\bin\x64\Release\net48\config6
 
     - name: Show build info
-      run: bash -c 'pwd ; ls ; ls * ; ls Rubjerg.Graphviz.Test/bin/x64/Release/net48'
+      run: bash -c 'pwd ; ls Rubjerg.Graphviz.Test/bin/x64/Release/net48'
 
     # - name: Run Recordshape test
     #   run: Rubjerg.Graphviz\GraphvizWrapper.exe
