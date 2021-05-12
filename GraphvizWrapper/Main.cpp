@@ -202,11 +202,9 @@ void imdebug()
     fclose(file);
 
     // Read reproduction graph
-    system("touch 1");
     file = fopen("input.dot", "r");
     auto root = agread(file, 0);
     fclose(file);
-    system("touch 2");
 
     // Compute layout using library calls
     system("echo Using lib calls: >> testout.txt");
@@ -214,26 +212,9 @@ void imdebug()
     gvLayout(gvc, root, "dot");
     gvRender(gvc, root, "xdot", NULL);
     file = fopen("output.dot", "w");
-    system("touch 3");
     agwrite(root, file);
-    system("touch 4");
     fclose(file);
     system("cat output.dot >> testout.txt");
-
-    /*
-    // Compute layout using library calls
-    ifstream input("input.dot", ios::in);
-    auto root = agread(&input, &memDisc);
-    input.close();
-    auto gvc = gvContext();
-    gvLayout(gvc, root, "dot");
-    gvRender(gvc, root, "xdot", NULL);
-    ofstream output("lib-output.dot", ios::out);
-    agwrite(root, &output);
-    output.close();
-    system("echo Using lib calls:");
-    system("cat lib-output.dot");
-    */
 
     // Compute layout using dot.exe
     system("echo Using dot.exe: >> testout.txt");

@@ -35,6 +35,9 @@ jobs:
     - name: Build App
       run: msbuild Rubjerg.Graphviz.sln /p:Configuration=Release
 
+    - name: Create config6
+      run: Rubjerg.Graphviz.Test\bin\x64\Release\net48\dot.exe -c ;cat Rubjerg.Graphviz.Test\bin\x64\Release\net48\config6
+
     # - name: Run Recordshape test
     #   run: Rubjerg.Graphviz\GraphvizWrapper.exe
 
