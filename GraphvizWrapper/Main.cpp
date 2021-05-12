@@ -217,7 +217,7 @@ void imdebug()
 
     // Compute layout using dot.exe
     system("bash -c 'echo Using dot.exe: >> testout.txt '");
-    system("bash -c 'Rubjerg.Graphviz\\dot.exe -Txdot input.dot >> testout.txt '");
+    system("bash -c 'Rubjerg.Graphviz.Test/bin/x64/Release/net48/dot.exe -Txdot input.dot >> testout.txt '");
 }
 
 int main()
