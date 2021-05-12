@@ -4,6 +4,7 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net48</TargetFramework>
     <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NoWarn>1701;1702;NU5100</NoWarn>
     <Version>1.0.8</Version>
