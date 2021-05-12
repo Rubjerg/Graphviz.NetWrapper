@@ -202,9 +202,11 @@ void imdebug()
     fclose(file);
 
     // Read reproduction graph
+    system("touch 1");
     file = fopen("input.dot", "r");
     auto root = agread(file, 0);
     fclose(file);
+    system("touch 2");
 
     // Compute layout using library calls
     system("echo Using lib calls:");
@@ -212,7 +214,9 @@ void imdebug()
     gvLayout(gvc, root, "dot");
     gvRender(gvc, root, "xdot", NULL);
     file = fopen("output.dot", "w");
+    system("touch 3");
     agwrite(root, file);
+    system("touch 4");
     fclose(file);
     system("cat output.dot");
 
