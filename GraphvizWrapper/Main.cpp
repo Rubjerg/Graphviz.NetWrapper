@@ -194,7 +194,6 @@ int echoint(int arg)
 void imdebug()
 {
     // Create reproduction dot file
-    system("echo Hello");
     FILE *file;
     file = fopen("input.dot", "w");
     const char *inputstr = "digraph \"problem graph\" { node[fontname = \"Times-Roman\", fontsize = 7, margin = 0.01 ]; A[label = \"{20 VH|{1|2}}\", shape = record]; }";
@@ -207,18 +206,18 @@ void imdebug()
     fclose(file);
 
     // Compute layout using library calls
-    system("echo Using lib calls: >> testout.txt");
+    system("bash -c 'echo Using lib calls: >> testout.txt '");
     auto gvc = gvContext();
     gvLayout(gvc, root, "dot");
     gvRender(gvc, root, "xdot", NULL);
     file = fopen("output.dot", "w");
     agwrite(root, file);
     fclose(file);
-    system("cat output.dot >> testout.txt");
+    system("bash -c 'cat output.dot >> testout.txt '");
 
     // Compute layout using dot.exe
-    system("echo Using dot.exe: >> testout.txt");
-    system("Rubjerg.Graphviz\\dot.exe -Txdot input.dot >> testout.txt");
+    system("bash -c 'echo Using dot.exe: >> testout.txt '");
+    system("bash -c 'Rubjerg.Graphviz\\dot.exe -Txdot input.dot >> testout.txt '");
 }
 
 int main()
