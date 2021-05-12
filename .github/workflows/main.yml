@@ -45,7 +45,7 @@ jobs:
     #   run: git diff --exit-code -- README.md
 
     - name: Run Unittests With Coverage Calculation
-      run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register '-target:bash.exe' -targetargs:'testrunner.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
+      run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register '-target:bash.exe' -targetargs:'testrunner.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*; echo fix error code'
 
     - name: Test output
       run: cat Rubjerg.Graphviz.Test\bin\x64\Release\net48\testout.txt
