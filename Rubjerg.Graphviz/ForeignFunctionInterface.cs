@@ -355,6 +355,13 @@ namespace Rubjerg.Graphviz
                 return edge_label(node);
             }
         }
+        public static IntPtr Imagread(string filename)
+        {
+            lock (Mutex)
+            {
+                return imagread(filename);
+            }
+        }
         public static void Imagwrite(IntPtr graph, string filename)
         {
             lock (Mutex)
@@ -362,13 +369,13 @@ namespace Rubjerg.Graphviz
                 imagwrite(graph, filename);
             }
         }
-        public static string Imagmemwrite(IntPtr graph)
-        {
-            lock (Mutex)
-            {
-                return imagmemwrite(graph);
-            }
-        }
+        //public static string Imagmemwrite(IntPtr graph)
+        //{
+        //    lock (Mutex)
+        //    {
+        //        return imagmemwrite(graph);
+        //    }
+        //}
         public static IntPtr GraphLabel(IntPtr node)
         {
             lock (Mutex)
@@ -495,13 +502,13 @@ namespace Rubjerg.Graphviz
                 convert_to_undirected(graph);
             }
         }
-        public static IntPtr Imagmemread(string input)
-        {
-            lock (Mutex)
-            {
-                return imagmemread(input);
-            }
-        }
+        //public static IntPtr Imagmemread(string input)
+        //{
+        //    lock (Mutex)
+        //    {
+        //        return imagmemread(input);
+        //    }
+        //}
         public static IntPtr Imagopen(string name, int graphtype)
         {
             lock (Mutex)
@@ -617,10 +624,12 @@ namespace Rubjerg.Graphviz
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr edge_label(IntPtr node);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void imagwrite(IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string filename);
+        private static extern IntPtr imagread([MarshalAs(UnmanagedType.LPStr)] string filename);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string imagmemwrite(IntPtr graph);
+        private static extern void imagwrite(IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string filename);
+        //[DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        //[return: MarshalAs(UnmanagedType.LPStr)]
+        //private static extern string imagmemwrite(IntPtr graph);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr graph_label(IntPtr node);
 
@@ -666,8 +675,8 @@ namespace Rubjerg.Graphviz
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void convert_to_undirected(IntPtr graph);
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr imagmemread([MarshalAs(UnmanagedType.LPStr)] string input);
+        //[DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        //private static extern IntPtr imagmemread([MarshalAs(UnmanagedType.LPStr)] string input);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr imagopen([MarshalAs(UnmanagedType.LPStr)] string name, int graphtype);
     }

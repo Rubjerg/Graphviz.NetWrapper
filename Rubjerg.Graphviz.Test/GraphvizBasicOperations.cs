@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -10,91 +9,29 @@ namespace Rubjerg.Graphviz.Test
     [TestFixture()]
     public class GraphvizBasicOperations
     {
-        [Test()]
-        public void TestHtmlLabels()
-        {
-            RootGraph root = CreateUniqueTestGraph();
-            const string labelKey = "label";
-            Node.IntroduceAttribute(root, labelKey, "");
+        //[Test()]
+        //public void TestHtmlLabels()
+        //{
+        //    RootGraph root = CreateUniqueTestGraph();
+        //    const string labelKey = "label";
+        //    Node.IntroduceAttribute(root, labelKey, "");
 
-            Node n1 = root.GetOrAddNode("1");
-            Node n2 = root.GetOrAddNode("2");
+        //    Node n1 = root.GetOrAddNode("1");
+        //    Node n2 = root.GetOrAddNode("2");
 
-            n1.SetAttribute(labelKey, "raw text");
-            n2.SetAttribute(labelKey, "<html text>");
+        //    n1.SetAttribute(labelKey, "raw text");
+        //    n2.SetAttribute(labelKey, "<html text>");
 
-            var result = root.ToDotString();
+        //    var result = root.ToDotString();
 
-            Assert.That(result, Does.Contain("\"raw text\""));
+        //    Assert.That(result, Does.Contain("\"raw text\""));
 
-            // Html labels are not string quoted in dot file
-            Assert.That(result, Does.Not.Contain("\"<html text>\""));
-            Assert.That(result, Does.Not.Contain("\"<<html text>>\""));
-            // Htmls labels have additional angel bracket delimeters added
-            Assert.That(result, Does.Contain("<<html text>>"));
-        }
-
-        [Test()]
-        public void TestRecordShapeOrder()
-        {
-            RootGraph root = CreateUniqueTestGraph();
-            Node nodeA = root.GetOrAddNode("A");
-
-            nodeA.SafeSetAttribute("shape", "record", "");
-            nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
-
-            root.ComputeLayout();
-
-            var rects = nodeA.GetRecordRectangles().ToList();
-
-            // Because Graphviz uses a lower-left originated coordinate system, we need to flip the y coordinates
-            Utils.AssertOrder(rects, r => (r.Left, -r.Top));
-            Assert.That(rects.Count, Is.EqualTo(9));
-        }
-
-        /// <summary>
-        /// This test used to fail: https://gitlab.com/graphviz/graphviz/-/issues/1894
-        /// It still fails on github hosted VMs: https://gitlab.com/graphviz/graphviz/-/issues/1905
-        /// </summary>
-        [Test()]
-        [TestCase("Times-Roman", 7, 0.01)]
-        [TestCase("Times-Roman", 7, 0.5)]
-        [Category("Flaky")]
-        public void TestRecordShapeAlignment(string fontname, double fontsize, double margin)
-        {
-            RootGraph root = CreateUniqueTestGraph();
-            // Margin between label and node boundary in inches
-            Node.IntroduceAttribute(root, "margin", margin.ToString(CultureInfo.InvariantCulture));
-            Node.IntroduceAttribute(root, "fontsize", fontsize.ToString(CultureInfo.InvariantCulture));
-            Node.IntroduceAttribute(root, "fontname", fontname);
-
-            Node nodeA = root.GetOrAddNode("A");
-
-            nodeA.SafeSetAttribute("shape", "record", "");
-            nodeA.SafeSetAttribute("label", "{20 VH|{1|2}}", "");
-
-            //TestContext.Write(root.ToDotString());
-            root.ComputeLayout();
-            //TestContext.Write(root.ToDotString());
-
-            var rects = nodeA.GetRecordRectangles().ToList();
-            Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
-        }
-
-        [Test()]
-        public void TestEmptyRecordShapes()
-        {
-            RootGraph root = CreateUniqueTestGraph();
-            Node nodeA = root.GetOrAddNode("A");
-            nodeA.SafeSetAttribute("shape", "record", "");
-            nodeA.SafeSetAttribute("label", "||||", "");
-
-            root.ComputeLayout();
-
-            var rects = nodeA.GetRecordRectangles().ToList();
-            Assert.That(rects.Count, Is.EqualTo(5));
-            root.ToSvgFile(GetTestFilePath("out.svg"));
-        }
+        //    // Html labels are not string quoted in dot file
+        //    Assert.That(result, Does.Not.Contain("\"<html text>\""));
+        //    Assert.That(result, Does.Not.Contain("\"<<html text>>\""));
+        //    // Htmls labels have additional angel bracket delimeters added
+        //    Assert.That(result, Does.Contain("<<html text>>"));
+        //}
 
         [Test()]
         [TestCase(true)]

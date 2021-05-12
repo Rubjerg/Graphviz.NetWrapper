@@ -164,10 +164,10 @@ namespace Rubjerg.Graphviz
         /// Attributes with the empty string as default are not correctly exported.
         /// https://gitlab.com/graphviz/graphviz/-/issues/1887
         /// </summary>
-        public string ToDotString()
-        {
-            return Imagmemwrite(_ptr);
-        }
+        //public string ToDotString()
+        //{
+        //    return Imagmemwrite(_ptr);
+        //}
 
         /// <summary>
         /// Attributes with the empty string as default are not correctly exported.
@@ -175,7 +175,7 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public void ToDotFile(string filename)
         {
-            File.WriteAllText(filename, ToDotString());
+            Imagwrite(_ptr, filename);
         }
 
         /// <summary>
