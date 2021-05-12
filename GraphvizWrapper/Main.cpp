@@ -209,7 +209,7 @@ void imdebug()
     system("touch 2");
 
     // Compute layout using library calls
-    system("echo Using lib calls:");
+    system("echo Using lib calls: >> testout.txt");
     auto gvc = gvContext();
     gvLayout(gvc, root, "dot");
     gvRender(gvc, root, "xdot", NULL);
@@ -218,7 +218,7 @@ void imdebug()
     agwrite(root, file);
     system("touch 4");
     fclose(file);
-    system("cat output.dot");
+    system("cat output.dot >> testout.txt");
 
     /*
     // Compute layout using library calls
@@ -236,8 +236,8 @@ void imdebug()
     */
 
     // Compute layout using dot.exe
-    system("echo Using dot.exe:");
-    system("Rubjerg.Graphviz\\dot.exe -Txdot input.dot");
+    system("echo Using dot.exe: >> testout.txt");
+    system("Rubjerg.Graphviz\\dot.exe -Txdot input.dot >> testout.txt");
 }
 
 int main()
