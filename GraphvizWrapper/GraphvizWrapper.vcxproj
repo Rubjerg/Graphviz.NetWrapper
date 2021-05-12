@@ -18,13 +18,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -62,7 +62,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <PostBuildEvent>
-      <Command>xcopy /y /d /s /e  "graphvizfiles/$(Configuration)" "$(OutDir)"</Command>
+      <Command>xcopy /y /s /e  "graphvizfiles/$(Configuration)" "$(OutDir)"</Command>
     </PostBuildEvent>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -85,7 +85,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <PostBuildEvent>
-      <Command>xcopy /y /d /s /e  "graphvizfiles/$(Configuration)" "$(OutDir)"</Command>
+      <Command>xcopy /y /s /e  "graphvizfiles/$(Configuration)" "$(OutDir)"</Command>
     </PostBuildEvent>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
