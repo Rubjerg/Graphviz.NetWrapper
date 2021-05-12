@@ -39,7 +39,7 @@ jobs:
       run: Rubjerg.Graphviz.Test\bin\x64\Release\net48\dot.exe -c ;cat Rubjerg.Graphviz.Test\bin\x64\Release\net48\config6
 
     - name: Show build info
-      run: bash -c 'pwd ; ls ; ls * ; ls Rubjerg.Graphviz.Test\bin\x64\Release\net48'
+      run: bash -c 'pwd ; ls ; ls * ; ls Rubjerg.Graphviz.Test/bin/x64/Release/net48'
 
     # - name: Run Recordshape test
     #   run: Rubjerg.Graphviz\GraphvizWrapper.exe
@@ -51,7 +51,7 @@ jobs:
       run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -skipautoprops -register '-target:bash.exe' -targetargs:'testrunner.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
 
     - name: Test output
-      run: bash -c 'pwd; ls Rubjerg.Graphviz.Test\bin\x64\Release\net48 ; cat Rubjerg.Graphviz.Test\bin\x64\Release\net48\testout.txt'
+      run: bash -c 'pwd; ls Rubjerg.Graphviz.Test/bin/x64/Release/net48 ; cat Rubjerg.Graphviz.Test/bin/x64/Release/net48/testout.txt'
 
     # - name: Upload Coverage data
     #   run: |
