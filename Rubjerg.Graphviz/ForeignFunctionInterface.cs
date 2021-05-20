@@ -10,7 +10,6 @@ namespace Rubjerg.Graphviz
     internal static class ForeignFunctionInterface
     {
         private static readonly object Mutex = new object();
-        private const string LabelKey = "label";
 
         public static IntPtr GvContext()
         {
@@ -143,33 +142,16 @@ namespace Rubjerg.Graphviz
         {
             lock (Mutex)
             {
-                if (name.Equals(LabelKey, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    AddLabel(obj, value);
-                }
-                else
-                {
-                    agset(obj, name, value);
-                }
+                agset(obj, name, value);
             }
         }   
-        
-        public static void AddLabel(IntPtr obj, string value)
+
+        public static void AgsetHtml(IntPtr obj, string name, string value)
         {
             lock (Mutex)
             {
-                const string htmlStartDelimeter = "<";
-                const string htmlEndDelimeter = ">";
-
-                if (value.StartsWith(htmlStartDelimeter) && value.EndsWith(htmlEndDelimeter))
-                {
-                    var ptr = agstrdup_html(agroot(obj), value);
-                    agset(obj, LabelKey, ptr);
-                }
-                else
-                {
-                    agset(obj, LabelKey, value);
-                }
+                var ptr = agstrdup_html(agroot(obj), value);
+                agset(obj, name, ptr);
             }
         }
 
