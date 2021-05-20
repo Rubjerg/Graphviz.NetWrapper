@@ -86,6 +86,10 @@ namespace Rubjerg.Graphviz.Test
             edgeAB.SafeSetAttribute("color", "red", "black");
             edgeBC.SafeSetAttribute("arrowsize", "2.0", "1.0");
 
+            // Some attributes - like "label" - accept HTML strings as value.
+            // To tell graphviz that a string should be interpreted as HTML use the following method
+            nodeB.SetHtmlAttribute("label", "<b>Some HTML string</b>");
+
             // We can simply export this graph to a text file in dot format
             root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
         }
