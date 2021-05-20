@@ -27,6 +27,11 @@ namespace Rubjerg.Graphviz
             _ptr = ptr;
         }
 
+        public void SetHtmlAttribute(string name, string value)
+        {
+            AgsetHtml(_ptr, name, value);
+        }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as GraphvizThing);

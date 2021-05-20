@@ -21,7 +21,7 @@ namespace Rubjerg.Graphviz.Test
             Node n2 = root.GetOrAddNode("2");
 
             n1.SetAttribute(labelKey, "raw text");
-            n2.SetAttribute(labelKey, "<html text>");
+            n2.SetHtmlAttribute(labelKey, "<html text>");
 
             var result = root.ToDotString();
 
