@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
 
@@ -8,14 +8,14 @@ namespace Rubjerg.Graphviz.Test
     public class CGraphEdgeCases
     {
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        protected static extern void imdebug();
+        protected static extern void rj_debug();
 
         [Test()]
         [Ignore("For debugging")]
         public void debug()
         {
             NativeMethods.CreateConsole();
-            imdebug();
+            rj_debug();
         }
 
         [Test()]

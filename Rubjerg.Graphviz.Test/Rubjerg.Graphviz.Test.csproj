@@ -29,21 +29,11 @@
     </PackageReference>
   </ItemGroup>
 
-  <PropertyGroup>
-    <PowerShell># 2&gt;nul || type %~df0|find /v "setlocal"|find /v "errorlevel"|powershell.exe -noninteractive -&amp; exit %errorlevel% || #</PowerShell>
-  </PropertyGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <PropertyGroup>
-      <GenerateReadme>$(PowerShell)
-        Write-Host "Generating README.md"
-        Get-Content ../README-src.md | Set-Content ../README.md
-        Add-Content ../README.md '```cs'
-        Get-Content Tutorial.cs | Add-Content ../README.md
-        Add-Content ../README.md '```'
-      </GenerateReadme>
+      <GenerateReadme>generatereadme.bat</GenerateReadme>
     </PropertyGroup>
-    <Exec Command="$(GenerateReadme)" EchoOff="true" />
+    <Exec Command="$(GenerateReadme)"/>
   </Target>
 
 </Project>

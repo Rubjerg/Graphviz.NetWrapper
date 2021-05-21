@@ -166,7 +166,7 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public string ToDotString()
         {
-            return Imagmemwrite(_ptr);
+            return Rjagmemwrite(_ptr);
         }
 
         /// <summary>
@@ -490,7 +490,7 @@ namespace Rubjerg.Graphviz
 
         public RectangleF BoundingBox()
         {
-            string bb_string = Imagget(_ptr, "bb");
+            string bb_string = Rjagget(_ptr, "bb");
             if (string.IsNullOrEmpty(bb_string))
                 return default;
             // x and y are the topleft point of the bb

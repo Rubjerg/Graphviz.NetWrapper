@@ -13,12 +13,12 @@ using namespace std;
 extern "C" {
 
 	// Some wrappers around existing cgraph functions to handle string marshaling
-    __declspec(dllexport) const char* imagmemwrite(Agraph_t * g);
-    __declspec(dllexport) Agraph_t* imagmemread(const char* s);
-    __declspec(dllexport) const char* imagget(void* obj, char* name);
-    __declspec(dllexport) const char* imagnameof(void* obj);
-    __declspec(dllexport) Agraph_t* imagopen(char* name, int graphtype);
-    __declspec(dllexport) const char *imsym_key(Agsym_t *sym);
+    __declspec(dllexport) const char* rj_agmemwrite(Agraph_t * g);
+    __declspec(dllexport) Agraph_t* rj_agmemread(const char* s);
+    __declspec(dllexport) const char* rj_agget(void* obj, char* name);
+    __declspec(dllexport) const char* rj_agnameof(void* obj);
+    __declspec(dllexport) Agraph_t* rj_agopen(char* name, int graphtype);
+    __declspec(dllexport) const char *rj_sym_key(Agsym_t *sym);
 
     __declspec(dllexport) double node_x(Agnode_t* node);
     __declspec(dllexport) double node_y(Agnode_t* node);
@@ -44,7 +44,7 @@ extern "C" {
     // Test and debug functions
     __declspec(dllexport) bool echobool(bool arg);
     __declspec(dllexport) int echoint(int arg);
-    __declspec(dllexport) void imdebug();
+    __declspec(dllexport) void rj_debug();
 }
 
 
@@ -57,7 +57,7 @@ char* marshalCString(const char* s)
     return ptr;
 }
 
-static int imafread(void* stream, char* buffer, int bufsize)
+static int rj_afread(void* stream, char* buffer, int bufsize)
 {
     istringstream* is = (istringstream*) stream;
     is->read(buffer, bufsize);
@@ -65,14 +65,14 @@ static int imafread(void* stream, char* buffer, int bufsize)
     return result;
 }
 
-static int imputstr(void* stream, const char *s)
+static int rj_putstr(void* stream, const char *s)
 {
     ostringstream* os = (ostringstream*) stream;
     (*os) << s;
     return 0;
 }
 
-static int imflush(void* stream)
+static int rj_flush(void* stream)
 {
     ostringstream* os = (ostringstream*) stream;
     os->flush();
@@ -80,7 +80,7 @@ static int imflush(void* stream)
 }
 
 
-static Agiodisc_t memIoDisc = {imafread, imputstr, imflush};
+static Agiodisc_t memIoDisc = {rj_afread, rj_putstr, rj_flush};
 static Agdisc_t memDisc = {0, 0, &memIoDisc};
 
 textlabel_t* node_label(Agnode_t* node) { return ND_label(node); }
@@ -102,9 +102,9 @@ double node_y(Agnode_t* node) { return ND_coord(node).y; } // in points
 double node_width(Agnode_t* node) { return ND_width(node); } // in inches
 double node_height(Agnode_t* node) { return ND_height(node); } // in inches
 
-const char *imsym_key(Agsym_t *sym) { return marshalCString(sym->name); }
+const char *rj_sym_key(Agsym_t *sym) { return marshalCString(sym->name); }
 
-Agraph_t* imagopen(char* name, int graphtype)
+Agraph_t* rj_agopen(char* name, int graphtype)
 {
     if (graphtype == 0)
         return agopen(name, Agdirected, &memDisc);
@@ -117,7 +117,7 @@ Agraph_t* imagopen(char* name, int graphtype)
 	return 0;
 }
 
-Agraph_t* imagmemread(const char* s)
+Agraph_t* rj_agmemread(const char* s)
 {
     stringstream stream;
     stream << s;
@@ -125,8 +125,8 @@ Agraph_t* imagmemread(const char* s)
     return g;
 }
 
-// Note: for this function to work, the graph has to be created with the memDisc, e.g. using imagopen
-void imagwrite(Agraph_t * g, const char* filename)
+// Note: for this function to work, the graph has to be created with the memDisc, e.g. using rj_agopen
+void rj_agwrite(Agraph_t * g, const char* filename)
 {
     ostringstream os;
     agwrite(g, &os);
@@ -135,21 +135,21 @@ void imagwrite(Agraph_t * g, const char* filename)
     out.close();
 }
 
-// Note: for this function to work, the graph has to be created with the memDisc, e.g. using imagopen
-const char* imagmemwrite(Agraph_t * g)
+// Note: for this function to work, the graph has to be created with the memDisc, e.g. using rj_agopen
+const char* rj_agmemwrite(Agraph_t * g)
 {
     ostringstream os;
     agwrite(g, &os);
     return marshalCString(os.str().c_str());
 }
 
-const char* imagget(void* obj, char* name)
+const char* rj_agget(void* obj, char* name)
 {
     char* result = agget(obj, name);
     return marshalCString(result);
 }
 
-const char* imagnameof(void* obj)
+const char* rj_agnameof(void* obj)
 {
     char* result = agnameof(obj);
     return marshalCString(result);
@@ -188,11 +188,11 @@ int echoint(int arg)
     return arg;
 }
 
-void imdebug()
+void rj_debug()
 {
 }
 
 int main()
 {
-    imdebug();
+    rj_debug();
 }

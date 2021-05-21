@@ -1,0 +1,13 @@
+# Don't do any line ending normalization, ever
+* -text
+
+# Improve diffing
+*.cs diff=csharp
+*.cpp diff=cpp
+*.hpp diff=cpp
+*.c diff=cpp
+*.h diff=cpp
+
+# Prevent git from interpreting dot as Microsoft Word documents while diffing.
+*.dot !diff
+*.DOT !diff

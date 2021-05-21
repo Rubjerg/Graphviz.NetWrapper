@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace Rubjerg.Graphviz
@@ -9,130 +9,130 @@ namespace Rubjerg.Graphviz
     /// </summary>
     internal static class ForeignFunctionInterface
     {
-        private static readonly object Mutex = new object();
+        private static readonly object _mutex = new object();
 
         public static IntPtr GvContext()
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return gvContext();
             }
         }
         public static int GvFreeContext(IntPtr gvc)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return gvFreeContext(gvc);
             }
         }
         public static string GvcVersion(IntPtr gvc)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return gvcVersion(gvc);
             }
         }
         public static string GvcInfo(IntPtr gvc)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return gvcInfo(gvc);
             }
         }
         public static string GvcBuildDate(IntPtr gvc)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return gvcBuildDate(gvc);
             }
         }
         public static int GvLayout(IntPtr gvc, IntPtr graph, string engine)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return gvLayout(gvc, graph, engine);
             }
         }
         public static int GvFreeLayout(IntPtr gvc, IntPtr graph)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return gvFreeLayout(gvc, graph);
             }
         }
         public static int GvRender(IntPtr gvc, IntPtr graph, string format, IntPtr @out)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return gvRender(gvc, graph, format, @out);
             }
         }
         public static int GvRenderFilename(IntPtr gvc, IntPtr graph, string format, string filename)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return gvRenderFilename(gvc, graph, format, filename);
             }
         }
         public static IntPtr Agnode(IntPtr graph, string name, int create)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agnode(graph, name, create);
             }
         }
         public static int Agdegree(IntPtr graph, IntPtr node, int inset, int outset)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agdegree(graph, node, inset, outset);
             }
         }
         public static IntPtr Agfstout(IntPtr graph, IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agfstout(graph, node);
             }
         }
         public static IntPtr Agnxtout(IntPtr graph, IntPtr edge)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agnxtout(graph, edge);
             }
         }
         public static IntPtr Agfstin(IntPtr graph, IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agfstin(graph, node);
             }
         }
         public static IntPtr Agnxtin(IntPtr graph, IntPtr edge)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agnxtin(graph, edge);
             }
         }
         public static IntPtr Agfstedge(IntPtr graph, IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agfstedge(graph, node);
             }
         }
         public static IntPtr Agnxtedge(IntPtr graph, IntPtr edge, IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agnxtedge(graph, edge, node);
             }
         }
         public static void Agattr(IntPtr graph, int type, string name, string deflt)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 agattr(graph, type, name, deflt);
             }
@@ -140,7 +140,7 @@ namespace Rubjerg.Graphviz
 
         public static void Agset(IntPtr obj, string name, string value)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 agset(obj, name, value);
             }
@@ -148,7 +148,7 @@ namespace Rubjerg.Graphviz
 
         public static void AgsetHtml(IntPtr obj, string name, string value)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 var ptr = agstrdup_html(agroot(obj), value);
                 agset(obj, name, ptr);
@@ -157,338 +157,331 @@ namespace Rubjerg.Graphviz
 
         public static void Agsafeset(IntPtr obj, string name, string val, string deflt)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 agsafeset(obj, name, val, deflt);
             }
         }
         public static IntPtr Agroot(IntPtr obj)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agroot(obj);
             }
         }
         public static IntPtr Agnxtattr(IntPtr obj, int kind, IntPtr attribute)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agnxtattr(obj, kind, attribute);
             }
         }
         public static int Agcopyattr(IntPtr from, IntPtr to)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agcopyattr(from, to);
             }
         }
         public static bool Ageqedge(IntPtr edge1, IntPtr edge2)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return ageqedge(edge1, edge2);
             }
         }
         public static IntPtr Agtail(IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agtail(node);
             }
         }
         public static IntPtr Aghead(IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return aghead(node);
             }
         }
         public static IntPtr Agedge(IntPtr graph, IntPtr tail, IntPtr head, string name, int create)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agedge(graph, tail, head, name, create);
             }
         }
         public static IntPtr Agmkin(IntPtr edge)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agmkin(edge);
             }
         }
         public static IntPtr Agmkout(IntPtr edge)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agmkout(edge);
             }
         }
         public static IntPtr Agparent(IntPtr obj)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agparent(obj);
             }
         }
         public static int Agclose(IntPtr graph)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agclose(graph);
             }
         }
         public static int Agdelete(IntPtr graph, IntPtr item)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agdelete(graph, item);
             }
         }
         public static IntPtr Agfstnode(IntPtr graph)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agfstnode(graph);
             }
         }
         public static IntPtr Agnxtnode(IntPtr graph, IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agnxtnode(graph, node);
             }
         }
         public static int Agcontains(IntPtr graph, IntPtr obj)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agcontains(graph, obj);
             }
         }
         public static IntPtr Agsubg(IntPtr graph, string name, int create)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agsubg(graph, name, create);
             }
         }
         public static IntPtr Agfstsubg(IntPtr graph)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agfstsubg(graph);
             }
         }
         public static IntPtr Agnxtsubg(IntPtr graph)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agnxtsubg(graph);
             }
         }
         public static int Agisstrict(IntPtr ptr)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agisstrict(ptr);
             }
         }
         public static int Agisdirected(IntPtr ptr)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agisdirected(ptr);
             }
         }
         public static int Agisundirected(IntPtr ptr)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agisundirected(ptr);
             }
         }
         public static IntPtr Agsubedge(IntPtr graph, IntPtr edge, int create)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agsubedge(graph, edge, create);
             }
         }
         public static IntPtr Agsubnode(IntPtr graph, IntPtr node, int create)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return agsubnode(graph, node, create);
             }
         }
-        public static void Imdebug(IntPtr graph)
-        {
-            lock (Mutex)
-            {
-                imdebug(graph);
-            }
-        }
         public static IntPtr EdgeLabel(IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return edge_label(node);
             }
         }
-        public static void Imagwrite(IntPtr graph, string filename)
+        public static void Rjagwrite(IntPtr graph, string filename)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
-                imagwrite(graph, filename);
+                rj_agwrite(graph, filename);
             }
         }
-        public static string Imagmemwrite(IntPtr graph)
+        public static string Rjagmemwrite(IntPtr graph)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
-                return imagmemwrite(graph);
+                return rj_agmemwrite(graph);
             }
         }
         public static IntPtr GraphLabel(IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return graph_label(node);
             }
         }
-        public static string Imagget(IntPtr obj, string name)
+        public static string Rjagget(IntPtr obj, string name)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
-                return imagget(obj, name);
+                return rj_agget(obj, name);
             }
         }
-        public static string Imagnameof(IntPtr obj)
+        public static string Rjagnameof(IntPtr obj)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
-                return imagnameof(obj);
+                return rj_agnameof(obj);
             }
         }
         public static void CloneAttributeDeclarations(IntPtr graphfrom, IntPtr graphto)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 clone_attribute_declarations(graphfrom, graphto);
             }
         }
         public static string ImsymKey(IntPtr sym)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
-                return imsym_key(sym);
+                return rj_sym_key(sym);
             }
         }
         public static double LabelX(IntPtr label)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return label_x(label);
             }
         }
         public static double LabelY(IntPtr label)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return label_y(label);
             }
         }
         public static double LabelWidth(IntPtr label)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return label_width(label);
             }
         }
         public static double LabelHeight(IntPtr label)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return label_height(label);
             }
         }
         public static string LabelText(IntPtr label)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return label_text(label);
             }
         }
         public static double LabelFontsize(IntPtr label)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return label_fontsize(label);
             }
         }
         public static string LabelFontname(IntPtr label)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return label_fontname(label);
             }
         }
         public static double NodeX(IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return node_x(node);
             }
         }
         public static double NodeY(IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return node_y(node);
             }
         }
         public static double NodeWidth(IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return node_width(node);
             }
         }
         public static double NodeHeight(IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return node_height(node);
             }
         }
         public static IntPtr NodeLabel(IntPtr node)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 return node_label(node);
             }
         }
         public static void ConvertToUndirected(IntPtr graph)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 convert_to_undirected(graph);
             }
         }
-        public static IntPtr Imagmemread(string input)
+        public static IntPtr Rjagmemread(string input)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
-                return imagmemread(input);
+                return rj_agmemread(input);
             }
         }
-        public static IntPtr Imagopen(string name, int graphtype)
+        public static IntPtr Rjagopen(string name, int graphtype)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
-                return imagopen(name, graphtype);
+                return rj_agopen(name, graphtype);
             }
         }
 
@@ -595,28 +588,26 @@ namespace Rubjerg.Graphviz
         private static extern IntPtr agsubnode(IntPtr graph, IntPtr node, int create);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void imdebug(IntPtr graph);
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr edge_label(IntPtr node);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void imagwrite(IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string filename);
+        private static extern void rj_agwrite(IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string filename);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string imagmemwrite(IntPtr graph);
+        private static extern string rj_agmemwrite(IntPtr graph);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr graph_label(IntPtr node);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string imagget(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name);
+        private static extern string rj_agget(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string imagnameof(IntPtr obj);
+        private static extern string rj_agnameof(IntPtr obj);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void clone_attribute_declarations(IntPtr graphfrom, IntPtr graphto);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string imsym_key(IntPtr sym);
+        private static extern string rj_sym_key(IntPtr sym);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern double label_x(IntPtr label);
@@ -649,8 +640,8 @@ namespace Rubjerg.Graphviz
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void convert_to_undirected(IntPtr graph);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr imagmemread([MarshalAs(UnmanagedType.LPStr)] string input);
+        private static extern IntPtr rj_agmemread([MarshalAs(UnmanagedType.LPStr)] string input);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr imagopen([MarshalAs(UnmanagedType.LPStr)] string name, int graphtype);
+        private static extern IntPtr rj_agopen([MarshalAs(UnmanagedType.LPStr)] string name, int graphtype);
     }
 }
