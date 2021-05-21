@@ -1,10 +1,13 @@
-# Improve diffing for many languages
+# We use windows line ending at the moment
+* eol=crlf
+
+# Improve diffing
 *.cs diff=csharp
-*.css diff=css
 *.cpp diff=cpp
 *.hpp diff=cpp
 *.c diff=cpp
 *.h diff=cpp
-*.html diff=html
-*.python diff=python
-*.tex diff=text
+
+# Prevent git from interpreting dot as Microsoft Word documents while diffing.
+*.dot !diff
+*.DOT !diff
