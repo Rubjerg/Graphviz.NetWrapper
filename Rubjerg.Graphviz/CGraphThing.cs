@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -56,7 +56,7 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public string GetAttribute(string name)
         {
-            return Imagget(_ptr, name);
+            return Rjagget(_ptr, name);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Rubjerg.Graphviz
 
         public string GetName()
         {
-            return Imagnameof(_ptr);
+            return Rjagnameof(_ptr);
         }
 
         public override string ToString()

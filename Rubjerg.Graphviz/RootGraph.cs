@@ -52,7 +52,7 @@ namespace Rubjerg.Graphviz
         /// <param name="name">Unique identifier</param>
         public static RootGraph CreateNew(string name, GraphType graphtype)
         {
-            var ptr = Imagopen(name, (int)graphtype);
+            var ptr = Rjagopen(name, (int)graphtype);
             return new RootGraph(ptr);
         }
 
@@ -67,7 +67,7 @@ namespace Rubjerg.Graphviz
 
         public static RootGraph FromDotString(string graph)
         {
-            IntPtr ptr = Imagmemread(graph);
+            IntPtr ptr = Rjagmemread(graph);
             var result = new RootGraph(ptr);
             result.UpdateMemoryPressure();
             return result;
