@@ -1,3 +1,5 @@
+* -text
+
 # Improve diffing
 *.cs diff=csharp
 *.cpp diff=cpp
