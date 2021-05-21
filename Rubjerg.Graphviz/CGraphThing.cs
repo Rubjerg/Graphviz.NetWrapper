@@ -69,6 +69,21 @@ namespace Rubjerg.Graphviz
             return deflt;
         }
 
+        public void SetAttributeHtml(string name, string value)
+        {
+            AgsetHtml(_ptr, name, value);
+        }
+
+        /// <summary>
+        /// Also works if the attribute has not been introduced for this kind.
+        /// </summary>
+        public void SafeSetAttributeHtml(string name, string value, string deflt)
+        {
+            if (deflt == null)
+                throw new ArgumentNullException(nameof(deflt));
+            AgsafesetHtml(_ptr, name, value, deflt);
+        }
+
         /// <summary>
         /// Get all attributes as dictionary.
         /// </summary>

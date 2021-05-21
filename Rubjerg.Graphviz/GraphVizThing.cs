@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz
@@ -25,11 +25,6 @@ namespace Rubjerg.Graphviz
             if (ptr == IntPtr.Zero)
                 throw new ArgumentException("Can't have a null pointer.");
             _ptr = ptr;
-        }
-
-        public void SetHtmlAttribute(string name, string value)
-        {
-            AgsetHtml(_ptr, name, value);
         }
 
         public override bool Equals(object obj)

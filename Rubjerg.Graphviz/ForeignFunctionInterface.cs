@@ -1,6 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
 
+#pragma warning disable IDE1006 // Naming Styles
+
 namespace Rubjerg.Graphviz
 {
     /// <summary>
@@ -137,6 +139,14 @@ namespace Rubjerg.Graphviz
                 agattr(graph, type, name, deflt);
             }
         }
+        public static void AgattrHtml(IntPtr graph, int type, string name, string deflt)
+        {
+            lock (_mutex)
+            {
+                var ptr = agstrdup_html(agroot(graph), deflt);
+                agattr(graph, type, name, ptr);
+            }
+        }
 
         public static void Agset(IntPtr obj, string name, string value)
         {
@@ -160,6 +170,14 @@ namespace Rubjerg.Graphviz
             lock (_mutex)
             {
                 agsafeset(obj, name, val, deflt);
+            }
+        }
+        public static void AgsafesetHtml(IntPtr obj, string name, string val, string deflt)
+        {
+            lock (_mutex)
+            {
+                var ptr = agstrdup_html(agroot(obj), deflt);
+                agsafeset(obj, name, val, ptr);
             }
         }
         public static IntPtr Agroot(IntPtr obj)
@@ -527,6 +545,8 @@ namespace Rubjerg.Graphviz
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void agattr(IntPtr graph, int type, [MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string deflt);
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void agattr(IntPtr graph, int type, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr deflt);
+        [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void agset(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string value);
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void agset(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr value);
@@ -534,6 +554,8 @@ namespace Rubjerg.Graphviz
         private static extern IntPtr agstrdup_html(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string html);
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void agsafeset(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string val, [MarshalAs(UnmanagedType.LPStr)] string deflt);
+        [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void agsafeset(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string val, IntPtr deflt);
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr agroot(IntPtr obj);
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]

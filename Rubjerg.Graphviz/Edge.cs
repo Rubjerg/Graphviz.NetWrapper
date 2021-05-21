@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -37,6 +37,13 @@ namespace Rubjerg.Graphviz
             if (deflt == null)
                 throw new ArgumentNullException(nameof(deflt));
             Agattr(root._ptr, 2, name, deflt);
+        }
+
+        public static void IntroduceAttributeHtml(RootGraph root, string name, string deflt)
+        {
+            if (deflt == null)
+                throw new ArgumentNullException(nameof(deflt));
+            AgattrHtml(root._ptr, 2, name, deflt);
         }
 
         protected internal IntPtr HeadPtr()
