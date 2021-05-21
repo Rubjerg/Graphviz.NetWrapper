@@ -23,6 +23,11 @@ jobs:
     - uses: actions/checkout@v1
       name: Checkout Code
 
+    - name: Check if line endings are CRLF
+      run: |
+        bash -c "find . | xargs unix2dos"
+        git diff --exit-code
+
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
 
@@ -37,12 +42,6 @@ jobs:
 
     - name: Check if README is up-to-date
       run: git diff --exit-code -- README.md
-
-    - name: Convert line endings
-      run: find . | xargs unix2dos
-
-    - name: Check if line endings are CRLF
-      run: git diff --exit-code
 
     - name: Run Unittests With Coverage Calculation
       run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -returntargetcode -skipautoprops -register '-target:packages\nunit.consolerunner\3.12.0\tools\nunit3-console.exe' -targetargs:'Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll --where \"cat!=Slow and cat!=Flaky\" '  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
