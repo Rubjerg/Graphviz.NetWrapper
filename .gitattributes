@@ -1,3 +1,4 @@
+# Don't do any line ending normalization, ever
 * -text
 
 # Improve diffing
