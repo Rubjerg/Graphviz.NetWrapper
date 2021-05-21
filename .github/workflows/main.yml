@@ -25,7 +25,7 @@ jobs:
 
     - name: Check if line endings are CRLF
       run: |
-        bash -c "find . | xargs unix2dos"
+        bash -c "git grep -rlIP . | xargs unix2dos"
         git diff --exit-code
 
     - name: Add msbuild to PATH
