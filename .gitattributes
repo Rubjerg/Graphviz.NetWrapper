@@ -1,6 +1,3 @@
-# We use windows line ending at the moment
-* eol=crlf
-
 # Improve diffing
 *.cs diff=csharp
 *.cpp diff=cpp
