@@ -48,7 +48,7 @@ documents presented at the [Graphviz documentation page](https://graphviz.org/do
 ## Tutorial
 
 ```cs 
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Drawing;
 using System.Linq;
 
@@ -88,6 +88,7 @@ namespace Rubjerg.Graphviz.Test
 
             // Some attributes - like "label" - accept HTML strings as value
             // To tell graphviz that a string should be interpreted as HTML use the designated methods
+            Node.IntroduceAttribute(root, "label", "defaultlabel");
             nodeB.SafeSetAttributeHtml("label", "<b>Some HTML string</b>", "<i>Some default</i>");
 
             // We can simply export this graph to a text file in dot format
