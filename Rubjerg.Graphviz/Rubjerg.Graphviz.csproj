@@ -7,7 +7,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NoWarn>1701;1702;NU5100</NoWarn>
-    <Version>1.0.8</Version>
+    <Version>1.0.9</Version>
     <Authors>Chiel ten Brinke</Authors>
     <Company>Rubjerg</Company>
     <Description>Lean wrapper around Graphviz for building graphs, reading/writing dot files, exporting images, or reading out layout parameters.</Description>
