@@ -13,7 +13,7 @@ namespace Rubjerg.Graphviz
     /// two wrappers to be equal (i.e. not reference equality for wrappers, but equality of the
     /// pointers they wrap) to allow usage of common functions (like linq contains) in a way that
     /// makes sense.
-    /// 
+    ///
     /// Invariant: ptr member is never 0.
     /// </summary>
     public abstract class GraphvizThing

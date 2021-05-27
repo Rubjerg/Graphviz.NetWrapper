@@ -38,15 +38,13 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public static void IntroduceAttribute(RootGraph root, string name, string deflt)
         {
-            if (deflt == null)
-                throw new ArgumentNullException(nameof(deflt));
+            _ = deflt ?? throw new ArgumentNullException(nameof(deflt));
             Agattr(root._ptr, 0, name, deflt);
         }
 
         public static void IntroduceAttributeHtml(RootGraph root, string name, string deflt)
         {
-            if (deflt == null)
-                throw new ArgumentNullException(nameof(deflt));
+            _ = deflt ?? throw new ArgumentNullException(nameof(deflt));
             AgattrHtml(root._ptr, 0, name, deflt);
         }
 
@@ -203,7 +201,7 @@ namespace Rubjerg.Graphviz
         /// Edges are added to the result if both endpoints are among the nodes.
         /// Subgraphs are added to the result if they have nodes in the given nodelist.
         /// The names of the Subgraphs are of the form "name:subgraphname".
-        /// 
+        ///
         /// Side effect: adds the returned subgraph (and its children) to self.
         /// </summary>
         public SubGraph AddSubgraphFromNodes(string name, IEnumerable<Node> nodes)
@@ -283,7 +281,7 @@ namespace Rubjerg.Graphviz
         /// Add a plain subgraph with given name to self, containing the nodes that occur both in origin
         /// and the filter. In other words, filter the origin subgraph by the filter subgraph on node-level.
         /// Attributes are copied from origin to the result.
-        /// 
+        ///
         /// Side effect: adds the returned subgraph to self.
         /// </summary>
         public SubGraph AddSubgraphFilteredByNodes(string name, SubGraph origin, IEnumerable<Node> filter)
@@ -299,7 +297,7 @@ namespace Rubjerg.Graphviz
         /// <summary>
         /// Create a deepcopy of the graph as a new root graph.
         /// All nodes, edges and subgraphs contained in self are copied.
-        /// 
+        ///
         /// No side effects to self.
         /// </summary>
         /// <returns></returns>
@@ -387,7 +385,7 @@ namespace Rubjerg.Graphviz
         /// Contract an edge into a newly created node with given target name.
         /// The attributes of the endpoints are merged and copied to the target node,
         /// with head attributes taking precedence over tail attributes.
-        /// 
+        ///
         /// The end points of the given edge are removed, as well as the edge itself.
         /// Then all the neighbours of both endpoints are attached to the target,
         /// preserving direction and attributes.
@@ -405,7 +403,7 @@ namespace Rubjerg.Graphviz
         /// The resulting node will have targetname as name.
         /// The attributes of the endpoints are merged and copied to the target node,
         /// with head attributes taking precedence over tail attributes.
-        /// 
+        ///
         /// Both node1 and node2 will be removed from the graph.
         /// Then all the neighbours of both endpoints are attached to the target,
         /// preserving direction and attributes.
@@ -428,9 +426,9 @@ namespace Rubjerg.Graphviz
         /// Basically, add the neighborhood of the node to the neighborhood of the target.
         /// The merge node will be removed from the graph.
         /// The new edges will be added to the root graph.
-        /// 
+        ///
         /// If the graph is strict, no multiple edges will be added between nodes.
-        /// 
+        ///
         /// If add_self_loops is true, edges between the merge node and the target node will be
         /// added as self loops to the target node. Self loops that already exist as such are always added.
         /// </summary>

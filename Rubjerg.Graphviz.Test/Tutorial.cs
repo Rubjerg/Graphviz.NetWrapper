@@ -32,8 +32,12 @@ namespace Rubjerg.Graphviz.Test
             Node.IntroduceAttribute(root, "my attribute", "defaultvalue");
             nodeA.SetAttribute("my attribute", "othervalue");
 
+            // Attributes are introduced per kind (Node, Edge, Graph) per root graph.
+            // So to be able to use "my attribute" on edges, we first have to introduce it as well.
+            Edge.IntroduceAttribute(root, "my attribute", "defaultvalue");
+            edgeAB.SetAttribute("my attribute", "othervalue");
+
             // To introduce and set an attribute at the same time, there are convenience wrappers
-            edgeAB.SafeSetAttribute("color", "red", "black");
             edgeBC.SafeSetAttribute("arrowsize", "2.0", "1.0");
 
             // Some attributes - like "label" - accept HTML strings as value
