@@ -1,5 +1,8 @@
-codecov:
-  require_ci_to_pass: yes
-
 coverage:
   range: "60...90"
+  status:
+    project:
+      default:
+        # basic
+        target: 70%
+        threshold: 0%
