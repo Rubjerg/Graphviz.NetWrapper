@@ -16,22 +16,50 @@ namespace Rubjerg.Graphviz.Test
             RootGraph root = CreateUniqueTestGraph();
             const string labelKey = "label";
             Node.IntroduceAttribute(root, labelKey, "");
+            Graph.IntroduceAttribute(root, labelKey, "");
 
             Node n1 = root.GetOrAddNode("1");
             Node n2 = root.GetOrAddNode("2");
+            root.SetAttributeHtml(labelKey, "<html 3>");
 
-            n1.SetAttribute(labelKey, "raw text");
-            n2.SetHtmlAttribute(labelKey, "<html text>");
+            n1.SetAttribute(labelKey, "plain 1");
+            n2.SetAttributeHtml(labelKey, "<html 2>");
 
             var result = root.ToDotString();
 
-            Assert.That(result, Does.Contain("\"raw text\""));
+            Assert.That(result, Does.Contain("\"plain 1\""));
+            AssertContainsHtml(result, "<html 2>");
+            AssertContainsHtml(result, "<html 3>");
+        }
 
+        [Test()]
+        public void TestHtmlLabelsDefault()
+        {
+            RootGraph root = CreateUniqueTestGraph();
+            const string labelKey = "label";
+            Node.IntroduceAttributeHtml(root, labelKey, "<html default>");
+
+            Node n1 = root.GetOrAddNode("1");
+            Node n2 = root.GetOrAddNode("2");
+            Node n3 = root.GetOrAddNode("3");
+
+            n1.SetAttribute(labelKey, "plain 1");
+            n2.SetAttributeHtml(labelKey, "<html 2>");
+
+            var result = root.ToDotString();
+
+            Assert.That(result, Does.Contain("\"plain 1\""));
+            AssertContainsHtml(result, "<html 2>");
+            AssertContainsHtml(result, "<html default>");
+        }
+
+        private static void AssertContainsHtml(string result, string html)
+        {
             // Html labels are not string quoted in dot file
-            Assert.That(result, Does.Not.Contain("\"<html text>\""));
-            Assert.That(result, Does.Not.Contain("\"<<html text>>\""));
+            Assert.That(result, Does.Not.Contain($"\"{html}\""));
+            Assert.That(result, Does.Not.Contain($"\"<{html}>\""));
             // Htmls labels have additional angel bracket delimeters added
-            Assert.That(result, Does.Contain("<<html text>>"));
+            Assert.That(result, Does.Contain($"<{html}>"));
         }
 
         [Test()]

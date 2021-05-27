@@ -68,8 +68,7 @@ namespace Rubjerg.Graphviz.Test
 
         public static bool IsOrdered<T, TKey>(this IEnumerable<T> source, Func<T, TKey> keySelector)
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            _ = source ?? throw new ArgumentNullException("source");
 
             var comparer = Comparer<TKey>.Default;
             using (var iterator = source.GetEnumerator())

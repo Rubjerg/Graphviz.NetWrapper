@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz
@@ -13,7 +13,7 @@ namespace Rubjerg.Graphviz
     /// two wrappers to be equal (i.e. not reference equality for wrappers, but equality of the
     /// pointers they wrap) to allow usage of common functions (like linq contains) in a way that
     /// makes sense.
-    /// 
+    ///
     /// Invariant: ptr member is never 0.
     /// </summary>
     public abstract class GraphvizThing
@@ -25,11 +25,6 @@ namespace Rubjerg.Graphviz
             if (ptr == IntPtr.Zero)
                 throw new ArgumentException("Can't have a null pointer.");
             _ptr = ptr;
-        }
-
-        public void SetHtmlAttribute(string name, string value)
-        {
-            AgsetHtml(_ptr, name, value);
         }
 
         public override bool Equals(object obj)

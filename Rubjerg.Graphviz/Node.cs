@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -34,9 +34,14 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public static void IntroduceAttribute(RootGraph root, string name, string deflt)
         {
-            if (deflt == null)
-                throw new ArgumentNullException(nameof(deflt));
+            _ = deflt ?? throw new ArgumentNullException(nameof(deflt));
             Agattr(root._ptr, 1, name, deflt);
+        }
+
+        public static void IntroduceAttributeHtml(RootGraph root, string name, string deflt)
+        {
+            _ = deflt ?? throw new ArgumentNullException(nameof(deflt));
+            AgattrHtml(root._ptr, 1, name, deflt);
         }
 
         public IEnumerable<Edge> EdgesOut(Graph graph = null)
