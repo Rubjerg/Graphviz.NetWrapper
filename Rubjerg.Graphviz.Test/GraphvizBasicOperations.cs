@@ -16,9 +16,11 @@ namespace Rubjerg.Graphviz.Test
             RootGraph root = CreateUniqueTestGraph();
             const string labelKey = "label";
             Node.IntroduceAttribute(root, labelKey, "");
+            Graph.IntroduceAttribute(root, labelKey, "");
 
             Node n1 = root.GetOrAddNode("1");
             Node n2 = root.GetOrAddNode("2");
+            root.SetAttributeHtml(labelKey, "<html 3>");
 
             n1.SetAttribute(labelKey, "plain 1");
             n2.SetAttributeHtml(labelKey, "<html 2>");
@@ -26,12 +28,8 @@ namespace Rubjerg.Graphviz.Test
             var result = root.ToDotString();
 
             Assert.That(result, Does.Contain("\"plain 1\""));
-
-            // Html labels are not string quoted in dot file
-            Assert.That(result, Does.Not.Contain("\"<html 2>\""));
-            Assert.That(result, Does.Not.Contain("\"<<html 2>>\""));
-            // Htmls labels have additional angel bracket delimeters added
-            Assert.That(result, Does.Contain("<<html 2>>"));
+            AssertContainsHtml(result, "<html 2>");
+            AssertContainsHtml(result, "<html 3>");
         }
 
         [Test()]
@@ -51,18 +49,17 @@ namespace Rubjerg.Graphviz.Test
             var result = root.ToDotString();
 
             Assert.That(result, Does.Contain("\"plain 1\""));
+            AssertContainsHtml(result, "<html 2>");
+            AssertContainsHtml(result, "<html default>");
+        }
 
+        private static void AssertContainsHtml(string result, string html)
+        {
             // Html labels are not string quoted in dot file
-            Assert.That(result, Does.Not.Contain("\"<html 2>\""));
-            Assert.That(result, Does.Not.Contain("\"<<html 2>>\""));
+            Assert.That(result, Does.Not.Contain($"\"{html}\""));
+            Assert.That(result, Does.Not.Contain($"\"<{html}>\""));
             // Htmls labels have additional angel bracket delimeters added
-            Assert.That(result, Does.Contain("<<html 2>>"));
-
-            // Html labels are not string quoted in dot file
-            Assert.That(result, Does.Not.Contain("\"<html default>\""));
-            Assert.That(result, Does.Not.Contain("\"<<html default>>\""));
-            // Htmls labels have additional angel bracket delimeters added
-            Assert.That(result, Does.Contain("<<html default>>"));
+            Assert.That(result, Does.Contain($"<{html}>"));
         }
 
         [Test()]
