@@ -24,7 +24,7 @@
       <Version>4.7.1221</Version>
     </PackageReference>
     <PackageReference Include="Rubjerg.Graphviz">
-      <Version>1.0.8</Version>
+      <Version>1.0.9</Version>
     </PackageReference>
   </ItemGroup>
 
