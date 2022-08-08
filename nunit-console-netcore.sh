@@ -1,2 +1,2 @@
 #!/bin/bash
-dotnet tool run nunit "$@" --where "cat!=Slow and cat!=Flaky"
+dotnet tool run nunit "$@" --trace=Off --where "cat!=Slow and cat!=Flaky"
