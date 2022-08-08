@@ -38,6 +38,9 @@ jobs:
     - name: Restore NuGet Packages
       run: nuget restore Rubjerg.Graphviz.sln
 
+    - name: Restore Tools
+      run: dotnet tool restore
+
     - name: Build App
       run: msbuild Rubjerg.Graphviz.sln /p:Configuration=Release
 

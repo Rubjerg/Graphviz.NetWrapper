@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "nunit.consolerunner.netcore": {
+      "version": "3.15.2",
+      "commands": [
+        "nunit"
+      ]
+    }
+  }
+}
