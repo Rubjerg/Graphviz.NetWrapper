@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29509.3
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32428.209
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubjerg.Graphviz", "Rubjerg.Graphviz\Rubjerg.Graphviz.csproj", "{66D83B79-08D5-4590-90E3-8F6CDF108D5E}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -37,6 +37,7 @@ Global
 		{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}.Debug|x64.Build.0 = Debug|x64
 		{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}.Release|x64.ActiveCfg = Release|x64
 		{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}.Release|x64.Build.0 = Release|x64
+		{FAB37EA6-101F-4B84-816F-7A98D571BAE7}.Debug|x64.ActiveCfg = Debug|x64
 		{FAB37EA6-101F-4B84-816F-7A98D571BAE7}.Debug|x64.Build.0 = Debug|x64
 		{FAB37EA6-101F-4B84-816F-7A98D571BAE7}.Release|x64.ActiveCfg = Release|x64
 		{FAB37EA6-101F-4B84-816F-7A98D571BAE7}.Release|x64.Build.0 = Release|x64
