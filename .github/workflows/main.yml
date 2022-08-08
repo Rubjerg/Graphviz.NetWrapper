@@ -35,11 +35,11 @@ jobs:
     - name: Setup NuGet.exe for use with actions
       uses: NuGet/setup-nuget@v1.0.5
 
+    - name: Restore Tools
+      run: dotnet tool restore Rubjerg.Graphviz.sln
+
     - name: Restore NuGet Packages
       run: nuget restore Rubjerg.Graphviz.sln
-
-    - name: Restore Tools
-      run: dotnet tool restore
 
     - name: Build App
       run: msbuild Rubjerg.Graphviz.sln /p:Configuration=Release
@@ -67,9 +67,21 @@ jobs:
     - name: Run Transitive Tests (.NET 6)
       run: bash nunit-console-netcore.sh Rubjerg.Graphviz.TransitiveTest\bin\x64\Release\net6.0\Rubjerg.Graphviz.TransitiveTest.dll
 
+    - name: Restore NuGet Packages for Nuget Tests (from local package source)
+      run: nuget restore Rubjerg.Graphviz.NugetTests.sln
+
+    - name: Build Nuget Test Solution
+      run: msbuild Rubjerg.Graphviz.NugetTests.sln /p:Configuration=Release
+
     - name: Run Nuget Tests (.NET 4.8)
       run: bash nunit-console.sh Rubjerg.Graphviz.NugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.NugetTest.dll
 
+    - name: Run Nuget Tests (.NET 6)
+      run: bash nunit-console.sh Rubjerg.Graphviz.NugetTest\bin\x64\Release\net6.0\Rubjerg.Graphviz.NugetTest.dll
+
     - name: Run Transitive Nuget Tests (.NET 4.8)
       run: bash nunit-console.sh Rubjerg.Graphviz.TransitiveNugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveNugetTest.dll
+
+    - name: Run Transitive Nuget Tests (.NET 6)
+      run: bash nunit-console.sh Rubjerg.Graphviz.TransitiveNugetTest\bin\x64\Release\net6.0\Rubjerg.Graphviz.TransitiveNugetTest.dll
 
