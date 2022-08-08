@@ -46,7 +46,7 @@ jobs:
 
     - name: Run Unittests With Coverage Calculation
     
-      run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -skipautoprops -register '-target:bash.exe' -targetargs:'nunit-console.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
+      run: packages\opencover\4.7.1221\tools\OpenCover.Console.exe -skipautoprops -register '-target:bash.exe' -targetargs:'nunit-console.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
 
     - name: Upload Coverage data
       run: |
