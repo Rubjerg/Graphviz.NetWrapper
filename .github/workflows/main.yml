@@ -36,7 +36,7 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.5
 
     - name: Restore Tools
-      run: dotnet tool restore Rubjerg.Graphviz.sln
+      run: dotnet tool restore
 
     - name: Restore NuGet Packages
       run: nuget restore Rubjerg.Graphviz.sln
