@@ -1,2 +1,3 @@
 #!/bin/bash
-msbuild && find . -wholename './**/bin/**/*Test.dll' | xargs ./nunit-console.sh
+msbuild.exe Rubjerg.Graphviz.sln && find . -wholename './Rubjerg.Graphviz.Test/bin/**/net48/*Test.dll' | xargs ./nunit-console.sh
+rm *.log

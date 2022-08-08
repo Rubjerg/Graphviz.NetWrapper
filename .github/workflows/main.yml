@@ -35,6 +35,9 @@ jobs:
     - name: Setup NuGet.exe for use with actions
       uses: NuGet/setup-nuget@v1.0.5
 
+    - name: Restore Tools
+      run: dotnet tool restore
+
     - name: Restore NuGet Packages
       run: nuget restore Rubjerg.Graphviz.sln
 
@@ -44,9 +47,13 @@ jobs:
     - name: Check if README is up-to-date
       run: git diff --exit-code -- README.md
 
-    - name: Run Unittests With Coverage Calculation
+    - name: Run Unittests With Coverage Calculation (.NET 4.8)
     
-      run: packages\opencover\4.7.922\tools\OpenCover.Console.exe -skipautoprops -register '-target:bash.exe' -targetargs:'nunit-console.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
+      run: packages\opencover\4.7.1221\tools\OpenCover.Console.exe -skipautoprops -register '-target:bash.exe' -targetargs:'nunit-console.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
+
+    - name: Run Unittests With Coverage Calculation (.NET 6)
+    
+      run: packages\opencover\4.7.1221\tools\OpenCover.Console.exe -skipautoprops -register '-target:bash.exe' -targetargs:'nunit-console-netcore.sh Rubjerg.Graphviz.Test\bin\x64\Release\net6.0\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
 
     - name: Upload Coverage data
       run: |
@@ -54,12 +61,27 @@ jobs:
         Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
         bash codecov.sh -f "results.xml"
 
-    - name: Run Nuget Tests
-      run: bash nunit-console.sh Rubjerg.Graphviz.NugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.NugetTest.dll
-
-    - name: Run Transitive Tests
+    - name: Run Transitive Tests (.NET 4.8)
       run: bash nunit-console.sh Rubjerg.Graphviz.TransitiveTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveTest.dll
 
-    - name: Run Transitive Nuget Tests
+    - name: Run Transitive Tests (.NET 6)
+      run: bash nunit-console-netcore.sh Rubjerg.Graphviz.TransitiveTest\bin\x64\Release\net6.0\Rubjerg.Graphviz.TransitiveTest.dll
+
+    - name: Restore NuGet Packages for Nuget Tests (from local package source)
+      run: nuget restore Rubjerg.Graphviz.NugetTests.sln
+
+    - name: Build Nuget Test Solution
+      run: msbuild Rubjerg.Graphviz.NugetTests.sln /p:Configuration=Release
+
+    - name: Run Nuget Tests (.NET 4.8)
+      run: bash nunit-console.sh Rubjerg.Graphviz.NugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.NugetTest.dll
+
+    - name: Run Nuget Tests (.NET 6)
+      run: bash nunit-console.sh Rubjerg.Graphviz.NugetTest\bin\x64\Release\net6.0\Rubjerg.Graphviz.NugetTest.dll
+
+    - name: Run Transitive Nuget Tests (.NET 4.8)
       run: bash nunit-console.sh Rubjerg.Graphviz.TransitiveNugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveNugetTest.dll
+
+    - name: Run Transitive Nuget Tests (.NET 6)
+      run: bash nunit-console.sh Rubjerg.Graphviz.TransitiveNugetTest\bin\x64\Release\net6.0\Rubjerg.Graphviz.TransitiveNugetTest.dll
 

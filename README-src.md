@@ -5,8 +5,9 @@ Graphviz.NetWrapper
 
 ## Supported platforms
 
-At the moment, `Rubjerg.Graphviz` ships with a bunch of precompiled Graphviz dlls built for
-64 bit Windows with .NET Framework version 4.8 and higher.
+At the moment, `Rubjerg.Graphviz` ships with a bunch of precompiled Graphviz dlls built for 64 bit Windows.
+This library is compatible with .NET Standard 2.0.
+The unit tests run against .NET Framework 4.8 and .NET 6.0.
 In the future support may be extended to other platforms.
 
 ## Contributing
@@ -32,11 +33,11 @@ your project.
 2. Add the projects Rubjerg.Graphviz and GraphvizWrapper to your solution.
 3. To use Rubjerg.Graphviz within a project of yours, simply add a project reference to it.
 
-When building your project, you should now see all the Graphviz binaries show
-up in your output folder. If you don't, you might try reordering the projects
-in your solution, such that GraphvizWrapper and Rubjerg.Graphviz are at the
-top. There is an [outstanding issue for
-this](https://github.com/Rubjerg/Graphviz.NetWrapper/issues/36).
+When building your project, you should now see all the Graphviz binaries show up in your output
+folder.  If you don't, try setting the `CopyLocalLockFileAssemblies` property in your referencing
+project file to `true`.  If that still fails, try reordering the projects in your solution, such
+that GraphvizWrapper and Rubjerg.Graphviz are at the top. 
+There is an [outstanding issue for this](https://github.com/Rubjerg/Graphviz.NetWrapper/issues/36).
 
 ## Documentation
 
