@@ -506,6 +506,8 @@ namespace Rubjerg.Graphviz
             RenderToFile(filename, "png");
         }
 
+        public void ToPdfFile(string filename) => RenderToFile(filename, "pdf");
+
         public RectangleF BoundingBox()
         {
             string bb_string = Rjagget(_ptr, "bb");
