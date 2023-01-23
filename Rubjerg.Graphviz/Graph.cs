@@ -483,15 +483,38 @@ namespace Rubjerg.Graphviz
                 throw new ApplicationException($"Graphviz render returned error code {free_rc}");
         }
 
+        private void RenderToFile(string filename, string format)
+        {
+            var render_rc = GvRenderFilename(GVC, _ptr, format, filename);
+            if (render_rc != 0)
+                throw new ApplicationException($"Graphviz render returned error code {render_rc}");
+        }
+
         /// <summary>
         /// Should only be called after <see cref="ComputeLayout"/> has been called.
         /// </summary>
         public void ToSvgFile(string filename)
         {
-            var render_rc = GvRenderFilename(GVC, _ptr, "svg", filename);
-            if (render_rc != 0)
-                throw new ApplicationException($"Graphviz render returned error code {render_rc}");
+            RenderToFile(filename, "svg");
         }
+
+        /// <summary>
+        /// Should only be called after <see cref="ComputeLayout"/> has been called.
+        /// </summary>
+        public void ToPngFile(string filename)
+        {
+            RenderToFile(filename, "png");
+        }
+
+        /// <summary>
+        /// Should only be called after <see cref="ComputeLayout"/> has been called.
+        /// </summary>        
+        public void ToPdfFile(string filename) => RenderToFile(filename, "pdf");
+
+        /// <summary>
+        /// Should only be called after <see cref="ComputeLayout"/> has been called.
+        /// </summary>
+        public void ToPsFile(string filename) => RenderToFile(filename, "ps");
 
         public RectangleF BoundingBox()
         {
