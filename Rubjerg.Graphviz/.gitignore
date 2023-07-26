@@ -1,7 +1,9 @@
 bin/
 obj/
 *.csproj.user
+*.svg
 *.dll
+*.exe
 *.exp
 *.lib
 *.pdb

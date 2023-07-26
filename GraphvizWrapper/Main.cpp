@@ -13,75 +13,117 @@ using namespace std;
 extern "C" {
 
 	// Some wrappers around existing cgraph functions to handle string marshaling
-    __declspec(dllexport) const char* rj_agmemwrite(Agraph_t * g);
-    __declspec(dllexport) Agraph_t* rj_agmemread(const char* s);
-    __declspec(dllexport) const char* rj_agget(void* obj, char* name);
-    __declspec(dllexport) const char* rj_agnameof(void* obj);
-    __declspec(dllexport) Agraph_t* rj_agopen(char* name, int graphtype);
-    __declspec(dllexport) const char *rj_sym_key(Agsym_t *sym);
+	__declspec(dllexport) const char* rj_agmemwrite(Agraph_t* g);
+	__declspec(dllexport) Agraph_t* rj_agmemread(const char* s);
+	__declspec(dllexport) const char* rj_agget(void* obj, char* name);
+	__declspec(dllexport) const char* rj_agnameof(void* obj);
+	__declspec(dllexport) Agraph_t* rj_agopen(char* name, int graphtype);
+	__declspec(dllexport) const char* rj_sym_key(Agsym_t* sym);
 
-    __declspec(dllexport) double node_x(Agnode_t* node);
-    __declspec(dllexport) double node_y(Agnode_t* node);
-    __declspec(dllexport) double node_width(Agnode_t* node);
-    __declspec(dllexport) double node_height(Agnode_t* node);
+	__declspec(dllexport) double node_x(Agnode_t* node);
+	__declspec(dllexport) double node_y(Agnode_t* node);
+	__declspec(dllexport) double node_width(Agnode_t* node);
+	__declspec(dllexport) double node_height(Agnode_t* node);
 
-    __declspec(dllexport) textlabel_t* node_label(Agnode_t* node);
-    __declspec(dllexport) textlabel_t* edge_label(Agedge_t* edge);
-    __declspec(dllexport) textlabel_t* graph_label(Agraph_t* graph);
+	__declspec(dllexport) textlabel_t* node_label(Agnode_t* node);
+	__declspec(dllexport) textlabel_t* edge_label(Agedge_t* edge);
+	__declspec(dllexport) textlabel_t* graph_label(Agraph_t* graph);
 
-    __declspec(dllexport) double label_x(textlabel_t* label);
-    __declspec(dllexport) double label_y(textlabel_t* label);
-    __declspec(dllexport) double label_width(textlabel_t* label);
-    __declspec(dllexport) double label_height(textlabel_t* label);
-    __declspec(dllexport) const char* label_text(textlabel_t* label);
-    __declspec(dllexport) double label_fontsize(textlabel_t* label);
-    __declspec(dllexport) const char* label_fontname(textlabel_t* label);
+	__declspec(dllexport) double label_x(textlabel_t* label);
+	__declspec(dllexport) double label_y(textlabel_t* label);
+	__declspec(dllexport) double label_width(textlabel_t* label);
+	__declspec(dllexport) double label_height(textlabel_t* label);
+	__declspec(dllexport) const char* label_text(textlabel_t* label);
+	__declspec(dllexport) double label_fontsize(textlabel_t* label);
+	__declspec(dllexport) const char* label_fontname(textlabel_t* label);
 
-    __declspec(dllexport) void clone_attribute_declarations(Agraph_t* from, Agraph_t* to);
-    __declspec(dllexport) void convert_to_undirected(Agraph_t *graph);
+	__declspec(dllexport) void clone_attribute_declarations(Agraph_t* from, Agraph_t* to);
+	__declspec(dllexport) void convert_to_undirected(Agraph_t* graph);
 
 
-    // Test and debug functions
-    __declspec(dllexport) bool echobool(bool arg);
-    __declspec(dllexport) int echoint(int arg);
-    __declspec(dllexport) void rj_debug();
+	// Test and debug functions
+	__declspec(dllexport) int stackoverflow_repro();
+	__declspec(dllexport) int missing_label_repro();
+	__declspec(dllexport) int test_agread();
+	__declspec(dllexport) int test_agmemread();
+	__declspec(dllexport) int test_rj_agmemread();
 }
 
 
 char* marshalCString(const char* s)
 {
-    if (!s) return 0;
-    int len = (int)strlen(s) + 1;
-    char* ptr = (char*) CoTaskMemAlloc(len);
-    strcpy_s(ptr, len, s);
-    return ptr;
+	if (!s) return 0;
+	int len = (int)strlen(s) + 1;
+	char* ptr = (char*)CoTaskMemAlloc(len);
+	strcpy_s(ptr, len, s);
+	return ptr;
 }
+
 
 static int rj_afread(void* stream, char* buffer, int bufsize)
 {
-    istringstream* is = (istringstream*) stream;
-    is->read(buffer, bufsize);
-    int result = (int) is->gcount();
-    return result;
+	istringstream* is = (istringstream*)stream;
+	is->read(buffer, bufsize);
+	int result = (int)is->gcount();
+	return result;
 }
 
-static int rj_putstr(void* stream, const char *s)
+static int rj_putstr(void* stream, const char* s)
 {
-    ostringstream* os = (ostringstream*) stream;
-    (*os) << s;
-    return 0;
+	ostringstream* os = (ostringstream*)stream;
+	(*os) << s;
+	return 0;
 }
 
 static int rj_flush(void* stream)
 {
-    ostringstream* os = (ostringstream*) stream;
-    os->flush();
-    return 0;
+	ostringstream* os = (ostringstream*)stream;
+	os->flush();
+	return 0;
 }
 
+static Agiodisc_t memIoDisc = { rj_afread, rj_putstr, rj_flush };
+static Agdisc_t memDisc = { 0, 0, &memIoDisc };
 
-static Agiodisc_t memIoDisc = {rj_afread, rj_putstr, rj_flush};
-static Agdisc_t memDisc = {0, 0, &memIoDisc};
+Agraph_t* rj_agopen(char* name, int graphtype)
+{
+	if (graphtype == 0)
+		return agopen(name, Agdirected, &memDisc);
+	if (graphtype == 1)
+		return agopen(name, Agstrictdirected, &memDisc);
+	if (graphtype == 2)
+		return agopen(name, Agundirected, &memDisc);
+	if (graphtype == 3)
+		return agopen(name, Agstrictundirected, &memDisc);
+	return 0;
+}
+
+Agraph_t* rj_agmemread(const char* s)
+{
+	stringstream stream;
+	stream << s;
+	Agraph_t* g = agread(&stream, &memDisc);
+	return g;
+}
+
+// Note: for this function to work, the graph has to be created with the memDisc, e.g. using rj_agopen
+void rj_agwrite(Agraph_t* g, const char* filename)
+{
+	ostringstream os;
+	agwrite(g, &os);
+	ofstream out(filename);
+	out << os.str();
+	out.close();
+}
+
+// Note: for this function to work, the graph has to be created with the memDisc, e.g. using rj_agopen
+const char* rj_agmemwrite(Agraph_t* g)
+{
+	ostringstream os;
+	agwrite(g, &os);
+	return marshalCString(os.str().c_str());
+}
+
 
 textlabel_t* node_label(Agnode_t* node) { return ND_label(node); }
 textlabel_t* edge_label(Agedge_t* edge) { return ED_label(edge); }
@@ -102,97 +144,127 @@ double node_y(Agnode_t* node) { return ND_coord(node).y; } // in points
 double node_width(Agnode_t* node) { return ND_width(node); } // in inches
 double node_height(Agnode_t* node) { return ND_height(node); } // in inches
 
-const char *rj_sym_key(Agsym_t *sym) { return marshalCString(sym->name); }
-
-Agraph_t* rj_agopen(char* name, int graphtype)
-{
-    if (graphtype == 0)
-        return agopen(name, Agdirected, &memDisc);
-    if (graphtype == 1)
-		return agopen(name, Agstrictdirected, &memDisc);
-    if (graphtype == 2)
-		return agopen(name, Agundirected, &memDisc);
-    if (graphtype == 3)
-		return agopen(name, Agstrictundirected, &memDisc);
-	return 0;
-}
-
-Agraph_t* rj_agmemread(const char* s)
-{
-    stringstream stream;
-    stream << s;
-    Agraph_t* g = agread(&stream, &memDisc);
-    return g;
-}
-
-// Note: for this function to work, the graph has to be created with the memDisc, e.g. using rj_agopen
-void rj_agwrite(Agraph_t * g, const char* filename)
-{
-    ostringstream os;
-    agwrite(g, &os);
-    ofstream out(filename);
-    out << os.str();
-    out.close();
-}
-
-// Note: for this function to work, the graph has to be created with the memDisc, e.g. using rj_agopen
-const char* rj_agmemwrite(Agraph_t * g)
-{
-    ostringstream os;
-    agwrite(g, &os);
-    return marshalCString(os.str().c_str());
-}
+const char* rj_sym_key(Agsym_t* sym) { return marshalCString(sym->name); }
 
 const char* rj_agget(void* obj, char* name)
 {
-    char* result = agget(obj, name);
-    return marshalCString(result);
+	char* result = agget(obj, name);
+	return marshalCString(result);
 }
 
 const char* rj_agnameof(void* obj)
 {
-    char* result = agnameof(obj);
-    return marshalCString(result);
+	char* result = agnameof(obj);
+	return marshalCString(result);
 }
 
 Agdisc_t* getdisc()
 {
-    return &memDisc;
+	return &memDisc;
 }
 
 void clone_attribute_declarations(Agraph_t* from, Agraph_t* to)
 {
-    for (int kind = 0; kind < 3; kind++)
-    {
-        Agsym_t* current = agnxtattr(from, kind, NULL);
-        while (current)
-        {
-            agattr(to, kind, current->name, current->defval);
-            current = agnxtattr(from, kind, current);
-        }
-    }
+	for (int kind = 0; kind < 3; kind++)
+	{
+		Agsym_t* current = agnxtattr(from, kind, NULL);
+		while (current)
+		{
+			agattr(to, kind, current->name, current->defval);
+			current = agnxtattr(from, kind, current);
+		}
+	}
 }
 
 void convert_to_undirected(Agraph_t* graph)
 {
-    graph->desc.directed = 0;
+	graph->desc.directed = 0;
 }
 
-bool echobool(bool arg)
-{
-    return arg;
+// DEBUGGING AND TESTING
+
+char* readFile(const std::string& filename) {
+	std::ifstream file(filename, std::ios::binary | std::ios::ate);
+
+	if (!file) {
+		std::cerr << "Failed to open file: " << filename << std::endl;
+		return nullptr;
+	}
+
+	std::streamsize size = file.tellg();
+	file.seekg(0, std::ios::beg);
+
+	char* buffer = new char[size + 1];  // allocate one extra byte
+	if (!file.read(buffer, size)) {
+		std::cerr << "Failed to read file: " << filename << std::endl;
+		delete[] buffer;
+		return nullptr;
+	}
+
+	buffer[size] = '\0';  // null terminate the string
+	return buffer;
 }
 
-int echoint(int arg)
+void renderToSvg(char* dotString)
 {
-    return arg;
+	auto graph = agmemread(dotString);
+	if (graph == 0)
+		throw std::runtime_error("could not create graph");
+	auto gvc = gvContext();
+	int layout_rc = gvLayout(gvc, graph, "dot");
+	int render_rc = gvRender(gvc, graph, "xdot", 0);
+	render_rc = gvRenderFilename(gvc, graph, "svg", "test.svg");
+	gvFreeLayout(gvc, graph);
+	agclose(graph);
 }
 
-void rj_debug()
-{
+int stackoverflow_repro() {
+
+	const std::string filename = "stackoverflow-repro.dot";
+	char* dotString = readFile(filename);
+	renderToSvg(dotString);
+	delete[] dotString;
+	return 0;
 }
 
-int main()
-{
-    rj_debug();
+int missing_label_repro() {
+	const std::string filename = "missing-label-repro.dot";
+	char* dotString = readFile(filename);
+	renderToSvg(dotString);
+	delete[] dotString;
+	return 0;
+}
+
+
+int test_agread() {
+	char* filename = "missing-label-repro.dot";
+	// Open the file for reading
+	FILE* fp = fopen(filename, "r");
+	if (fp == NULL)
+		return 1;
+	auto graph = agread(fp, NULL);
+	if (graph == 0)
+		return 2;
+	fclose(fp);
+	return 0;
+}
+
+int test_agmemread() {
+	const std::string filename = "missing-label-repro.dot";
+	char* dotString = readFile(filename);
+	auto graph = agmemread(dotString);
+	if (graph == 0)
+		return 1;
+	delete[] dotString;
+	return 0;
+}
+
+int test_rj_agmemread() {
+	const std::string filename = "missing-label-repro.dot";
+	char* dotString = readFile(filename);
+	auto graph = rj_agmemread(dotString);
+	if (graph == 0)
+		return 1;
+	delete[] dotString;
+	return 0;
 }

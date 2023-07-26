@@ -1,0 +1,21 @@
+digraph {
+    compound=true;
+    node [shape=Mrecord]
+    rankdir="LR"
+
+    subgraph "clusterOpen"
+    {
+        label = "Open"
+        "Assigned" [label="Assigned|exit / OnDeassigned"];
+    }
+    "Deferred" [label="Deferred|entry / Function"];
+    "Closed" [label="Closed"];
+
+    "Open" -> "Assigned" [style="solid", label="Assign / OnAssigned"];
+    "Assigned" -> "Assigned" [style="solid", label="Assign"];
+    "Assigned" -> "Closed" [style="solid", label="Close"];
+    "Assigned" -> "Deferred" [style="solid", label="Defer"];
+    "Deferred" -> "Assigned" [style="solid", label="Assign / OnAssigned"];
+    init [label="", shape=point];
+    init -> "Open"[style = "solid"]
+}

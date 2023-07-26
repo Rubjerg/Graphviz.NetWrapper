@@ -154,7 +154,7 @@ namespace Rubjerg.Graphviz
             {
                 agset(obj, name, value);
             }
-        }   
+        }
 
         public static void AgsetHtml(IntPtr obj, string name, string value)
         {
@@ -665,5 +665,56 @@ namespace Rubjerg.Graphviz
         private static extern IntPtr rj_agmemread([MarshalAs(UnmanagedType.LPStr)] string input);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr rj_agopen([MarshalAs(UnmanagedType.LPStr)] string name, int graphtype);
+
+
+        #region debugging and testing
+
+        public static int StackOverflowRepro()
+        {
+            lock (_mutex)
+            {
+                return stackoverflow_repro();
+            }
+        }
+        public static int MissingLabelRepro()
+        {
+            lock (_mutex)
+            {
+                return missing_label_repro();
+            }
+        }
+        public static int TestAgread()
+        {
+            lock (_mutex)
+            {
+                return test_agread();
+            }
+        }
+        public static int TestAgmemread()
+        {
+            lock (_mutex)
+            {
+                return test_agmemread();
+            }
+        }
+        public static int TestRjAgmemread()
+        {
+            lock (_mutex)
+            {
+                return test_rj_agmemread();
+            }
+        }
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int stackoverflow_repro();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int missing_label_repro();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int test_agread();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int test_agmemread();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int test_rj_agmemread();
+
+        #endregion
     }
 }
