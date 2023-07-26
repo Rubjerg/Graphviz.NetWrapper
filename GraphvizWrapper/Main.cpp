@@ -42,6 +42,12 @@ extern "C" {
 
 
 	// Test and debug functions
+    __declspec(dllexport) bool echobool(bool arg);
+    __declspec(dllexport) int echoint(int arg);
+	__declspec(dllexport) bool returnTrue();
+	__declspec(dllexport) bool returnFalse();
+	__declspec(dllexport) int return1();
+	__declspec(dllexport) int return_1();
 	__declspec(dllexport) int stackoverflow_repro();
 	__declspec(dllexport) int missing_label_repro();
 	__declspec(dllexport) int test_agread();
@@ -182,6 +188,12 @@ void convert_to_undirected(Agraph_t* graph)
 }
 
 // DEBUGGING AND TESTING
+bool echobool(bool arg) { return arg; }
+int echoint(int arg) { return arg; }
+bool returnTrue() { return true; }
+bool returnFalse() { return false; }
+int return1() { return 1; }
+int return_1() { return -1; }
 
 char* readFile(const std::string& filename) {
 	std::ifstream file(filename, std::ios::binary | std::ios::ate);
@@ -205,34 +217,36 @@ char* readFile(const std::string& filename) {
 	return buffer;
 }
 
-void renderToSvg(char* dotString)
+int renderToSvg(char* dotString)
 {
 	auto graph = agmemread(dotString);
-	if (graph == 0)
-		throw std::runtime_error("could not create graph");
+	if (graph == NULL)
+		return 1;
 	auto gvc = gvContext();
 	int layout_rc = gvLayout(gvc, graph, "dot");
 	int render_rc = gvRender(gvc, graph, "xdot", 0);
 	render_rc = gvRenderFilename(gvc, graph, "svg", "test.svg");
 	gvFreeLayout(gvc, graph);
 	agclose(graph);
+	delete[] dotString;
+	return 0;
 }
 
 int stackoverflow_repro() {
 
 	const std::string filename = "stackoverflow-repro.dot";
 	char* dotString = readFile(filename);
-	renderToSvg(dotString);
-	delete[] dotString;
-	return 0;
+	if (dotString == NULL)
+		return 1;
+	return renderToSvg(dotString);
 }
 
 int missing_label_repro() {
 	const std::string filename = "missing-label-repro.dot";
 	char* dotString = readFile(filename);
-	renderToSvg(dotString);
-	delete[] dotString;
-	return 0;
+	if (dotString == NULL)
+		return 1;
+	return renderToSvg(dotString);
 }
 
 
@@ -252,6 +266,8 @@ int test_agread() {
 int test_agmemread() {
 	const std::string filename = "missing-label-repro.dot";
 	char* dotString = readFile(filename);
+	if (dotString == NULL)
+		return 1;
 	auto graph = agmemread(dotString);
 	if (graph == 0)
 		return 1;
@@ -262,9 +278,11 @@ int test_agmemread() {
 int test_rj_agmemread() {
 	const std::string filename = "missing-label-repro.dot";
 	char* dotString = readFile(filename);
-	auto graph = rj_agmemread(dotString);
-	if (graph == 0)
+	if (dotString == NULL)
 		return 1;
+	auto graph = rj_agmemread(dotString);
+	if (graph == NULL)
+		return 2;
 	delete[] dotString;
 	return 0;
 }

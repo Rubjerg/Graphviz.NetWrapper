@@ -149,21 +149,19 @@ namespace Rubjerg.Graphviz.Test
             Assert.AreEqual(3, node.Edges().Count());
         }
 
-        // .NET uses UnmanagedType.Bool by default for P/Invoke, but our C++ code uses UnmanagedType.U1
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        protected static extern bool echobool([MarshalAs(UnmanagedType.U1)] bool arg);
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        protected static extern int echoint(int arg);
         [Test()]
         public void TestMarshaling()
         {
-            Assert.True(echobool(true));
-            Assert.False(echobool(false));
+            Assert.True(ForeignFunctionInterface.echobool(true));
+            Assert.False(ForeignFunctionInterface.echobool(false));
+            Assert.True(ForeignFunctionInterface.returnTrue());
+            Assert.False(ForeignFunctionInterface.returnFalse());
 
-            Assert.AreEqual(0, echoint(0));
-            Assert.AreEqual(1, echoint(1));
-            Assert.AreEqual(-1, echoint(-1));
+            Assert.AreEqual(0, ForeignFunctionInterface.echoint(0));
+            Assert.AreEqual(1, ForeignFunctionInterface.echoint(1));
+            Assert.AreEqual(-1, ForeignFunctionInterface.echoint(-1));
+            Assert.AreEqual(1, ForeignFunctionInterface.return1());
+            Assert.AreEqual(-1, ForeignFunctionInterface.return_1());
         }
 
         [Test()]
