@@ -154,14 +154,15 @@ namespace Rubjerg.Graphviz.Test
         {
             Assert.True(ForeignFunctionInterface.echobool(true));
             Assert.False(ForeignFunctionInterface.echobool(false));
-            Assert.True(ForeignFunctionInterface.returnTrue());
-            Assert.False(ForeignFunctionInterface.returnFalse());
+            Assert.True(ForeignFunctionInterface.return_true());
+            Assert.False(ForeignFunctionInterface.return_false());
 
             Assert.AreEqual(0, ForeignFunctionInterface.echoint(0));
             Assert.AreEqual(1, ForeignFunctionInterface.echoint(1));
             Assert.AreEqual(-1, ForeignFunctionInterface.echoint(-1));
             Assert.AreEqual(1, ForeignFunctionInterface.return1());
             Assert.AreEqual(-1, ForeignFunctionInterface.return_1());
+            // FIXNOW: test string marshaling
         }
 
         [Test()]

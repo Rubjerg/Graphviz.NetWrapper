@@ -44,8 +44,8 @@ extern "C" {
 	// Test and debug functions
     __declspec(dllexport) bool echobool(bool arg);
     __declspec(dllexport) int echoint(int arg);
-	__declspec(dllexport) bool returnTrue();
-	__declspec(dllexport) bool returnFalse();
+	__declspec(dllexport) bool return_true();
+	__declspec(dllexport) bool return_false();
 	__declspec(dllexport) int return1();
 	__declspec(dllexport) int return_1();
 	__declspec(dllexport) int stackoverflow_repro();
@@ -190,8 +190,8 @@ void convert_to_undirected(Agraph_t* graph)
 // DEBUGGING AND TESTING
 bool echobool(bool arg) { return arg; }
 int echoint(int arg) { return arg; }
-bool returnTrue() { return true; }
-bool returnFalse() { return false; }
+bool return_true() { return true; }
+bool return_false() { return false; }
 int return1() { return 1; }
 int return_1() { return -1; }
 
@@ -225,7 +225,7 @@ int renderToSvg(char* dotString)
 	auto gvc = gvContext();
 	int layout_rc = gvLayout(gvc, graph, "dot");
 	int render_rc = gvRender(gvc, graph, "xdot", 0);
-	render_rc = gvRenderFilename(gvc, graph, "svg", "test.svg");
+	render_rc = gvRenderFilename(gvc, graph, "svg", "Rubjerg.Graphviz/test.svg");
 	gvFreeLayout(gvc, graph);
 	agclose(graph);
 	delete[] dotString;
@@ -234,7 +234,7 @@ int renderToSvg(char* dotString)
 
 int stackoverflow_repro() {
 
-	const std::string filename = "stackoverflow-repro.dot";
+	const std::string filename = "Rubjerg.Graphviz/stackoverflow-repro.dot";
 	char* dotString = readFile(filename);
 	if (dotString == NULL)
 		return 1;
@@ -242,7 +242,7 @@ int stackoverflow_repro() {
 }
 
 int missing_label_repro() {
-	const std::string filename = "missing-label-repro.dot";
+	const std::string filename = "Rubjerg.Graphviz/missing-label-repro.dot";
 	char* dotString = readFile(filename);
 	if (dotString == NULL)
 		return 1;
@@ -251,7 +251,7 @@ int missing_label_repro() {
 
 
 int test_agread() {
-	char* filename = "missing-label-repro.dot";
+	char* filename = "Rubjerg.Graphviz/missing-label-repro.dot";
 	// Open the file for reading
 	FILE* fp = fopen(filename, "r");
 	if (fp == NULL)
@@ -264,7 +264,7 @@ int test_agread() {
 }
 
 int test_agmemread() {
-	const std::string filename = "missing-label-repro.dot";
+	const std::string filename = "Rubjerg.Graphviz/missing-label-repro.dot";
 	char* dotString = readFile(filename);
 	if (dotString == NULL)
 		return 1;
@@ -276,7 +276,7 @@ int test_agmemread() {
 }
 
 int test_rj_agmemread() {
-	const std::string filename = "missing-label-repro.dot";
+	const std::string filename = "Rubjerg.Graphviz/missing-label-repro.dot";
 	char* dotString = readFile(filename);
 	if (dotString == NULL)
 		return 1;

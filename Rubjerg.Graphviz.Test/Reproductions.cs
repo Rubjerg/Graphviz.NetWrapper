@@ -44,7 +44,7 @@ namespace Rubjerg.Graphviz.Test
         [Test()]
         public void TestFromDotFile()
         {
-            _ = RootGraph.FromDotFile("missing-label-repro.dot");
+            _ = RootGraph.FromDotFile("Rubjerg.Graphviz/missing-label-repro.dot");
         }
     }
 }
