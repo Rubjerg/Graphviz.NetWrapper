@@ -219,30 +219,36 @@ char* readFile(const std::string& filename) {
 
 int renderToSvg(char* dotString)
 {
+    auto gvc = gvContext();
     auto graph = agmemread(dotString);
     if (graph == NULL)
         return 1;
-    auto gvc = gvContext();
-    int layout_rc = gvLayout(gvc, graph, "dot");
-    int render_rc = gvRender(gvc, graph, "xdot", 0);
-    render_rc = gvRenderFilename(gvc, graph, "svg", "Rubjerg.Graphviz/test.svg");
+    gvLayout(gvc, graph, "dot");
+    gvRenderFilename(gvc, graph, "svg", "Rubjerg.Graphviz/test.svg");
     gvFreeLayout(gvc, graph);
     agclose(graph);
-    delete[] dotString;
+    return 0;
+    //gvRender(gvc, graph, "xdot", 0);
+}
+
+// This test fails only the first time. Rerunning it makes it work.
+int missing_label_repro() {
+    const std::string filename = "Rubjerg.Graphviz/missing-label-repro.dot";
+    char* dotString = readFile(filename);
+    if (dotString == NULL)
+        return 1;
+    if (renderToSvg(dotString) > 0) return 2;
+
+    char* svgText = readFile("Rubjerg.Graphviz/test.svg");
+    char* expected = ">OpenNode</text>";
+    if (strstr(svgText, expected) == NULL)
+        return 3;
     return 0;
 }
 
 int stackoverflow_repro() {
 
     const std::string filename = "Rubjerg.Graphviz/stackoverflow-repro.dot";
-    char* dotString = readFile(filename);
-    if (dotString == NULL)
-        return 1;
-    return renderToSvg(dotString);
-}
-
-int missing_label_repro() {
-    const std::string filename = "Rubjerg.Graphviz/missing-label-repro.dot";
     char* dotString = readFile(filename);
     if (dotString == NULL)
         return 1;
@@ -271,7 +277,6 @@ int test_agmemread() {
     auto graph = agmemread(dotString);
     if (graph == 0)
         return 1;
-    delete[] dotString;
     return 0;
 }
 
@@ -283,6 +288,5 @@ int test_rj_agmemread() {
     auto graph = rj_agmemread(dotString);
     if (graph == NULL)
         return 2;
-    delete[] dotString;
     return 0;
 }

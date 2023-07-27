@@ -11,11 +11,11 @@ digraph {
     "Deferred" [label="Deferred|entry / Function"];
     "Closed" [label="Closed"];
 
-    "Open" -> "Assigned" [style="solid", label="Assign / OnAssigned"];
+    "OpenNode" -> "Assigned" [style="solid", label="Assign / OnAssigned"];
     "Assigned" -> "Assigned" [style="solid", label="Assign"];
     "Assigned" -> "Closed" [style="solid", label="Close"];
     "Assigned" -> "Deferred" [style="solid", label="Defer"];
     "Deferred" -> "Assigned" [style="solid", label="Assign / OnAssigned"];
     init [label="", shape=point];
-    init -> "Open"[style = "solid"]
+    init -> "OpenNode"[style = "solid"]
 }

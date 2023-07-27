@@ -162,7 +162,7 @@ namespace Rubjerg.Graphviz.Test
             Assert.AreEqual(-1, ForeignFunctionInterface.echoint(-1));
             Assert.AreEqual(1, ForeignFunctionInterface.return1());
             Assert.AreEqual(-1, ForeignFunctionInterface.return_1());
-            // FIXNOW: test string marshaling
+            // TODO: test string marshaling
         }
 
         [Test()]
