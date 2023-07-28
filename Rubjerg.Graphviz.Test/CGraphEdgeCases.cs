@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Runtime.InteropServices;
 using NUnit.Framework;
 
 namespace Rubjerg.Graphviz.Test
@@ -7,17 +6,6 @@ namespace Rubjerg.Graphviz.Test
     [TestFixture()]
     public class CGraphEdgeCases
     {
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        protected static extern void rj_debug();
-
-        [Test()]
-        [Ignore("For debugging")]
-        public void debug()
-        {
-            NativeMethods.CreateConsole();
-            rj_debug();
-        }
-
         [Test()]
         public void TestAttributeIntroduction()
         {
@@ -52,23 +40,20 @@ namespace Rubjerg.Graphviz.Test
                 root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.gv");
             }
 
+            // The empty label default is not exported, and the default default is \N.
+            // Related issue: https://gitlab.com/graphviz/graphviz/-/issues/1887
             {
                 var root = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "/out.gv");
                 Node nodeA = root.GetNode("A");
                 Node nodeB = root.GetNode("B");
                 Assert.AreEqual("1", nodeA.GetAttribute("label"));
-                Assert.AreEqual("", nodeB.GetAttribute("label"));
+                Assert.AreEqual("\\N", nodeB.GetAttribute("label"));
 
                 root.ComputeLayout();
                 Assert.AreEqual("1", nodeA.GetAttribute("label"));
-                Assert.AreEqual("", nodeB.GetAttribute("label"));
+                Assert.AreEqual("\\N", nodeB.GetAttribute("label"));
                 root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/out.svg");
             }
-            // The empty label default is not exported, but that appears to be no problem here. The
-            // default seems to become the empty string. However, dot.exe gives a different result.
-            // When applying dot.exe on out.gv the default label is set to \N, which gives different
-            // results entirely.
-            // Related issue: https://gitlab.com/graphviz/graphviz/-/issues/1887
         }
 
         [Test()]
@@ -149,21 +134,20 @@ namespace Rubjerg.Graphviz.Test
             Assert.AreEqual(3, node.Edges().Count());
         }
 
-        // .NET uses UnmanagedType.Bool by default for P/Invoke, but our C++ code uses UnmanagedType.U1
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        protected static extern bool echobool([MarshalAs(UnmanagedType.U1)] bool arg);
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        protected static extern int echoint(int arg);
         [Test()]
         public void TestMarshaling()
         {
-            Assert.True(echobool(true));
-            Assert.False(echobool(false));
+            Assert.True(ForeignFunctionInterface.echobool(true));
+            Assert.False(ForeignFunctionInterface.echobool(false));
+            Assert.True(ForeignFunctionInterface.return_true());
+            Assert.False(ForeignFunctionInterface.return_false());
 
-            Assert.AreEqual(0, echoint(0));
-            Assert.AreEqual(1, echoint(1));
-            Assert.AreEqual(-1, echoint(-1));
+            Assert.AreEqual(0, ForeignFunctionInterface.echoint(0));
+            Assert.AreEqual(1, ForeignFunctionInterface.echoint(1));
+            Assert.AreEqual(-1, ForeignFunctionInterface.echoint(-1));
+            Assert.AreEqual(1, ForeignFunctionInterface.return1());
+            Assert.AreEqual(-1, ForeignFunctionInterface.return_1());
+            // TODO: test string marshaling
         }
 
         [Test()]

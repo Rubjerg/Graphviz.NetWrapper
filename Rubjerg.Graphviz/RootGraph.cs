@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
@@ -19,12 +19,12 @@ namespace Rubjerg.Graphviz
     /// </summary>
     public class RootGraph : Graph
     {
-        private long added_pressure = 0;
+        private long _added_pressure = 0;
         private RootGraph(IntPtr ptr) : base(ptr, null) { }
         ~RootGraph()
         {
-            if (added_pressure > 0)
-                GC.RemoveMemoryPressure(added_pressure);
+            if (_added_pressure > 0)
+                GC.RemoveMemoryPressure(_added_pressure);
             _ = Agclose(_ptr);
         }
 
@@ -37,13 +37,13 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public void UpdateMemoryPressure()
         {
-            if (added_pressure > 0)
-                GC.RemoveMemoryPressure(added_pressure);
+            if (_added_pressure > 0)
+                GC.RemoveMemoryPressure(_added_pressure);
 
             long unmanaged_bytes_estimate = Nodes().Count() * 104 + Edges().Count() * 64;
             if (unmanaged_bytes_estimate > 0)
                 GC.AddMemoryPressure(unmanaged_bytes_estimate);
-            added_pressure = unmanaged_bytes_estimate;
+            _added_pressure = unmanaged_bytes_estimate;
         }
 
         /// <summary>
@@ -68,6 +68,10 @@ namespace Rubjerg.Graphviz
         public static RootGraph FromDotString(string graph)
         {
             IntPtr ptr = Rjagmemread(graph);
+            if (ptr == IntPtr.Zero)
+            {
+                throw new InvalidOperationException("Could not create graph");
+            }
             var result = new RootGraph(ptr);
             result.UpdateMemoryPressure();
             return result;

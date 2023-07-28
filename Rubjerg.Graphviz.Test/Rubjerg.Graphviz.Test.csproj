@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="NUnit.ConsoleRunner">
-      <Version>3.15.2</Version>
+      <Version>3.16.3</Version>
     </PackageReference>
     <PackageReference Include="NUnit">
       <Version>3.13.3</Version>
@@ -28,6 +28,14 @@
     <PackageReference Include="OpenCover">
       <Version>4.7.1221</Version>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="*.dot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+    </None>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

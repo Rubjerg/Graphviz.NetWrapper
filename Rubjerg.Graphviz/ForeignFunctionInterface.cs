@@ -154,7 +154,7 @@ namespace Rubjerg.Graphviz
             {
                 agset(obj, name, value);
             }
-        }   
+        }
 
         public static void AgsetHtml(IntPtr obj, string name, string value)
         {
@@ -346,13 +346,6 @@ namespace Rubjerg.Graphviz
             lock (_mutex)
             {
                 return edge_label(node);
-            }
-        }
-        public static void Rjagwrite(IntPtr graph, string filename)
-        {
-            lock (_mutex)
-            {
-                rj_agwrite(graph, filename);
             }
         }
         public static string Rjagmemwrite(IntPtr graph)
@@ -612,8 +605,6 @@ namespace Rubjerg.Graphviz
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr edge_label(IntPtr node);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void rj_agwrite(IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string filename);
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.LPStr)]
         private static extern string rj_agmemwrite(IntPtr graph);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -665,5 +656,54 @@ namespace Rubjerg.Graphviz
         private static extern IntPtr rj_agmemread([MarshalAs(UnmanagedType.LPStr)] string input);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr rj_agopen([MarshalAs(UnmanagedType.LPStr)] string name, int graphtype);
+
+
+        /// <summary>
+        /// A GraphvizContext is used to store various layout
+        /// information that is independent of a particular graph and
+        /// its attributes.  It holds the data associated with plugins,
+        /// parsed - command lines, script engines, and anything else
+        /// with a scope potentially larger than one graph, up to the
+        /// scope of the application. In addition, it maintains lists of
+        /// the available layout algorithms and renderers; it also
+        /// records the most recent layout algorithm applied to a graph.
+        /// It can be used to specify multiple renderings of a given
+        /// graph layout into different associated files.It is also used
+        /// to store various global information used during rendering.
+        /// There should be just one GVC created for the entire
+        /// duration of an application. A single GVC value can be used
+        /// with multiple graphs, though with only one graph at a
+        /// time. In addition, if gvLayout() was invoked for a graph and
+        /// GVC, then gvFreeLayout() should be called before using
+        /// gvLayout() again, even on the same graph.
+        /// </summary>
+        public static IntPtr GVC { get; private set; }
+        static ForeignFunctionInterface()
+        {
+            // We initialize the gvc here before interacting with graphviz
+            // https://gitlab.com/graphviz/graphviz/-/issues/2434
+            GVC = GvContext();
+        }
+
+        #region debugging and testing
+
+        // .NET uses UnmanagedType.Bool by default for P/Invoke, but our C++ code uses UnmanagedType.U1
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        public static extern bool echobool([MarshalAs(UnmanagedType.U1)] bool arg);
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        public static extern bool return_true();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        public static extern bool return_false();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int echoint(int arg);
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int return1();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int return_1();
+
+        #endregion
     }
 }
