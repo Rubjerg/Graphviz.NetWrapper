@@ -39,20 +39,6 @@ extern "C" {
 
     __declspec(dllexport) void clone_attribute_declarations(Agraph_t* from, Agraph_t* to);
     __declspec(dllexport) void convert_to_undirected(Agraph_t* graph);
-
-
-    // Test and debug functions
-    __declspec(dllexport) bool echobool(bool arg);
-    __declspec(dllexport) int echoint(int arg);
-    __declspec(dllexport) bool return_true();
-    __declspec(dllexport) bool return_false();
-    __declspec(dllexport) int return1();
-    __declspec(dllexport) int return_1();
-    __declspec(dllexport) int stackoverflow_repro();
-    __declspec(dllexport) int missing_label_repro();
-    __declspec(dllexport) int test_agread();
-    __declspec(dllexport) int test_agmemread();
-    __declspec(dllexport) int test_rj_agmemread();
 }
 
 
@@ -179,7 +165,22 @@ void convert_to_undirected(Agraph_t* graph)
     graph->desc.directed = 0;
 }
 
-// DEBUGGING AND TESTING
+#pragma region "DEBUGGING AND TESTING"
+
+extern "C" {
+    __declspec(dllexport) bool echobool(bool arg);
+    __declspec(dllexport) int echoint(int arg);
+    __declspec(dllexport) bool return_true();
+    __declspec(dllexport) bool return_false();
+    __declspec(dllexport) int return1();
+    __declspec(dllexport) int return_1();
+    __declspec(dllexport) int stackoverflow_repro();
+    __declspec(dllexport) int missing_label_repro();
+    __declspec(dllexport) int test_agread();
+    __declspec(dllexport) int test_agmemread();
+    __declspec(dllexport) int test_rj_agmemread();
+}
+
 bool echobool(bool arg) { return arg; }
 int echoint(int arg) { return arg; }
 bool return_true() { return true; }
@@ -218,7 +219,7 @@ int renderToSvg(char* dotString)
     if (graph == NULL)
         return 1;
     gvLayout(gvc, graph, "dot");
-    gvRenderFilename(gvc, graph, "svg", "Rubjerg.Graphviz/test.svg");
+    gvRenderFilename(gvc, graph, "svg", "test.svg");
     gvFreeLayout(gvc, graph);
     agclose(graph);
     return 0;
@@ -226,13 +227,13 @@ int renderToSvg(char* dotString)
 
 // This test fails only the first time. Rerunning it makes it work.
 int missing_label_repro() {
-    const std::string filename = "Rubjerg.Graphviz/missing-label-repro.dot";
+    const std::string filename = "missing-label-repro.dot";
     char* dotString = readFile(filename);
     if (dotString == NULL)
         return 1;
     if (renderToSvg(dotString) > 0) return 2;
 
-    char* svgText = readFile("Rubjerg.Graphviz/test.svg");
+    char* svgText = readFile("test.svg");
     char* expected = ">OpenNode</text>";
     if (strstr(svgText, expected) == NULL)
         return 3;
@@ -241,7 +242,7 @@ int missing_label_repro() {
 
 int stackoverflow_repro() {
 
-    const std::string filename = "Rubjerg.Graphviz/stackoverflow-repro.dot";
+    const std::string filename = "stackoverflow-repro.dot";
     char* dotString = readFile(filename);
     if (dotString == NULL)
         return 1;
@@ -250,7 +251,7 @@ int stackoverflow_repro() {
 
 
 int test_agread() {
-    char* filename = "Rubjerg.Graphviz/missing-label-repro.dot";
+    char* filename = "missing-label-repro.dot";
     // Open the file for reading
     FILE* fp = fopen(filename, "r");
     if (fp == NULL)
@@ -263,7 +264,7 @@ int test_agread() {
 }
 
 int test_agmemread() {
-    const std::string filename = "Rubjerg.Graphviz/missing-label-repro.dot";
+    const std::string filename = "missing-label-repro.dot";
     char* dotString = readFile(filename);
     if (dotString == NULL)
         return 1;
@@ -274,7 +275,7 @@ int test_agmemread() {
 }
 
 int test_rj_agmemread() {
-    const std::string filename = "Rubjerg.Graphviz/missing-label-repro.dot";
+    const std::string filename = "missing-label-repro.dot";
     char* dotString = readFile(filename);
     if (dotString == NULL)
         return 1;
@@ -283,3 +284,5 @@ int test_rj_agmemread() {
         return 2;
     return 0;
 }
+
+#pragma endregion "DEBUGGING AND TESTING"

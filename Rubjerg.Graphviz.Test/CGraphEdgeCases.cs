@@ -40,23 +40,20 @@ namespace Rubjerg.Graphviz.Test
                 root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.gv");
             }
 
+            // The empty label default is not exported, and the default default is \N.
+            // Related issue: https://gitlab.com/graphviz/graphviz/-/issues/1887
             {
                 var root = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "/out.gv");
                 Node nodeA = root.GetNode("A");
                 Node nodeB = root.GetNode("B");
                 Assert.AreEqual("1", nodeA.GetAttribute("label"));
-                Assert.AreEqual("", nodeB.GetAttribute("label"));
+                Assert.AreEqual("\\N", nodeB.GetAttribute("label"));
 
                 root.ComputeLayout();
                 Assert.AreEqual("1", nodeA.GetAttribute("label"));
-                Assert.AreEqual("", nodeB.GetAttribute("label"));
+                Assert.AreEqual("\\N", nodeB.GetAttribute("label"));
                 root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/out.svg");
             }
-            // The empty label default is not exported, but that appears to be no problem here. The
-            // default seems to become the empty string. However, dot.exe gives a different result.
-            // When applying dot.exe on out.gv the default label is set to \N, which gives different
-            // results entirely.
-            // Related issue: https://gitlab.com/graphviz/graphviz/-/issues/1887
         }
 
         [Test()]

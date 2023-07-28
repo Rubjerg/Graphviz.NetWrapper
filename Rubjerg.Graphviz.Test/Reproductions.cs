@@ -2,7 +2,6 @@ using NUnit.Framework;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace Rubjerg.Graphviz.Test
 {
@@ -12,15 +11,13 @@ namespace Rubjerg.Graphviz.Test
     [TestFixture()]
     public class Reproductions
     {
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        protected static extern void rj_debug();
+        private string _testDir;
 
-        [Test()]
-        [Ignore("For debugging")]
-        public void debug()
+        [SetUp]
+        public void SetUp()
         {
-            NativeMethods.CreateConsole();
-            rj_debug();
+            // Store the test directory.
+            _testDir = TestContext.CurrentContext.TestDirectory;
         }
 
         /// <summary>
@@ -52,59 +49,28 @@ namespace Rubjerg.Graphviz.Test
             Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
         }
 
-        // This test only fails when running in isolation
+        // This test only failed when running in isolation
         [Test()]
-        public void MissingLabelRepro1()
+        public void MissingLabelRepro()
         {
-            Assert.AreEqual(0, ForeignFunctionInterface.MissingLabelRepro());
-        }
-
-        // This test only fails when running in isolation
-        [Test()]
-        public void MissingLabelRepro2()
-        {
-            var graph = RootGraph.FromDotFile("Rubjerg.Graphviz/missing-label-repro.dot");
+            var graph = RootGraph.FromDotFile($"{_testDir}/missing-label-repro.dot");
             graph.ComputeLayout();
-            graph.ToSvgFile("Rubjerg.Graphviz/test.svg");
-            string svgString = File.ReadAllText("Rubjerg.Graphviz/test.svg");
+            graph.ToSvgFile($"{_testDir}/test.svg");
+            string svgString = File.ReadAllText($"{_testDir}/test.svg");
             Assert.IsTrue(svgString.Contains(">OpenNode</text>"));
         }
 
         [Test()]
         public void StackOverflowRepro()
         {
-            Assert.AreEqual(0, ForeignFunctionInterface.StackOverflowRepro());
-        }
-
-        [Test()]
-        public void StackOverflowRepro2()
-        {
-            var graph = RootGraph.FromDotFile("Rubjerg.Graphviz/stackoverflow-repro.dot");
+            var graph = RootGraph.FromDotFile($"{_testDir}/stackoverflow-repro.dot");
             graph.ComputeLayout();
-        }
-
-        [Test()]
-        public void TestAgread()
-        {
-            Assert.AreEqual(0, ForeignFunctionInterface.TestAgread());
-        }
-
-        [Test()]
-        public void TestAgmemread()
-        {
-            Assert.AreEqual(0, ForeignFunctionInterface.TestAgmemread());
-        }
-
-        [Test()]
-        public void TestRjAgmemread()
-        {
-            Assert.AreEqual(0, ForeignFunctionInterface.TestRjAgmemread());
         }
 
         [Test()]
         public void TestFromDotFile()
         {
-            _ = RootGraph.FromDotFile("Rubjerg.Graphviz/missing-label-repro.dot");
+            _ = RootGraph.FromDotFile($"{_testDir}/missing-label-repro.dot");
         }
     }
 }
