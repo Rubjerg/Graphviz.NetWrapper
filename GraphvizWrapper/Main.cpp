@@ -56,6 +56,8 @@ extern "C" {
 }
 
 
+// TODO: replace with a crossplatform alternative
+// Probably expose a free_string() function that needs to be called by C#
 char* marshalCString(const char* s)
 {
     if (!s) return 0;
@@ -110,16 +112,6 @@ Agraph_t* rj_agmemread(const char* s)
     stream << s;
     Agraph_t* g = agread(&stream, &memDisc);
     return g;
-}
-
-// Note: for this function to work, the graph has to be created with the memDisc, e.g. using rj_agopen
-void rj_agwrite(Agraph_t* g, const char* filename)
-{
-    ostringstream os;
-    agwrite(g, &os);
-    ofstream out(filename);
-    out << os.str();
-    out.close();
 }
 
 // Note: for this function to work, the graph has to be created with the memDisc, e.g. using rj_agopen

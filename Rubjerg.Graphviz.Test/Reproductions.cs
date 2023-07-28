@@ -83,7 +83,6 @@ namespace Rubjerg.Graphviz.Test
             graph.ComputeLayout();
         }
 
-        // TODO: remove all agread references; we should always handle file I/O ourselves
         [Test()]
         public void TestAgread()
         {

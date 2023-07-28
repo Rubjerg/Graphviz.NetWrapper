@@ -348,13 +348,6 @@ namespace Rubjerg.Graphviz
                 return edge_label(node);
             }
         }
-        public static void Rjagwrite(IntPtr graph, string filename)
-        {
-            lock (_mutex)
-            {
-                rj_agwrite(graph, filename);
-            }
-        }
         public static string Rjagmemwrite(IntPtr graph)
         {
             lock (_mutex)
@@ -611,8 +604,6 @@ namespace Rubjerg.Graphviz
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr edge_label(IntPtr node);
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void rj_agwrite(IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string filename);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.LPStr)]
         private static extern string rj_agmemwrite(IntPtr graph);
