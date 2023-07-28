@@ -30,6 +30,14 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="*.dot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+    </None>
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <PropertyGroup>
       <GenerateReadme>generatereadme.bat</GenerateReadme>

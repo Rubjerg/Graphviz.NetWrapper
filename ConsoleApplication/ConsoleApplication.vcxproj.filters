@@ -19,4 +19,8 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="missing-label-repro.dot" />
+    <CopyFileToFolders Include="stackoverflow-repro.dot" />
+  </ItemGroup>
 </Project>

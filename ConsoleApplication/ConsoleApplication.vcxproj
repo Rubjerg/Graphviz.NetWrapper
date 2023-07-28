@@ -86,6 +86,14 @@
       <Project>{f9bc5523-352d-469f-8dbb-97eca9d70648}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="missing-label-repro.dot">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="stackoverflow-repro.dot">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
