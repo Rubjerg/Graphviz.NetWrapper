@@ -1,3 +1,5 @@
+/// @file
+/// @ingroup plugin_api
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -8,41 +10,47 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GVPLUGIN_IMAGELOAD_H
-#define GVPLUGIN_IMAGELOAD_H
+#pragma once
 
 #include "types.h"
 #include "gvplugin.h"
 #include "gvcjob.h"
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/// @cond
+
 #ifdef GVDLL
-#  define extern __declspec(dllexport)
+#ifdef GVC_EXPORTS
+#define GVPLUGIN_LOADIMAGE_API __declspec(dllexport)
+#else
+#define GVPLUGIN_LOADIMAGE_API __declspec(dllimport)
+#endif
 #endif
 
-/*visual studio*/
-#ifdef _WIN32
-#ifndef GVC_EXPORTS
-#define extern __declspec(dllimport)
+#ifndef GVPLUGIN_LOADIMAGE_API
+#define GVPLUGIN_LOADIMAGE_API /* nothing */
 #endif
-#endif
-/*end visual studio*/
 
-extern boolean gvusershape_file_access(usershape_t *us);
-extern void gvusershape_file_release(usershape_t *us);
+/// @endcond
+
+/// @ingroup plugin_api
+/// @{
+
+GVPLUGIN_LOADIMAGE_API bool gvusershape_file_access(usershape_t *us);
+GVPLUGIN_LOADIMAGE_API void gvusershape_file_release(usershape_t *us);
 
     struct gvloadimage_engine_s {
-	void (*loadimage) (GVJ_t *job, usershape_t *us, boxf b, boolean filled);
+	void (*loadimage) (GVJ_t *job, usershape_t *us, boxf b, bool filled);
     };
 
-#ifdef extern
-#undef extern
-#endif
+/// @}
+
+#undef GVPLUGIN_LOADIMAGE_API
 
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVPLUGIN_IMAGELOAD_H */

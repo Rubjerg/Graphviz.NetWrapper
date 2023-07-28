@@ -12,32 +12,39 @@ using namespace std;
 
 extern "C" {
 
+	// Some wrappers around cgraph macros
+	__declspec(dllexport) Agedge_t* rj_agmkin(Agedge_t* e);
+	__declspec(dllexport) Agedge_t* rj_agmkout(Agedge_t* e);
+	__declspec(dllexport) Agnode_t* rj_aghead(Agedge_t* edge);
+	__declspec(dllexport) Agnode_t* rj_agtail(Agedge_t* edge);
+	__declspec(dllexport) int rj_ageqedge(Agedge_t* e, Agedge_t* f);
+
     // Some wrappers around existing cgraph functions to handle string marshaling
     __declspec(dllexport) const char* rj_agmemwrite(Agraph_t* g);
-    __declspec(dllexport) Agraph_t* rj_agmemread(const char* s);
-    __declspec(dllexport) const char* rj_agget(void* obj, char* name);
-    __declspec(dllexport) const char* rj_agnameof(void* obj);
-    __declspec(dllexport) Agraph_t* rj_agopen(char* name, int graphtype);
+	__declspec(dllexport) Agraph_t* rj_agmemread(const char* s);
+	__declspec(dllexport) const char* rj_agget(void* obj, char* name);
+	__declspec(dllexport) const char* rj_agnameof(void* obj);
+	__declspec(dllexport) Agraph_t* rj_agopen(char* name, int graphtype);
     __declspec(dllexport) const char* rj_sym_key(Agsym_t* sym);
 
-    __declspec(dllexport) double node_x(Agnode_t* node);
-    __declspec(dllexport) double node_y(Agnode_t* node);
-    __declspec(dllexport) double node_width(Agnode_t* node);
-    __declspec(dllexport) double node_height(Agnode_t* node);
+	__declspec(dllexport) double node_x(Agnode_t* node);
+	__declspec(dllexport) double node_y(Agnode_t* node);
+	__declspec(dllexport) double node_width(Agnode_t* node);
+	__declspec(dllexport) double node_height(Agnode_t* node);
 
-    __declspec(dllexport) textlabel_t* node_label(Agnode_t* node);
-    __declspec(dllexport) textlabel_t* edge_label(Agedge_t* edge);
-    __declspec(dllexport) textlabel_t* graph_label(Agraph_t* graph);
+	__declspec(dllexport) textlabel_t* node_label(Agnode_t* node);
+	__declspec(dllexport) textlabel_t* edge_label(Agedge_t* edge);
+	__declspec(dllexport) textlabel_t* graph_label(Agraph_t* graph);
 
-    __declspec(dllexport) double label_x(textlabel_t* label);
-    __declspec(dllexport) double label_y(textlabel_t* label);
-    __declspec(dllexport) double label_width(textlabel_t* label);
-    __declspec(dllexport) double label_height(textlabel_t* label);
-    __declspec(dllexport) const char* label_text(textlabel_t* label);
-    __declspec(dllexport) double label_fontsize(textlabel_t* label);
-    __declspec(dllexport) const char* label_fontname(textlabel_t* label);
+	__declspec(dllexport) double label_x(textlabel_t* label);
+	__declspec(dllexport) double label_y(textlabel_t* label);
+	__declspec(dllexport) double label_width(textlabel_t* label);
+	__declspec(dllexport) double label_height(textlabel_t* label);
+	__declspec(dllexport) const char* label_text(textlabel_t* label);
+	__declspec(dllexport) double label_fontsize(textlabel_t* label);
+	__declspec(dllexport) const char* label_fontname(textlabel_t* label);
 
-    __declspec(dllexport) void clone_attribute_declarations(Agraph_t* from, Agraph_t* to);
+	__declspec(dllexport) void clone_attribute_declarations(Agraph_t* from, Agraph_t* to);
     __declspec(dllexport) void convert_to_undirected(Agraph_t* graph);
 }
 
@@ -46,66 +53,99 @@ extern "C" {
 // Probably expose a free_string() function that needs to be called by C#
 char* marshalCString(const char* s)
 {
-    if (!s) return 0;
-    int len = (int)strlen(s) + 1;
+	if (!s) return 0;
+	int len = (int)strlen(s) + 1;
     char* ptr = (char*)CoTaskMemAlloc(len);
-    strcpy_s(ptr, len, s);
-    return ptr;
+	strcpy_s(ptr, len, s);
+	return ptr;
 }
 
 
 static int rj_afread(void* stream, char* buffer, int bufsize)
 {
     istringstream* is = (istringstream*)stream;
-    is->read(buffer, bufsize);
+	is->read(buffer, bufsize);
     int result = (int)is->gcount();
-    return result;
+	return result;
 }
 
 static int rj_putstr(void* stream, const char* s)
 {
     ostringstream* os = (ostringstream*)stream;
-    (*os) << s;
-    return 0;
+	(*os) << s;
+	return 0;
 }
 
 static int rj_flush(void* stream)
 {
     ostringstream* os = (ostringstream*)stream;
-    os->flush();
-    return 0;
+	os->flush();
+	return 0;
 }
 
 static Agiodisc_t memIoDisc = { rj_afread, rj_putstr, rj_flush };
 static Agdisc_t memDisc = { 0, 0, &memIoDisc };
 
+/* directed, strict, no_loops, maingraph */
+Agdesc_t Agdirected = { 1, 0, 0, 1 };
+Agdesc_t Agstrictdirected = { 1, 1, 0, 1 };
+Agdesc_t Agundirected = { 0, 0, 0, 1 };
+Agdesc_t Agstrictundirected = { 0, 1, 0, 1 };
+//Agdesc_t Agdirected = { .directed = true, .maingraph = true };
+//Agdesc_t Agstrictdirected = { .directed = true, .strict = true, .maingraph = true };
+//Agdesc_t Agundirected = { .maingraph = true };
+//Agdesc_t Agstrictundirected = { .strict = true, .maingraph = true };
+
+
 Agraph_t* rj_agopen(char* name, int graphtype)
 {
-    if (graphtype == 0)
-        return agopen(name, Agdirected, &memDisc);
-    if (graphtype == 1)
+	if (graphtype == 0)
+		return agopen(name, Agdirected, &memDisc);
+	if (graphtype == 1)
         return agopen(name, Agstrictdirected, &memDisc);
-    if (graphtype == 2)
+	if (graphtype == 2)
         return agopen(name, Agundirected, &memDisc);
-    if (graphtype == 3)
+	if (graphtype == 3)
         return agopen(name, Agstrictundirected, &memDisc);
     return 0;
 }
 
 Agraph_t* rj_agmemread(const char* s)
 {
-    stringstream stream;
-    stream << s;
-    Agraph_t* g = agread(&stream, &memDisc);
-    return g;
+	stringstream stream;
+	stream << s;
+	Agraph_t* g = agread(&stream, &memDisc);
+	return g;
+}
+
+// Expose removed cgraph functions https://gitlab.com/graphviz/graphviz/-/issues/2433
+Agnode_t* rj_aghead(Agedge_t* edge)
+{
+	return AGHEAD(edge);
+}
+Agnode_t* rj_agtail(Agedge_t* edge)
+{
+	return AGTAIL(edge);
+}
+int rj_ageqedge(Agedge_t* e, Agedge_t* f)
+{
+	return AGEQEDGE(e, f);
+}
+Agedge_t* rj_agmkin(Agedge_t* e)
+{
+	return AGMKIN(e);
+}
+Agedge_t* rj_agmkout(Agedge_t* e)
+{
+	return AGMKOUT(e);
 }
 
 // Note: for this function to work, the graph has to be created with the memDisc, e.g. using rj_agopen
 const char* rj_agmemwrite(Agraph_t* g)
 {
-    ostringstream os;
-    agwrite(g, &os);
-    return marshalCString(os.str().c_str());
+	ostringstream os;
+	agwrite(g, &os);
+	return marshalCString(os.str().c_str());
 }
 
 
@@ -132,37 +172,37 @@ const char* rj_sym_key(Agsym_t* sym) { return marshalCString(sym->name); }
 
 const char* rj_agget(void* obj, char* name)
 {
-    char* result = agget(obj, name);
-    return marshalCString(result);
+	char* result = agget(obj, name);
+	return marshalCString(result);
 }
 
 const char* rj_agnameof(void* obj)
 {
-    char* result = agnameof(obj);
-    return marshalCString(result);
+	char* result = agnameof(obj);
+	return marshalCString(result);
 }
 
 Agdisc_t* getdisc()
 {
-    return &memDisc;
+	return &memDisc;
 }
 
 void clone_attribute_declarations(Agraph_t* from, Agraph_t* to)
 {
-    for (int kind = 0; kind < 3; kind++)
-    {
-        Agsym_t* current = agnxtattr(from, kind, NULL);
-        while (current)
-        {
-            agattr(to, kind, current->name, current->defval);
-            current = agnxtattr(from, kind, current);
-        }
-    }
+	for (int kind = 0; kind < 3; kind++)
+	{
+		Agsym_t* current = agnxtattr(from, kind, NULL);
+		while (current)
+		{
+			agattr(to, kind, current->name, current->defval);
+			current = agnxtattr(from, kind, current);
+		}
+	}
 }
 
 void convert_to_undirected(Agraph_t* graph)
 {
-    graph->desc.directed = 0;
+	graph->desc.directed = 0;
 }
 
 #pragma region "DEBUGGING AND TESTING"

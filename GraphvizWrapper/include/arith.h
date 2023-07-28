@@ -1,3 +1,5 @@
+/// @file
+/// @ingroup public_apis
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -11,8 +13,7 @@
 /* geometric functions (e.g. on points and boxes) with application to, but
  * no specific dependence on graphs */
 
-#ifndef GV_ARITH_H
-#define GV_ARITH_H
+#pragma once
 
 /* for sincos */
 #ifndef _GNU_SOURCE
@@ -40,24 +41,8 @@ extern "C" {
 #define SGN(a)		(((a)<0)? -1 : 1)
 #define CMP(a,b)	(((a)<(b)) ? -1 : (((a)>(b)) ? 1 : 0))
 
-#ifndef INT_MAX
-#define	INT_MAX		((int)(~(unsigned)0 >> 1))
-#endif
-
-#ifndef INT_MIN
-#define INT_MIN		(-INT_MAX - 1)
-#endif
-
-#ifndef MAXSHORT
-#define	MAXSHORT	0x7fff
-#endif
-
 #ifndef MAXDOUBLE
 #define MAXDOUBLE	1.7976931348623157e+308
-#endif
-
-#ifndef MAXFLOAT
-#define MAXFLOAT	((float)3.40282347e+38)  // exact value: 0x1.fffffep+127f
 #endif
 
 #ifdef BETWEEN
@@ -87,6 +72,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

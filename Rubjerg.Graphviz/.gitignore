@@ -10,3 +10,4 @@ obj/
 config6
 *.ipdb
 *.iobj
+*.exe

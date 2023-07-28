@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @brief geometric types and macros (e.g. points and boxes)
+ * @ingroup public_apis
+ *
+ * with application to, but no specific dependence on graphs
+ */
+
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -7,12 +15,7 @@
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
-
-/* geometric types and macros (e.g. points and boxes) with application to, but
- * no specific dependence on graphs */
-
-#ifndef GV_GEOM_H
-#define GV_GEOM_H
+#pragma once
 
 #include "arith.h"
 
@@ -75,6 +78,4 @@ typedef struct { pointf LL, UR; } boxf;
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

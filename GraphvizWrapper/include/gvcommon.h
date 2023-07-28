@@ -1,3 +1,5 @@
+/// @file
+/// @ingroup gvc_api
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -8,8 +10,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GVCOMMON_H
-#define GVCOMMON_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +20,7 @@ extern "C" {
 	char **info;
 	char *cmdname;
 	int verbose;
-	boolean config, auto_outfile_names;
+	bool config, auto_outfile_names;
         void (*errorfn) (const char *fmt, ...);
 	const char **show_boxes; /* emit code for correct box coordinates */
 	const char **lib; 
@@ -34,4 +35,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVCOMMON_H */

@@ -205,21 +205,21 @@ namespace Rubjerg.Graphviz
         {
             lock (_mutex)
             {
-                return ageqedge(edge1, edge2);
+                return rj_ageqedge(edge1, edge2);
             }
         }
         public static IntPtr Agtail(IntPtr node)
         {
             lock (_mutex)
             {
-                return agtail(node);
+                return rj_agtail(node);
             }
         }
         public static IntPtr Aghead(IntPtr node)
         {
             lock (_mutex)
             {
-                return aghead(node);
+                return rj_aghead(node);
             }
         }
         public static IntPtr Agedge(IntPtr graph, IntPtr tail, IntPtr head, string name, int create)
@@ -233,14 +233,14 @@ namespace Rubjerg.Graphviz
         {
             lock (_mutex)
             {
-                return agmkin(edge);
+                return rj_agmkin(edge);
             }
         }
         public static IntPtr Agmkout(IntPtr edge)
         {
             lock (_mutex)
             {
-                return agmkout(edge);
+                return rj_agmkout(edge);
             }
         }
         public static IntPtr Agparent(IntPtr obj)
@@ -556,19 +556,19 @@ namespace Rubjerg.Graphviz
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern int agcopyattr(IntPtr from, IntPtr to);
 
-        [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.U1)]
-        private static extern bool ageqedge(IntPtr edge1, IntPtr edge2);
-        [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr agtail(IntPtr node);
-        [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr aghead(IntPtr node);
+        private static extern bool rj_ageqedge(IntPtr edge1, IntPtr edge2);
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr rj_agtail(IntPtr node);
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr rj_aghead(IntPtr node);
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr agedge(IntPtr graph, IntPtr tail, IntPtr head, [MarshalAs(UnmanagedType.LPStr)] string name, int create);
-        [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr agmkin(IntPtr edge);
-        [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr agmkout(IntPtr edge);
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr rj_agmkin(IntPtr edge);
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr rj_agmkout(IntPtr edge);
 
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr agparent(IntPtr obj);
