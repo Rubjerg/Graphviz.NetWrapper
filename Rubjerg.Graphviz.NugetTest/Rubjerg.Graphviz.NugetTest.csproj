@@ -16,7 +16,7 @@
       <Version>3.13.3</Version>
     </PackageReference>
     <PackageReference Include="NUnit.ConsoleRunner">
-      <Version>3.15.2</Version>
+      <Version>3.16.3</Version>
     </PackageReference>
     <PackageReference Include="NUnit.Extension.TeamCityEventListener">
       <Version>1.0.7</Version>
@@ -24,9 +24,9 @@
     <PackageReference Include="OpenCover">
       <Version>4.7.1221</Version>
     </PackageReference>
-    <PackageReference Include="Rubjerg.Graphviz">
-      <Version>1.1.0</Version>
-    </PackageReference>
+    <!--We need both packages below to run the tests in VS https://github.com/microsoft/vstest/issues/1870-->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
   </ItemGroup>
 
 </Project>
