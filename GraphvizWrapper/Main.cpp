@@ -219,6 +219,8 @@ char* readFile(const std::string& filename) {
 
 int renderToSvg(char* dotString)
 {
+    // NOTE: the gvContext has to be called first
+    // See https://gitlab.com/graphviz/graphviz/-/issues/2434
     auto gvc = gvContext();
     auto graph = agmemread(dotString);
     if (graph == NULL)
@@ -228,7 +230,6 @@ int renderToSvg(char* dotString)
     gvFreeLayout(gvc, graph);
     agclose(graph);
     return 0;
-    //gvRender(gvc, graph, "xdot", 0);
 }
 
 // This test fails only the first time. Rerunning it makes it work.

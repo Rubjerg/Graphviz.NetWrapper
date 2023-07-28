@@ -457,7 +457,7 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public void ComputeLayout(string engine = LayoutEngines.Dot)
         {
-            //ToDotFile(@"c:\users\chiel.tenbrinke\desktop\test.dot");
+
             int layout_rc = GvLayout(GVC, _ptr, engine);
             if (layout_rc != 0)
                 throw new ApplicationException($"Graphviz layout returned error code {layout_rc}");

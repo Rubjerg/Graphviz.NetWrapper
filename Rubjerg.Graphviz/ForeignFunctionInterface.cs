@@ -667,6 +667,33 @@ namespace Rubjerg.Graphviz
         private static extern IntPtr rj_agopen([MarshalAs(UnmanagedType.LPStr)] string name, int graphtype);
 
 
+        /// <summary>
+        /// A GraphvizContext is used to store various layout
+        /// information that is independent of a particular graph and
+        /// its attributes.  It holds the data associated with plugins,
+        /// parsed - command lines, script engines, and anything else
+        /// with a scope potentially larger than one graph, up to the
+        /// scope of the application. In addition, it maintains lists of
+        /// the available layout algorithms and renderers; it also
+        /// records the most recent layout algorithm applied to a graph.
+        /// It can be used to specify multiple renderings of a given
+        /// graph layout into different associated files.It is also used
+        /// to store various global information used during rendering.
+        /// There should be just one GVC created for the entire
+        /// duration of an application. A single GVC value can be used
+        /// with multiple graphs, though with only one graph at a
+        /// time. In addition, if gvLayout() was invoked for a graph and
+        /// GVC, then gvFreeLayout() should be called before using
+        /// gvLayout() again, even on the same graph.
+        /// </summary>
+        public static IntPtr GVC { get; private set; }
+        static ForeignFunctionInterface()
+        {
+            // We initialize the gvc here before interacting with graphviz
+            // https://gitlab.com/graphviz/graphviz/-/issues/2434
+            GVC = GvContext();
+        }
+
         #region debugging and testing
 
         // .NET uses UnmanagedType.Bool by default for P/Invoke, but our C++ code uses UnmanagedType.U1
