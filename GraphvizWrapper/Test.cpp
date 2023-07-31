@@ -1,0 +1,113 @@
+#define _CRT_SECURE_NO_DEPRECATE
+#include "cgraph.h"
+#include "gvc.h"
+#include "types.h"
+#include <objbase.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include "GraphvizWrapper.h"
+
+bool echobool(bool arg) { return arg; }
+int echoint(int arg) { return arg; }
+bool return_true() { return true; }
+bool return_false() { return false; }
+int return1() { return 1; }
+int return_1() { return -1; }
+
+char* readFile(const std::string& filename) {
+    std::ifstream file(filename, std::ios::binary | std::ios::ate);
+
+    if (!file) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return nullptr;
+    }
+
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    char* buffer = new char[size + 1];  // allocate one extra byte
+    if (!file.read(buffer, size)) {
+        std::cerr << "Failed to read file: " << filename << std::endl;
+        delete[] buffer;
+        return nullptr;
+    }
+
+    buffer[size] = '\0';  // null terminate the string
+    return buffer;
+}
+
+int renderToSvg(char* dotString)
+{
+    // NOTE: the gvContext has to be called first
+    // See https://gitlab.com/graphviz/graphviz/-/issues/2434
+    auto gvc = gvContext();
+    auto graph = agmemread(dotString);
+    if (graph == NULL)
+        return 1;
+    gvLayout(gvc, graph, "dot");
+    gvRenderFilename(gvc, graph, "svg", "test.svg");
+    gvFreeLayout(gvc, graph);
+    agclose(graph);
+    return 0;
+}
+
+// This test fails only the first time. Rerunning it makes it work.
+int missing_label_repro() {
+    const std::string filename = "missing-label-repro.dot";
+    char* dotString = readFile(filename);
+    if (dotString == NULL)
+        return 1;
+    if (renderToSvg(dotString) > 0) return 2;
+
+    char* svgText = readFile("test.svg");
+    char* expected = ">OpenNode</text>";
+    if (strstr(svgText, expected) == NULL)
+        return 3;
+    return 0;
+}
+
+int stackoverflow_repro() {
+
+    const std::string filename = "stackoverflow-repro.dot";
+    char* dotString = readFile(filename);
+    if (dotString == NULL)
+        return 1;
+    return renderToSvg(dotString);
+}
+
+
+int test_agread() {
+    char* filename = "missing-label-repro.dot";
+    // Open the file for reading
+    FILE* fp = fopen(filename, "r");
+    if (fp == NULL)
+        return 1;
+    auto graph = agread(fp, NULL);
+    if (graph == 0)
+        return 2;
+    fclose(fp);
+    return 0;
+}
+
+int test_agmemread() {
+    const std::string filename = "missing-label-repro.dot";
+    char* dotString = readFile(filename);
+    if (dotString == NULL)
+        return 1;
+    auto graph = agmemread(dotString);
+    if (graph == 0)
+        return 1;
+    return 0;
+}
+
+int test_rj_agmemread() {
+    const std::string filename = "missing-label-repro.dot";
+    char* dotString = readFile(filename);
+    if (dotString == NULL)
+        return 1;
+    auto graph = rj_agmemread(dotString);
+    if (graph == NULL)
+        return 2;
+    return 0;
+}

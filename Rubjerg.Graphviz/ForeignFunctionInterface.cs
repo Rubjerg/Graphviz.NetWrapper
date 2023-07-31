@@ -390,6 +390,7 @@ namespace Rubjerg.Graphviz
                 return rj_sym_key(sym);
             }
         }
+        // FIXNOW: test these label FFIs with the xdot rendering
         public static double LabelX(IntPtr label)
         {
             lock (_mutex)

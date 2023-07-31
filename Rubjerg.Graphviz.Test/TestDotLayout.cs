@@ -8,7 +8,7 @@ using static Rubjerg.Graphviz.Test.Utils;
 namespace Rubjerg.Graphviz.Test
 {
     [TestFixture()]
-    public class GraphvizBasicOperations
+    public class TestDotLayout
     {
         [Test()]
         public void TestHtmlLabels()
@@ -71,7 +71,7 @@ namespace Rubjerg.Graphviz.Test
             nodeA.SafeSetAttribute("shape", "record", "");
             nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
 
-            root.ComputeLayout();
+            root = root.ComputeDotLayoutGraph();
 
             var rects = nodeA.GetRecordRectangles().ToList();
 
@@ -88,7 +88,7 @@ namespace Rubjerg.Graphviz.Test
             nodeA.SafeSetAttribute("shape", "record", "");
             nodeA.SafeSetAttribute("label", "||||", "");
 
-            root.ComputeLayout();
+            root = root.ComputeDotLayoutGraph();
 
             var rects = nodeA.GetRecordRectangles().ToList();
             Assert.That(rects.Count, Is.EqualTo(5));
@@ -129,7 +129,7 @@ namespace Rubjerg.Graphviz.Test
                 Assert.That(edge.GetAttribute("tailport"), Is.EqualTo(port1 + ":n"));
                 Assert.That(edge.GetAttribute("headport"), Is.EqualTo(port2 + ":s"));
 
-                root.ComputeLayout();
+                root = root.ComputeDotLayoutGraph();
                 root.ToSvgFile(GetTestFilePath("out.svg"));
                 root.ToDotFile(GetTestFilePath("out.dot"));
 
@@ -177,7 +177,7 @@ namespace Rubjerg.Graphviz.Test
                 Node node3 = root.GetNode("3");
                 Assert.That(node3.GetAttribute("label"), Is.EqualTo(label3));
 
-                root.ComputeLayout();
+                root = root.ComputeDotLayoutGraph();
                 root.ToSvgFile(GetTestFilePath("out.svg"));
                 root.ToDotFile(GetTestFilePath("out.dot"));
 

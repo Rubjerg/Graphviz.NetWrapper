@@ -470,6 +470,11 @@ namespace Rubjerg.Graphviz
                 throw new ApplicationException($"Graphviz render returned error code {render_rc}");
         }
 
+        public RootGraph ComputeDotLayoutGraph()
+        {
+            return DotCommand.Layout(this);
+        }
+
         /// <summary>
         /// Clean up the layout information stored in this graph. This does not include the attributes set by GvRender.
         /// This method should always be called as soon as the layout information of a graph is not needed anymore.
