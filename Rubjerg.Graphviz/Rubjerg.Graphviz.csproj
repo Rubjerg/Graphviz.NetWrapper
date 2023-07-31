@@ -35,6 +35,11 @@
       <Pack>true</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Include="C:\Users\chiel.tenbrinke\prj\RMFMagic\source\Graphviz.NetWrapper\Rubjerg.Graphviz\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\chiel.tenbrinke\prj\RMFMagic\source\Graphviz.NetWrapper\Rubjerg.Graphviz\.editorconfig" />
   </ItemGroup>
 
 </Project>

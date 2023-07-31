@@ -1,11 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.InteropServices;
 
 namespace Rubjerg.Graphviz
 {
-
     public enum XDotGradType
     {
         None,
