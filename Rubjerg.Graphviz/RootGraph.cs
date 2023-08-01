@@ -20,7 +20,7 @@ namespace Rubjerg.Graphviz
     public class RootGraph : Graph
     {
         private long _added_pressure = 0;
-        private RootGraph(IntPtr ptr) : base(ptr, null) { }
+        protected RootGraph(IntPtr ptr) : base(ptr, null) { }
         ~RootGraph()
         {
             if (_added_pressure > 0)
@@ -65,16 +65,22 @@ namespace Rubjerg.Graphviz
             return FromDotString(input);
         }
 
-        public static RootGraph FromDotString(string graph)
+        protected static T FromDotString<T>(string graph, Func<IntPtr, T> constructor)
+            where T : RootGraph
         {
             IntPtr ptr = Rjagmemread(graph);
             if (ptr == IntPtr.Zero)
             {
                 throw new InvalidOperationException("Could not create graph");
             }
-            var result = new RootGraph(ptr);
+            var result = constructor(ptr);
             result.UpdateMemoryPressure();
             return result;
+        }
+
+        public static RootGraph FromDotString(string graph)
+        {
+            return FromDotString(graph, ptr => new RootGraph(ptr));
         }
 
         public void ConvertToUndirectedGraph()

@@ -17,7 +17,7 @@ namespace Rubjerg.Graphviz
         /// <summary>
         /// rootgraph may be null
         /// </summary>
-        internal Graph(IntPtr ptr, RootGraph rootgraph) : base(ptr, rootgraph) { }
+        protected Graph(IntPtr ptr, RootGraph rootgraph) : base(ptr, rootgraph) { }
         public bool IsStrict() { return Agisstrict(_ptr) != 0; }
         public bool IsDirected() { return Agisdirected(_ptr) != 0; }
         public bool IsUndirected() { return Agisundirected(_ptr) != 0; }
@@ -470,7 +470,11 @@ namespace Rubjerg.Graphviz
                 throw new ApplicationException($"Graphviz render returned error code {render_rc}");
         }
 
-        public RootGraph ComputeDotLayoutGraph()
+        /// <summary>
+        /// Compute the dot layout in a separate process, and return a new graph, which is a copy of the old
+        /// graph with the xdot information added to it.
+        /// </summary>
+        public XDotGraph CreateDotLayout()
         {
             return DotCommand.Layout(this);
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz
@@ -208,7 +209,9 @@ namespace Rubjerg.Graphviz
 
         private RectangleF ParseRect(string rect)
         {
-            string[] points = rect.Split(',');
+            string pattern = @"[\s\\]+";
+            string cleaned = Regex.Replace(rect, pattern, "");
+            string[] points = cleaned.Split(',');
             float leftX = float.Parse(points[0], NumberStyles.Any, CultureInfo.InvariantCulture);
             float upperY = float.Parse(points[1], NumberStyles.Any, CultureInfo.InvariantCulture);
             float rightX = float.Parse(points[2], NumberStyles.Any, CultureInfo.InvariantCulture);

@@ -129,7 +129,7 @@ namespace Rubjerg.Graphviz
         public XDotOp[] Ops { get; set; }  // xdot operations
     }
 
-    static class XDotTranslator
+    internal static class XDotTranslator
     {
         public static XDot TranslateXDot(IntPtr xdotPtr)
         {

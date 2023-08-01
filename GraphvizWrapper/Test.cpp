@@ -1,7 +1,4 @@
 #define _CRT_SECURE_NO_DEPRECATE
-#include "cgraph.h"
-#include "gvc.h"
-#include "types.h"
 #include <objbase.h>
 #include <iostream>
 #include <fstream>
@@ -109,5 +106,19 @@ int test_rj_agmemread() {
     auto graph = rj_agmemread(dotString);
     if (graph == NULL)
         return 2;
+    return 0;
+}
+
+
+int test_xdot() {
+    char* str = "c 9 -#fffffe00 C 7 -#ffffff P 4 0 0 0 72.25 136.5 72.25 136.5 0";
+//    char* str = "c 7 -#000000 p 4 569.18 36.75 569.18 81.51 590.82 81.51 590.82 36.75 c 7 -#000000 L 2 569.18 70.32 581.12 70.32 c 7 -#000000 L 2 \
+//569.18 59.13 581.12 59.13 c 7 -#000000 L 2 581.12 47.94 581.12 81.51 c 7 -#000000 L 2 581.12 70.32 590.82 70.32 c 7 -#000000 L 2 \
+//581.12 59.13 590.82 59.13 c 7 -#000000 L 2 569.18 47.94 590.82 47.94 ";
+    auto xdot = parseXDot(str);
+    auto ops = get_ops(xdot);
+    auto op = get_op_at_index(ops, 0);
+    auto kind = get_kind(op);
+    cout << kind << endl;
     return 0;
 }

@@ -1,15 +1,18 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Rubjerg.Graphviz
 {
     public static class XDotFFI
     {
+        [DllImport("xdot.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr parseXDot([MarshalAs(UnmanagedType.LPStr)] string xdotString);
+        [DllImport("xdot.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void freeXDot(IntPtr xdotptr);
+
         // Accessors for xdot
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        public static extern ulong get_cnt(IntPtr xdot);
+        public static extern UIntPtr get_cnt(IntPtr xdot);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr get_ops(IntPtr xdot);
@@ -154,7 +157,7 @@ namespace Rubjerg.Graphviz
 
         // Accessors for xdot_polyline
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        public static extern ulong get_cnt_polyline(IntPtr polyline);
+        public static extern UIntPtr get_cnt_polyline(IntPtr polyline);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr get_pts_polyline(IntPtr polyline);

@@ -5,10 +5,14 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
+#define GVDLL 1
+
 #include "cgraph.h"
 #include "gvc.h"
 #include "types.h"
 #include "xdot.h"
+
 
 using namespace std;
 
@@ -122,6 +126,7 @@ extern "C" {
     __declspec(dllexport) int test_agread();
     __declspec(dllexport) int test_agmemread();
     __declspec(dllexport) int test_rj_agmemread();
+    __declspec(dllexport) int test_xdot();
 #pragma endregion
 }
 

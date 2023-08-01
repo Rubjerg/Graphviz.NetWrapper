@@ -3,9 +3,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "cgraph.h"
-#include "gvc.h"
-#include "types.h"
 #include "GraphvizWrapper.h"
 
 using namespace std;
@@ -13,6 +10,8 @@ using namespace std;
 
 // TODO: replace with a crossplatform alternative
 // Probably expose a free_string() function that needs to be called by C#
+// TODO: is this function even necessary? The CLR already copies the native lpstr into a .NET string
+// No need to do this manually
 char* marshalCString(const char* s)
 {
     if (!s) return 0;
@@ -49,10 +48,10 @@ static Agiodisc_t memIoDisc = { rj_afread, rj_putstr, rj_flush };
 static Agdisc_t memDisc = { 0, 0, &memIoDisc };
 
 /* directed, strict, no_loops, maingraph */
-Agdesc_t Agdirected = { 1, 0, 0, 1 };
-Agdesc_t Agstrictdirected = { 1, 1, 0, 1 };
-Agdesc_t Agundirected = { 0, 0, 0, 1 };
-Agdesc_t Agstrictundirected = { 0, 1, 0, 1 };
+//Agdesc_t Agdirected = { 1, 0, 0, 1 };
+//Agdesc_t Agstrictdirected = { 1, 1, 0, 1 };
+//Agdesc_t Agundirected = { 0, 0, 0, 1 };
+//Agdesc_t Agstrictundirected = { 0, 1, 0, 1 };
 //Agdesc_t Agdirected = { .directed = true, .maingraph = true };
 //Agdesc_t Agstrictdirected = { .directed = true, .strict = true, .maingraph = true };
 //Agdesc_t Agundirected = { .maingraph = true };
@@ -142,11 +141,6 @@ const char* rj_agnameof(void* obj)
 {
     char* result = agnameof(obj);
     return marshalCString(result);
-}
-
-Agdisc_t* getdisc()
-{
-    return &memDisc;
 }
 
 void clone_attribute_declarations(Agraph_t* from, Agraph_t* to)

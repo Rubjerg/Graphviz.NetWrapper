@@ -8,7 +8,7 @@ namespace Rubjerg.Graphviz
 {
     public class DotCommand
     {
-        public static RootGraph Layout(Graph input)
+        public static XDotGraph Layout(Graph input)
         {
             string exeName = "dot.exe";
             string arguments = "-Txdot";
@@ -58,7 +58,7 @@ namespace Rubjerg.Graphviz
             else
             {
                 // Process completed successfully.
-                var resultGraph = RootGraph.FromDotString(output);
+                var resultGraph = XDotGraph.FromDotString(output);
                 return resultGraph;
             }
         }

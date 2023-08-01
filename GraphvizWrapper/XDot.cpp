@@ -1,4 +1,4 @@
-#include "xdot.h"
+#include "GraphvizWrapper.h"
 
 
 // Accessors for xdot
