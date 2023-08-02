@@ -27,7 +27,11 @@ namespace Rubjerg.Graphviz.Test
             Assert.AreEqual(TestEnum.Val2, echo_enum(TestEnum.Val2));
             Assert.AreEqual(TestEnum.Val5, echo_enum(TestEnum.Val5));
 
-            // TODO: test string marshaling
+            Assert.AreEqual("", ReturnEmptyString());
+            Assert.AreEqual("hello", ReturnHello());
+            Assert.AreEqual("1", EchoString("1"));
+            Assert.AreEqual("", EchoString(""));
+            Assert.AreEqual("hello", EchoString("hello"));
         }
     }
 }

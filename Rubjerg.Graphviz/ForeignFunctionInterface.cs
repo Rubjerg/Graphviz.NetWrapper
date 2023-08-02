@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Rubjerg.Graphviz
 {
+    // FIXNOW: check all string marshaling
     /// <summary>
     /// Graphviz is thread unsafe, so we wrap all function calls inside a lock to make sure we don't run into
     /// issues caused by multiple threads accessing the graphviz datastructures (like the GC executing a destructor).
@@ -497,6 +498,9 @@ namespace Rubjerg.Graphviz
             }
         }
 
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void free_str(IntPtr ptr);
+
         [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr gvContext();
         [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -717,6 +721,27 @@ namespace Rubjerg.Graphviz
         public static extern TestEnum return_enum5();
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern TestEnum echo_enum(TestEnum e);
+
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr echo_string([MarshalAs(UnmanagedType.LPStr)] string str);
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr return_empty_string();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr return_hello();
+
+        public static string EchoString(string str)
+        {
+            // echo_string gives us ownership over the string, which means that we have to free it.
+            var ptr = echo_string(str);
+            var result = Marshal.PtrToStringAnsi(ptr);
+            free_str(ptr);
+            return result;
+        }
+        public static string ReturnEmptyString() => Marshal.PtrToStringAnsi(return_empty_string());
+        public static string ReturnHello() => Marshal.PtrToStringAnsi(return_hello());
+
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern XDotKind test_xdot();
         #endregion
     }
 }

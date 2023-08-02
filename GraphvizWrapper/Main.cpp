@@ -21,6 +21,10 @@ char* marshalCString(const char* s)
     return ptr;
 }
 
+void free_str(char* str) {
+    free(str);
+}
+
 
 static int rj_afread(void* stream, char* buffer, int bufsize)
 {

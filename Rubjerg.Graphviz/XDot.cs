@@ -178,7 +178,7 @@ namespace Rubjerg.Graphviz
                     break;
                 case XDotKind.FillColor:
                 case XDotKind.PenColor:
-                    xdotOp.Color = XDotFFI.get_color(xdotOpPtr);
+                    xdotOp.Color = XDotFFI.GetColor(xdotOpPtr);
                     break;
                 case XDotKind.GradFillColor:
                 case XDotKind.GradPenColor:
@@ -188,7 +188,7 @@ namespace Rubjerg.Graphviz
                     xdotOp.Font = TranslateFont(XDotFFI.get_font(xdotOpPtr));
                     break;
                 case XDotKind.Style:
-                    xdotOp.Style = XDotFFI.get_style(xdotOpPtr);
+                    xdotOp.Style = XDotFFI.GetStyle(xdotOpPtr);
                     break;
                 case XDotKind.Image:
                     xdotOp.Image = TranslateImage(XDotFFI.get_image(xdotOpPtr));
@@ -207,7 +207,7 @@ namespace Rubjerg.Graphviz
         {
             XDotImage image = new XDotImage();
             image.Pos = TranslateRect(XDotFFI.get_pos(imagePtr));
-            image.Name = XDotFFI.get_name_image(imagePtr);
+            image.Name = XDotFFI.GetNameImage(imagePtr);
 
             return image;
         }
@@ -216,7 +216,7 @@ namespace Rubjerg.Graphviz
         {
             XDotFont font = new XDotFont();
             font.Size = XDotFFI.get_size(fontPtr);
-            font.Name = XDotFFI.get_name_font(fontPtr);
+            font.Name = XDotFFI.GetNameFont(fontPtr);
 
             return font;
         }
@@ -238,7 +238,7 @@ namespace Rubjerg.Graphviz
         {
             XDotColor color = new XDotColor();
             color.Type = XDotFFI.get_type(colorPtr);
-            color.Color = XDotFFI.get_clr(colorPtr);
+            color.Color = XDotFFI.GetClr(colorPtr);
 
             switch (color.Type)
             {
@@ -305,7 +305,7 @@ namespace Rubjerg.Graphviz
         {
             XDotColorStop colorStop = new XDotColorStop();
             colorStop.Frac = XDotFFI.get_frac(stopPtr);
-            colorStop.Color = XDotFFI.get_color_stop(stopPtr);
+            colorStop.Color = XDotFFI.GetColorStop(stopPtr);
 
             return colorStop;
         }
@@ -356,7 +356,7 @@ namespace Rubjerg.Graphviz
             text.Y = XDotFFI.get_y_text(txtPtr);
             text.Align = XDotFFI.get_align(txtPtr);
             text.Width = XDotFFI.get_width(txtPtr);
-            text.Text = XDotFFI.get_text_str(txtPtr);
+            text.Text = XDotFFI.GetTextStr(txtPtr);
 
             return text;
         }

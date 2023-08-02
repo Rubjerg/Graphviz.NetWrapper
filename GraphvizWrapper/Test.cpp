@@ -17,6 +17,20 @@ TestEnum return_enum1() { return Val1; }
 TestEnum return_enum2() { return Val2; }
 TestEnum return_enum5() { return Val5; }
 
+/// <param name="str">Does not take ownership</param>
+/// <returns>Ownership of the function result is transferred to the caller</returns>
+char* echo_string(char* str) {
+    // We are not the owner of str, so we cannot return it as-is; the result
+    // may already be freed when the consumer uses the string.
+    // Instead, we have to duplicate the string.
+    // Note that the caller has to free the returned string though, because we transfer ownership.
+    return _strdup(str);
+}
+/// <returns>Ownership is not returned to the caller</returns>
+char* return_empty_string() { return ""; }
+/// <returns>Ownership is not returned to the caller</returns>
+char* return_hello() { return "hello"; }
+
 char* readFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
 
@@ -116,14 +130,15 @@ int test_rj_agmemread() {
 
 
 int test_xdot() {
+    // FIXNOW: remove this function
     char* str = "c 9 -#fffffe00 C 7 -#ffffff P 4 0 0 0 72.25 136.5 72.25 136.5 0";
-//    char* str = "c 7 -#000000 p 4 569.18 36.75 569.18 81.51 590.82 81.51 590.82 36.75 c 7 -#000000 L 2 569.18 70.32 581.12 70.32 c 7 -#000000 L 2 \
-//569.18 59.13 581.12 59.13 c 7 -#000000 L 2 581.12 47.94 581.12 81.51 c 7 -#000000 L 2 581.12 70.32 590.82 70.32 c 7 -#000000 L 2 \
-//581.12 59.13 590.82 59.13 c 7 -#000000 L 2 569.18 47.94 590.82 47.94 ";
+    //    char* str = "c 7 -#000000 p 4 569.18 36.75 569.18 81.51 590.82 81.51 590.82 36.75 c 7 -#000000 L 2 569.18 70.32 581.12 70.32 c 7 -#000000 L 2 \
+    //569.18 59.13 581.12 59.13 c 7 -#000000 L 2 581.12 47.94 581.12 81.51 c 7 -#000000 L 2 581.12 70.32 590.82 70.32 c 7 -#000000 L 2 \
+    //581.12 59.13 590.82 59.13 c 7 -#000000 L 2 569.18 47.94 590.82 47.94 ";
     auto xdot = parseXDot(str);
     auto ops = get_ops(xdot);
     auto op = get_op_at_index(ops, 0);
     auto kind = get_kind(op);
-    cout << kind << endl;
+    auto color = get_color(op);
     return 0;
 }

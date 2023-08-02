@@ -19,8 +19,8 @@ namespace Rubjerg.Graphviz
 
         // Accessors for xdot_image
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        public static extern string get_name_image(IntPtr img);
+        private static extern IntPtr get_name_image(IntPtr img);
+        public static string GetNameImage(IntPtr img) => Marshal.PtrToStringAnsi(get_name_image(img));
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr get_pos(IntPtr img);
@@ -30,8 +30,8 @@ namespace Rubjerg.Graphviz
         public static extern double get_size(IntPtr font);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        public static extern string get_name_font(IntPtr font);
+        private static extern IntPtr get_name_font(IntPtr font);
+        public static string GetNameFont(IntPtr img) => Marshal.PtrToStringAnsi(get_name_font(img));
 
         // Accessors for xdot_op
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -56,8 +56,8 @@ namespace Rubjerg.Graphviz
         public static extern IntPtr get_image(IntPtr op);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        public static extern string get_color(IntPtr op);
+        private static extern IntPtr get_color(IntPtr op);
+        public static string GetColor(IntPtr op) => Marshal.PtrToStringAnsi(get_color(op));
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr get_grad_color(IntPtr op);
@@ -66,8 +66,8 @@ namespace Rubjerg.Graphviz
         public static extern IntPtr get_font(IntPtr op);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        public static extern string get_style(IntPtr op);
+        private static extern IntPtr get_style(IntPtr op);
+        public static string GetStyle(IntPtr op) => Marshal.PtrToStringAnsi(get_style(op));
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint get_fontchar(IntPtr op);
@@ -77,8 +77,8 @@ namespace Rubjerg.Graphviz
         public static extern XDotGradType get_type(IntPtr clr);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        public static extern string get_clr(IntPtr clr);
+        private static extern IntPtr get_clr(IntPtr clr);
+        public static string GetClr(IntPtr clr) => Marshal.PtrToStringAnsi(get_clr(clr));
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr get_ling(IntPtr clr);
@@ -100,8 +100,8 @@ namespace Rubjerg.Graphviz
         public static extern double get_width(IntPtr txt);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        public static extern string get_text_str(IntPtr txt);
+        private static extern IntPtr get_text_str(IntPtr txt);
+        public static string GetTextStr(IntPtr txt) => Marshal.PtrToStringAnsi(get_text_str(txt));
 
         // Accessors for xdot_linear_grad
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -152,8 +152,8 @@ namespace Rubjerg.Graphviz
         public static extern float get_frac(IntPtr stop);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        public static extern string get_color_stop(IntPtr stop);
+        private static extern IntPtr get_color_stop(IntPtr stop);
+        public static string GetColorStop(IntPtr stop) => Marshal.PtrToStringAnsi(get_color_stop(stop));
 
         // Accessors for xdot_polyline
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]

@@ -18,6 +18,8 @@ using namespace std;
 
 extern "C" {
 
+    __declspec(dllexport) void free_str(char* str);
+
 #pragma region "CGraph"
     // Some wrappers around cgraph macros
     __declspec(dllexport) Agedge_t* rj_agmkin(Agedge_t* e);
@@ -130,6 +132,9 @@ extern "C" {
     __declspec(dllexport) TestEnum return_enum1();
     __declspec(dllexport) TestEnum return_enum2();
     __declspec(dllexport) TestEnum return_enum5();
+    __declspec(dllexport) char* echo_string(char* str);
+    __declspec(dllexport) char* return_empty_string();
+    __declspec(dllexport) char* return_hello();
     __declspec(dllexport) int stackoverflow_repro();
     __declspec(dllexport) int missing_label_repro();
     __declspec(dllexport) int test_agread();

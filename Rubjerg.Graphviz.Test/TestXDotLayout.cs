@@ -1,6 +1,4 @@
 using System;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using static Rubjerg.Graphviz.Test.Utils;
@@ -13,6 +11,7 @@ namespace Rubjerg.Graphviz.Test
         [Test()]
         public void TestXDotTranslate()
         {
+
             string xdotString = "c 9 -#fffffe00 C 7 -#ffffff P 4 0 0 0 72.25 136.5 72.25 136.5 0";
             IntPtr xdot = XDotFFI.parseXDot(xdotString);
             try
