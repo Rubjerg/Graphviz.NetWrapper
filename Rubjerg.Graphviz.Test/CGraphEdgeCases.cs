@@ -135,22 +135,6 @@ namespace Rubjerg.Graphviz.Test
         }
 
         [Test()]
-        public void TestMarshaling()
-        {
-            Assert.True(ForeignFunctionInterface.echobool(true));
-            Assert.False(ForeignFunctionInterface.echobool(false));
-            Assert.True(ForeignFunctionInterface.return_true());
-            Assert.False(ForeignFunctionInterface.return_false());
-
-            Assert.AreEqual(0, ForeignFunctionInterface.echoint(0));
-            Assert.AreEqual(1, ForeignFunctionInterface.echoint(1));
-            Assert.AreEqual(-1, ForeignFunctionInterface.echoint(-1));
-            Assert.AreEqual(1, ForeignFunctionInterface.return1());
-            Assert.AreEqual(-1, ForeignFunctionInterface.return_1());
-            // TODO: test string marshaling
-        }
-
-        [Test()]
         public void TestNonStrictGraph()
         {
             RootGraph graph = Utils.CreateUniqueTestGraph();

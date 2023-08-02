@@ -12,6 +12,11 @@ bool return_false() { return false; }
 int return1() { return 1; }
 int return_1() { return -1; }
 
+TestEnum echo_enum(TestEnum e) { return e; }
+TestEnum return_enum1() { return Val1; }
+TestEnum return_enum2() { return Val2; }
+TestEnum return_enum5() { return Val5; }
+
 char* readFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
 

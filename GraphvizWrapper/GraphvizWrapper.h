@@ -121,6 +121,15 @@ extern "C" {
     __declspec(dllexport) bool return_false();
     __declspec(dllexport) int return1();
     __declspec(dllexport) int return_1();
+
+    typedef enum {
+        Val1, Val2, Val3, Val4, Val5
+    } TestEnum;
+
+    __declspec(dllexport) TestEnum echo_enum(TestEnum e);
+    __declspec(dllexport) TestEnum return_enum1();
+    __declspec(dllexport) TestEnum return_enum2();
+    __declspec(dllexport) TestEnum return_enum5();
     __declspec(dllexport) int stackoverflow_repro();
     __declspec(dllexport) int missing_label_repro();
     __declspec(dllexport) int test_agread();

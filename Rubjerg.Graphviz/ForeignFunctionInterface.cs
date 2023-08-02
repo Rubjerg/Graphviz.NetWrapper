@@ -705,6 +705,18 @@ namespace Rubjerg.Graphviz
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern int return_1();
 
+        public enum TestEnum
+        {
+            Val1, Val2, Val3, Val4, Val5
+        }
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern TestEnum return_enum1();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern TestEnum return_enum2();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern TestEnum return_enum5();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern TestEnum echo_enum(TestEnum e);
         #endregion
     }
 }
