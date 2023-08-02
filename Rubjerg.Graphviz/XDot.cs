@@ -142,9 +142,10 @@ namespace Rubjerg.Graphviz
             // Translate the array of XDotOps
             int count = xdot.Count;
             xdot.Ops = new XDotOp[count];
+            var opsPtr = XDotFFI.get_ops(xdotPtr);
             for (int i = 0; i < count; ++i)
             {
-                IntPtr xdotOpPtr = XDotFFI.get_op_at_index(xdotPtr, i);
+                IntPtr xdotOpPtr = XDotFFI.get_op_at_index(opsPtr, i);
                 xdot.Ops[i] = TranslateXDotOp(xdotOpPtr);
             }
 
@@ -266,9 +267,10 @@ namespace Rubjerg.Graphviz
             // Translate the array of ColorStops
             int count = linearGrad.NStops;
             linearGrad.Stops = new XDotColorStop[count];
+            var stopsPtr = XDotFFI.get_stops_ling(lingPtr);
             for (int i = 0; i < count; ++i)
             {
-                IntPtr colorStopPtr = XDotFFI.get_color_stop_at_index(lingPtr, i);
+                IntPtr colorStopPtr = XDotFFI.get_color_stop_at_index(stopsPtr, i);
                 linearGrad.Stops[i] = TranslateColorStop(colorStopPtr);
             }
 
@@ -289,9 +291,10 @@ namespace Rubjerg.Graphviz
             // Translate the array of ColorStops
             int count = radialGrad.NStops;
             radialGrad.Stops = new XDotColorStop[count];
+            var stopsPtr = XDotFFI.get_stops_ring(ringPtr);
             for (int i = 0; i < count; ++i)
             {
-                IntPtr colorStopPtr = XDotFFI.get_color_stop_at_index(ringPtr, i);
+                IntPtr colorStopPtr = XDotFFI.get_color_stop_at_index(stopsPtr, i);
                 radialGrad.Stops[i] = TranslateColorStop(colorStopPtr);
             }
 
@@ -315,9 +318,10 @@ namespace Rubjerg.Graphviz
             // Translate the array of Points
             int count = polyline.Count;
             polyline.Points = new XDotPoint[count];
+            var pointsPtr = XDotFFI.get_pts_polyline(polylinePtr);
             for (int i = 0; i < count; ++i)
             {
-                IntPtr pointPtr = XDotFFI.get_pt_at_index(polylinePtr, i);
+                IntPtr pointPtr = XDotFFI.get_pt_at_index(pointsPtr, i);
                 polyline.Points[i] = TranslatePoint(pointPtr);
             }
 
