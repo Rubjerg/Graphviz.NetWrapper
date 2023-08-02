@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Rubjerg.Graphviz
 {
-    public static class XDotFFI
+    internal static class XDotFFI
     {
         [DllImport("xdot.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr parseXDot([MarshalAs(UnmanagedType.LPStr)] string xdotString);

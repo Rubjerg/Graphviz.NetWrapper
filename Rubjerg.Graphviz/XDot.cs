@@ -2,7 +2,7 @@ using System;
 
 namespace Rubjerg.Graphviz
 {
-    public enum XDotGradType
+    internal enum XDotGradType
     {
         None,
         Linear,
@@ -37,12 +37,21 @@ namespace Rubjerg.Graphviz
         public XDotColorStop[] Stops { get; set; }
     }
 
-    public struct XDotColor
+    public abstract class XDotColor
     {
-        public XDotGradType Type { get; set; }
-        public string Color { get; set; }
-        public XDotLinearGrad LinearGrad { get; set; }
-        public XDotRadialGrad RadialGrad { get; set; }
+        private XDotColor() { }
+        public sealed class Uniform : XDotColor
+        {
+            public string Color { get; set; }
+        }
+        public sealed class LinearGradient : XDotColor
+        {
+            public XDotLinearGrad LinearGrad { get; set; }
+        }
+        public sealed class RadialGradient : XDotColor
+        {
+            public XDotRadialGrad RadialGrad { get; set; }
+        }
     }
 
     public enum XDotAlign
@@ -94,7 +103,7 @@ namespace Rubjerg.Graphviz
         public string Name { get; set; }
     }
 
-    public enum XDotKind
+    internal enum XDotKind
     {
         FilledEllipse, UnfilledEllipse,
         FilledPolygon, UnfilledPolygon,
@@ -105,22 +114,75 @@ namespace Rubjerg.Graphviz
         FontChar
     }
 
-    public struct XDotOp
+    public abstract class XDotOp
     {
-        public XDotKind Kind { get; set; }
+        private XDotOp() { }
         // We define a custom structure for each kind of operation
         // and a custom field in the union for each structure
-        public XDotRect Ellipse { get; set; }      // FilledEllipse, UnfilledEllipse
-        public XDotPolyline Polygon { get; set; }  // FilledPolygon, UnfilledPolygon
-        public XDotPolyline Polyline { get; set; } // Polyline
-        public XDotPolyline Bezier { get; set; }   // FilledBezier, UnfilledBezier
-        public XDotText Text { get; set; }         // Text
-        public XDotImage Image { get; set; }       // Image
-        public string Color { get; set; }          // FillColor, PenColor
-        public XDotColor GradColor { get; set; }   // GradFillColor, GradPenColor
-        public XDotFont Font { get; set; }         // Font
-        public string Style { get; set; }          // Style
-        public uint FontChar { get; set; }         // FontChar
+        public sealed class FilledEllipse : XDotOp
+        {
+            public XDotRect Ellipse { get; set; }      // FilledEllipse, UnfilledEllipse
+        }
+        public sealed class UnfilledEllipse : XDotOp
+        {
+            public XDotRect Ellipse { get; set; }      // FilledEllipse, UnfilledEllipse
+        }
+        public sealed class FilledPolygon : XDotOp
+        {
+            public XDotPolyline Polygon { get; set; }  // FilledPolygon, UnfilledPolygon
+        }
+        public sealed class UnfilledPolygon : XDotOp
+        {
+            public XDotPolyline Polygon { get; set; }  // FilledPolygon, UnfilledPolygon
+        }
+        public sealed class PolyLine : XDotOp
+        {
+            public XDotPolyline Polyline { get; set; } // Polyline
+        }
+        public sealed class FilledBezier : XDotOp
+        {
+            public XDotPolyline Bezier { get; set; }   // FilledBezier, UnfilledBezier
+        }
+        public sealed class UnfilledBezier : XDotOp
+        {
+            public XDotPolyline Bezier { get; set; }   // FilledBezier, UnfilledBezier
+        }
+        public sealed class Text : XDotOp
+        {
+            public XDotText Value { get; set; }         // Text
+        }
+        public sealed class Image : XDotOp
+        {
+            public XDotImage Value { get; set; }       // Image
+        }
+        public sealed class FillColor : XDotOp
+        {
+            public string Color { get; set; }          // FillColor, PenColor
+        }
+        public sealed class PenColor : XDotOp
+        {
+            public string Color { get; set; }          // FillColor, PenColor
+        }
+        public sealed class GradFillColor : XDotOp
+        {
+            public XDotColor GradColor { get; set; }   // GradFillColor, GradPenColor
+        }
+        public sealed class GradPenColor : XDotOp
+        {
+            public XDotColor GradColor { get; set; }   // GradFillColor, GradPenColor
+        }
+        public sealed class Font : XDotOp
+        {
+            public XDotFont Value { get; set; }         // Font
+        }
+        public sealed class Style : XDotOp
+        {
+            public string Value { get; set; }          // Style
+        }
+        public sealed class FontChar : XDotOp
+        {
+            public uint Value { get; set; }         // FontChar
+        }
     }
 
     public struct XDot
@@ -157,50 +219,92 @@ namespace Rubjerg.Graphviz
             if (xdotOpPtr == IntPtr.Zero)
                 throw new ArgumentNullException(nameof(xdotOpPtr));
 
-            XDotOp xdotOp = new XDotOp();
-            xdotOp.Kind = XDotFFI.get_kind(xdotOpPtr);
-
-            switch (xdotOp.Kind)
+            var kind = XDotFFI.get_kind(xdotOpPtr);
+            switch (kind)
             {
                 case XDotKind.FilledEllipse:
+                    return new XDotOp.FilledEllipse()
+                    {
+                        Ellipse = TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr))
+                    };
                 case XDotKind.UnfilledEllipse:
-                    xdotOp.Ellipse = TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr));
-                    break;
+                    return new XDotOp.UnfilledEllipse()
+                    {
+                        Ellipse = TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr))
+                    };
                 case XDotKind.FilledPolygon:
+                    return new XDotOp.FilledPolygon()
+                    {
+                        Polygon = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                    };
                 case XDotKind.UnfilledPolygon:
+                    return new XDotOp.FilledPolygon()
+                    {
+                        Polygon = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                    };
                 case XDotKind.FilledBezier:
+                    return new XDotOp.FilledBezier()
+                    {
+                        Bezier = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                    };
                 case XDotKind.UnfilledBezier:
+                    return new XDotOp.UnfilledBezier()
+                    {
+                        Bezier = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                    };
                 case XDotKind.Polyline:
-                    xdotOp.Polyline = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr));
-                    break;
+                    return new XDotOp.PolyLine()
+                    {
+                        Polyline = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                    };
                 case XDotKind.Text:
-                    xdotOp.Text = TranslateText(XDotFFI.get_text(xdotOpPtr));
-                    break;
+                    return new XDotOp.Text()
+                    {
+                        Value = TranslateText(XDotFFI.get_text(xdotOpPtr))
+                    };
                 case XDotKind.FillColor:
+                    return new XDotOp.FillColor()
+                    {
+                        Color = XDotFFI.GetColor(xdotOpPtr)
+                    };
                 case XDotKind.PenColor:
-                    xdotOp.Color = XDotFFI.GetColor(xdotOpPtr);
-                    break;
+                    return new XDotOp.PenColor()
+                    {
+                        Color = XDotFFI.GetColor(xdotOpPtr)
+                    };
                 case XDotKind.GradFillColor:
+                    return new XDotOp.GradFillColor()
+                    {
+                        GradColor = TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr))
+                    };
                 case XDotKind.GradPenColor:
-                    xdotOp.GradColor = TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr));
-                    break;
+                    return new XDotOp.GradPenColor()
+                    {
+                        GradColor = TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr))
+                    };
                 case XDotKind.Font:
-                    xdotOp.Font = TranslateFont(XDotFFI.get_font(xdotOpPtr));
-                    break;
+                    return new XDotOp.Font()
+                    {
+                        Value = TranslateFont(XDotFFI.get_font(xdotOpPtr))
+                    };
                 case XDotKind.Style:
-                    xdotOp.Style = XDotFFI.GetStyle(xdotOpPtr);
-                    break;
+                    return new XDotOp.Style()
+                    {
+                        Value = XDotFFI.GetStyle(xdotOpPtr)
+                    };
                 case XDotKind.Image:
-                    xdotOp.Image = TranslateImage(XDotFFI.get_image(xdotOpPtr));
-                    break;
+                    return new XDotOp.Image()
+                    {
+                        Value = TranslateImage(XDotFFI.get_image(xdotOpPtr))
+                    };
                 case XDotKind.FontChar:
-                    xdotOp.FontChar = XDotFFI.get_fontchar(xdotOpPtr);
-                    break;
+                    return new XDotOp.FontChar()
+                    {
+                        Value = XDotFFI.get_fontchar(xdotOpPtr)
+                    };
                 default:
-                    throw new ArgumentException($"Unexpected XDotOp.Kind: {xdotOp.Kind}");
+                    throw new ArgumentException($"Unexpected XDotOp.Kind: {kind}");
             }
-
-            return xdotOp;
         }
 
         private static XDotImage TranslateImage(IntPtr imagePtr)
@@ -236,23 +340,27 @@ namespace Rubjerg.Graphviz
 
         private static XDotColor TranslateGradColor(IntPtr colorPtr)
         {
-            XDotColor color = new XDotColor();
-            color.Type = XDotFFI.get_type(colorPtr);
-            color.Color = XDotFFI.GetClr(colorPtr);
-
-            switch (color.Type)
+            var type = XDotFFI.get_type(colorPtr);
+            switch (type)
             {
+                case XDotGradType.None:
+                    return new XDotColor.Uniform()
+                    {
+                        Color = XDotFFI.GetClr(colorPtr)
+                    };
                 case XDotGradType.Linear:
-                    color.LinearGrad = TranslateLinearGrad(XDotFFI.get_ling(colorPtr));
-                    break;
+                    return new XDotColor.LinearGradient()
+                    {
+                        LinearGrad = TranslateLinearGrad(XDotFFI.get_ling(colorPtr))
+                    };
                 case XDotGradType.Radial:
-                    color.RadialGrad = TranslateRadialGrad(XDotFFI.get_ring(colorPtr));
-                    break;
+                    return new XDotColor.RadialGradient()
+                    {
+                        RadialGrad = TranslateRadialGrad(XDotFFI.get_ring(colorPtr))
+                    };
                 default:
-                    throw new ArgumentException($"Unexpected XDotColor.Type: {color.Type}");
+                    throw new ArgumentException($"Unexpected XDotColor.Type: {type}");
             }
-
-            return color;
         }
 
         private static XDotLinearGrad TranslateLinearGrad(IntPtr lingPtr)

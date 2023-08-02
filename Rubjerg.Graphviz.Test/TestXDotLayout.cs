@@ -11,8 +11,10 @@ namespace Rubjerg.Graphviz.Test
         [Test()]
         public void TestXDotTranslate()
         {
-
-            string xdotString = "c 9 -#fffffe00 C 7 -#ffffff P 4 0 0 0 72.25 136.5 72.25 136.5 0";
+            // FIXNOW: parse a sample in which all directives occur
+            string xdotString = @"c 7 -#000000 p 4 569.18 36.75 569.18 81.51 590.82 81.51 590.82 36.75 c 7 -#000000 L 2 569.18 70.32 581.12 70.32 c 7 -#000000 L 2 
+    569.18 59.13 581.12 59.13 c 7 -#000000 L 2 581.12 47.94 581.12 81.51 c 7 -#000000 L 2 581.12 70.32 590.82 70.32 c 7 -#000000 L 2 
+    581.12 59.13 590.82 59.13 c 7 -#000000 L 2 569.18 47.94 590.82 47.94 ";
             IntPtr xdot = XDotFFI.parseXDot(xdotString);
             try
             {
@@ -46,7 +48,7 @@ namespace Rubjerg.Graphviz.Test
             Assert.That(rects.Count, Is.EqualTo(9));
 
             // Test xdot translation
-            var xdotDraw = xdotGraph.GetDraw();
+            var xdotDraw = xdotGraph.GetDrawing();
         }
 
         [Test()]
