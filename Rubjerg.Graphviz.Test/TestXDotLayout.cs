@@ -38,6 +38,7 @@ namespace Rubjerg.Graphviz.Test
             nodeA.SafeSetAttribute("shape", "record", "");
             nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
 
+
             var xdotGraph = root.CreateDotLayout();
 
             var xNodeA = xdotGraph.GetNode("A");

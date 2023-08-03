@@ -476,7 +476,7 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public XDotGraph CreateDotLayout()
         {
-            return DotCommand.Layout(this);
+            return GraphvizCommand.Layout(this);
         }
 
         /// <summary>
@@ -540,6 +540,7 @@ namespace Rubjerg.Graphviz
             return new RectangleF(x, y, w, h);
         }
 
+        [Obsolete("This method is only available after ComputeLayout(). It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
         public GraphvizLabel GetLabel()
         {
             IntPtr labelptr = GraphLabel(_ptr);

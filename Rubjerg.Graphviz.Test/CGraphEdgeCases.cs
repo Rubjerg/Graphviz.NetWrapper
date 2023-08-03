@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Linq;
 using NUnit.Framework;
 
@@ -24,6 +25,20 @@ namespace Rubjerg.Graphviz.Test
             Assert.AreEqual("1", node.GetAttribute("test"));
             Node.IntroduceAttribute(root, "test", "default");
             Assert.AreEqual("1", node.GetAttribute("test"));
+        }
+
+        [Test()]
+        public void TestLayoutMethodsWithoutLayout()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+            Node nodeA = root.GetOrAddNode("A");
+            Node nodeB = root.GetOrAddNode("B");
+            Edge edge = root.GetOrAddEdge(nodeA, nodeB, "");
+            Assert.AreEqual(root.BoundingBox(), default(RectangleF));
+            Assert.AreEqual(nodeA.Position(), default(PointF));
+            Assert.AreEqual(nodeA.BoundingBox(), default(RectangleF));
+            Assert.AreEqual(edge.FirstSpline(), null);
+            Assert.AreEqual(edge.Splines(), Enumerable.Empty<PointF[]>());
         }
 
         [Test()]

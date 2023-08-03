@@ -1,17 +1,22 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System.Xml.Linq;
 
 namespace Rubjerg.Graphviz
 {
-    public class DotCommand
+    /// <summary>
+    /// See https://graphviz.org/doc/info/command.html
+    /// </summary>
+    public class GraphvizCommand
     {
-        public static XDotGraph Layout(Graph input)
+        public static XDotGraph Layout(Graph input, string outputPath = null, string engine = LayoutEngines.Dot)
         {
             string exeName = "dot.exe";
-            string arguments = "-Txdot";
+            string arguments = $"-Txdot -K{engine}";
+            if (outputPath != null)
+            {
+                arguments = $"{arguments} -o{outputPath}";
+            }
             string inputToStdin = input.ToDotString();
 
             // Get the location of the currently executing DLL

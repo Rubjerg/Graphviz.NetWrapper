@@ -18,6 +18,7 @@ namespace Rubjerg.Graphviz
     /// <summary>
     /// Wraps a graphviz label for any kind of graphviz object.
     /// </summary>
+    [Obsolete("This object is only available after ComputeLayout(). It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
     public class GraphvizLabel : GraphvizThing
     {
         private readonly BoundingBoxCoords representation;

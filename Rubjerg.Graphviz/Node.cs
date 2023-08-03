@@ -172,6 +172,7 @@ namespace Rubjerg.Graphviz
         /// Return null if label not set.
         /// </summary>
         /// <returns></returns>
+        [Obsolete("This method is only available after ComputeLayout(). It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
         public GraphvizLabel GetLabel()
         {
             IntPtr labelptr = NodeLabel(_ptr);
