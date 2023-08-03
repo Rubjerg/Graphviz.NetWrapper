@@ -1,11 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
 
-#pragma warning disable IDE1006 // Naming Styles
-
 namespace Rubjerg.Graphviz
 {
-    // FIXNOW: check all string marshaling
     /// <summary>
     /// Graphviz is thread unsafe, so we wrap all function calls inside a lock to make sure we don't run into
     /// issues caused by multiple threads accessing the graphviz datastructures (like the GC executing a destructor).
@@ -373,7 +370,6 @@ namespace Rubjerg.Graphviz
                 return Marshal.PtrToStringAnsi(rj_sym_key(sym));
             }
         }
-        // FIXNOW: test these label FFIs with the xdot rendering
         public static double LabelX(IntPtr label)
         {
             lock (_mutex)
