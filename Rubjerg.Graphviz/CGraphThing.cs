@@ -55,7 +55,7 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public string GetAttribute(string name)
         {
-            return Rjagget(_ptr, name);
+            return Agget(_ptr, name);
         }
 
         /// <summary>

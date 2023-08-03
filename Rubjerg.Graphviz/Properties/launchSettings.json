@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Rubjerg.Graphviz": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

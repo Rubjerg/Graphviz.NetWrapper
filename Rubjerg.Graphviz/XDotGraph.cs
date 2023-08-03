@@ -15,16 +15,16 @@ namespace Rubjerg.Graphviz
             return FromDotString(graph, ptr => new XDotGraph(ptr));
         }
 
-        public List<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
-        public List<XDotOp> GetDrawing(Node node) => GetXDotValue(node, "_draw_");
-        public List<XDotOp> GetDrawing(Edge edge) => GetXDotValue(edge, "_draw_");
-        public List<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
-        public List<XDotOp> GetLabelDrawing(Node node) => GetXDotValue(node, "_ldraw_");
-        public List<XDotOp> GetLabelDrawing(Edge edge) => GetXDotValue(edge, "_ldraw_");
-        public List<XDotOp> GetHeadArrowDrawing(Edge edge) => GetXDotValue(edge, "_hdraw_");
-        public List<XDotOp> GetTailArrowDrawing(Edge edge) => GetXDotValue(edge, "_tdraw_");
-        public List<XDotOp> GetHeadLabelDrawing(Edge edge) => GetXDotValue(edge, "_hldraw_");
-        public List<XDotOp> GetTailLabelDrawing(Edge edge) => GetXDotValue(edge, "_tldraw_");
+        public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
+        public IReadOnlyList<XDotOp> GetDrawing(Node node) => GetXDotValue(node, "_draw_");
+        public IReadOnlyList<XDotOp> GetDrawing(Edge edge) => GetXDotValue(edge, "_draw_");
+        public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
+        public IReadOnlyList<XDotOp> GetLabelDrawing(Node node) => GetXDotValue(node, "_ldraw_");
+        public IReadOnlyList<XDotOp> GetLabelDrawing(Edge edge) => GetXDotValue(edge, "_ldraw_");
+        public IReadOnlyList<XDotOp> GetHeadArrowDrawing(Edge edge) => GetXDotValue(edge, "_hdraw_");
+        public IReadOnlyList<XDotOp> GetTailArrowDrawing(Edge edge) => GetXDotValue(edge, "_tdraw_");
+        public IReadOnlyList<XDotOp> GetHeadLabelDrawing(Edge edge) => GetXDotValue(edge, "_hldraw_");
+        public IReadOnlyList<XDotOp> GetTailLabelDrawing(Edge edge) => GetXDotValue(edge, "_tldraw_");
 
         private static List<XDotOp> GetXDotValue(CGraphThing obj, string attrName)
         {

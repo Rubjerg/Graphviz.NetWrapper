@@ -295,5 +295,21 @@ namespace Rubjerg.Graphviz.Test
             Assert.AreEqual(null, graph.GetDescendantByName("subsubgraph"));
         }
 
+
+        [Test()]
+        public void DotOutputConsistency()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+            Node nodeA = root.GetOrAddNode("A");
+
+            nodeA.SafeSetAttribute("shape", "record", "");
+            nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+
+            root.ComputeLayout();
+            var dotstr = root.ToDotString();
+            var root2 = RootGraph.FromDotString(dotstr);
+            var dotstr2 = root2.ToDotString();
+            Assert.AreEqual(dotstr, dotstr2);
+        }
     }
 }

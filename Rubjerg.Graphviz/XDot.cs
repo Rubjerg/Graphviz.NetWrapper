@@ -2,48 +2,48 @@ namespace Rubjerg.Graphviz
 {
     // FIXNOW: point to relevant documentation
 
-    public struct XDotColorStop
+    public record struct XDotColorStop
     {
-        public float Frac { get; set; }
-        public string Color { get; set; }
+        public float Frac { get; init; }
+        public string Color { get; init; }
     }
 
-    public struct XDotLinearGrad
+    public record struct XDotLinearGrad
     {
-        public double X0 { get; set; }
-        public double Y0 { get; set; }
-        public double X1 { get; set; }
-        public double Y1 { get; set; }
-        public int NStops { get; set; }
-        public XDotColorStop[] Stops { get; set; }
+        public double X0 { get; init; }
+        public double Y0 { get; init; }
+        public double X1 { get; init; }
+        public double Y1 { get; init; }
+        public int NStops { get; init; }
+        public XDotColorStop[] Stops { get; init; }
     }
 
-    public struct XDotRadialGrad
+    public record struct XDotRadialGrad
     {
-        public double X0 { get; set; }
-        public double Y0 { get; set; }
-        public double R0 { get; set; }
-        public double X1 { get; set; }
-        public double Y1 { get; set; }
-        public double R1 { get; set; }
-        public int NStops { get; set; }
-        public XDotColorStop[] Stops { get; set; }
+        public double X0 { get; init; }
+        public double Y0 { get; init; }
+        public double R0 { get; init; }
+        public double X1 { get; init; }
+        public double Y1 { get; init; }
+        public double R1 { get; init; }
+        public int NStops { get; init; }
+        public XDotColorStop[] Stops { get; init; }
     }
 
-    public abstract class XDotColor
+    public abstract record class XDotColor
     {
         private XDotColor() { }
-        public sealed class Uniform : XDotColor
+        public sealed record class Uniform : XDotColor
         {
-            public string Color { get; set; }
+            public string Color { get; init; }
         }
-        public sealed class LinearGradient : XDotColor
+        public sealed record class LinearGradient : XDotColor
         {
-            public XDotLinearGrad LinearGrad { get; set; }
+            public XDotLinearGrad LinearGrad { get; init; }
         }
-        public sealed class RadialGradient : XDotColor
+        public sealed record class RadialGradient : XDotColor
         {
-            public XDotRadialGrad RadialGrad { get; set; }
+            public XDotRadialGrad RadialGrad { get; init; }
         }
     }
 
@@ -54,116 +54,115 @@ namespace Rubjerg.Graphviz
         Right
     }
 
-    public struct XDotPoint
+    public record struct XDotPoint
     {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
+        public double X { get; init; }
+        public double Y { get; init; }
+        public double Z { get; init; }
     }
 
-    public struct XDotRect
+    public record struct XDotRect
     {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Width { get; set; }
-        public double Height { get; set; }
+        public double X { get; init; }
+        public double Y { get; init; }
+        public double Width { get; init; }
+        public double Height { get; init; }
     }
 
-    public struct XDotPolyline
+    public record struct XDotPolyline
     {
-        public int Count { get; set; }
-        public XDotPoint[] Points { get; set; }
+        public int Count { get; init; }
+        public XDotPoint[] Points { get; init; }
     }
 
-    public struct XDotText
+    public record struct XDotText
     {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public XDotAlign Align { get; set; }
-        public double Width { get; set; }
-        public string Text { get; set; }
+        public double X { get; init; }
+        public double Y { get; init; }
+        public XDotAlign Align { get; init; }
+        public double Width { get; init; }
+        public string Text { get; init; }
     }
 
-    public struct XDotImage
+    public record struct XDotImage
     {
-        public XDotRect Pos { get; set; }
-        public string Name { get; set; }
+        public XDotRect Pos { get; init; }
+        public string Name { get; init; }
     }
 
-    public struct XDotFont
+    public record struct XDotFont
     {
-        public double Size { get; set; }
-        public string Name { get; set; }
+        public double Size { get; init; }
+        public string Name { get; init; }
     }
 
-    public abstract class XDotOp
+    public abstract record class XDotOp
     {
         private XDotOp() { }
-        // We define a custom structure for each kind of operation
-        // and a custom field in the union for each structure
-        public sealed class FilledEllipse : XDotOp
+
+        public sealed record class FilledEllipse : XDotOp
         {
-            public XDotRect Ellipse { get; set; }      // FilledEllipse, UnfilledEllipse
+            public XDotRect Ellipse { get; init; }
         }
-        public sealed class UnfilledEllipse : XDotOp
+        public sealed record class UnfilledEllipse : XDotOp
         {
-            public XDotRect Ellipse { get; set; }      // FilledEllipse, UnfilledEllipse
+            public XDotRect Ellipse { get; init; }
         }
-        public sealed class FilledPolygon : XDotOp
+        public sealed record class FilledPolygon : XDotOp
         {
-            public XDotPolyline Polygon { get; set; }  // FilledPolygon, UnfilledPolygon
+            public XDotPolyline Polygon { get; init; }
         }
-        public sealed class UnfilledPolygon : XDotOp
+        public sealed record class UnfilledPolygon : XDotOp
         {
-            public XDotPolyline Polygon { get; set; }  // FilledPolygon, UnfilledPolygon
+            public XDotPolyline Polygon { get; init; }
         }
-        public sealed class PolyLine : XDotOp
+        public sealed record class PolyLine : XDotOp
         {
-            public XDotPolyline Polyline { get; set; } // Polyline
+            public XDotPolyline Polyline { get; init; }
         }
-        public sealed class FilledBezier : XDotOp
+        public sealed record class FilledBezier : XDotOp
         {
-            public XDotPolyline Bezier { get; set; }   // FilledBezier, UnfilledBezier
+            public XDotPolyline Bezier { get; init; }
         }
-        public sealed class UnfilledBezier : XDotOp
+        public sealed record class UnfilledBezier : XDotOp
         {
-            public XDotPolyline Bezier { get; set; }   // FilledBezier, UnfilledBezier
+            public XDotPolyline Bezier { get; init; }
         }
-        public sealed class Text : XDotOp
+        public sealed record class Text : XDotOp
         {
-            public XDotText Value { get; set; }         // Text
+            public XDotText Value { get; init; }
         }
-        public sealed class Image : XDotOp
+        public sealed record class Image : XDotOp
         {
-            public XDotImage Value { get; set; }       // Image
+            public XDotImage Value { get; init; }
         }
-        public sealed class FillColor : XDotOp
+        public sealed record class FillColor : XDotOp
         {
-            public string Color { get; set; }          // FillColor, PenColor
+            public string Color { get; init; }
         }
-        public sealed class PenColor : XDotOp
+        public sealed record class PenColor : XDotOp
         {
-            public string Color { get; set; }          // FillColor, PenColor
+            public string Color { get; init; }
         }
-        public sealed class GradFillColor : XDotOp
+        public sealed record class GradFillColor : XDotOp
         {
-            public XDotColor GradColor { get; set; }   // GradFillColor, GradPenColor
+            public XDotColor GradColor { get; init; }
         }
-        public sealed class GradPenColor : XDotOp
+        public sealed record class GradPenColor : XDotOp
         {
-            public XDotColor GradColor { get; set; }   // GradFillColor, GradPenColor
+            public XDotColor GradColor { get; init; }
         }
-        public sealed class Font : XDotOp
+        public sealed record class Font : XDotOp
         {
-            public XDotFont Value { get; set; }         // Font
+            public XDotFont Value { get; init; }
         }
-        public sealed class Style : XDotOp
+        public sealed record class Style : XDotOp
         {
-            public string Value { get; set; }          // Style
+            public string Value { get; init; }
         }
-        public sealed class FontChar : XDotOp
+        public sealed record class FontChar : XDotOp
         {
-            public uint Value { get; set; }         // FontChar
+            public uint Value { get; init; }
         }
     }
 }

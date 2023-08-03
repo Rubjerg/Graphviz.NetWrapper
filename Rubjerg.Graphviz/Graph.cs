@@ -451,7 +451,18 @@ namespace Rubjerg.Graphviz
         }
 
         /// <summary>
-        /// Compute a layout for this graph.
+        /// Compute the layout in a separate process, and return a new graph, which is a copy of the old
+        /// graph with the xdot information added to it.
+        /// </summary>
+        public XDotGraph CreateLayout()
+        {
+            return GraphvizCommand.Layout(this);
+        }
+
+        /// <summary>
+        /// Compute a layout for this graph, in-process, on the given graph.
+        /// It is recommended to use <see cref="CreateLayout"/> instead, as that comes with less footguns and a better API. 
+        /// Moreover, experience shows it is less likely to trip over lingering graphviz bugs as well.
         /// NB: The method FreeLayout should always be called as soon as the layout information
         /// of a graph is not needed anymore.
         /// </summary>
@@ -468,15 +479,6 @@ namespace Rubjerg.Graphviz
             int render_rc = GvRender(GVC, _ptr, "xdot", IntPtr.Zero);
             if (render_rc != 0)
                 throw new ApplicationException($"Graphviz render returned error code {render_rc}");
-        }
-
-        /// <summary>
-        /// Compute the dot layout in a separate process, and return a new graph, which is a copy of the old
-        /// graph with the xdot information added to it.
-        /// </summary>
-        public XDotGraph CreateDotLayout()
-        {
-            return GraphvizCommand.Layout(this);
         }
 
         /// <summary>
@@ -527,7 +529,7 @@ namespace Rubjerg.Graphviz
 
         public RectangleF BoundingBox()
         {
-            string bb_string = Rjagget(_ptr, "bb");
+            string bb_string = Agget(_ptr, "bb");
             if (string.IsNullOrEmpty(bb_string))
                 return default;
             // x and y are the topleft point of the bb
@@ -540,7 +542,7 @@ namespace Rubjerg.Graphviz
             return new RectangleF(x, y, w, h);
         }
 
-        [Obsolete("This method is only available after ComputeLayout(). It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
+        [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
         public GraphvizLabel GetLabel()
         {
             IntPtr labelptr = GraphLabel(_ptr);

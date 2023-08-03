@@ -16,6 +16,32 @@
 
 using namespace std;
 
+
+static int rj_afread(void* stream, char* buffer, int bufsize)
+{
+    istringstream* is = (istringstream*)stream;
+    is->read(buffer, bufsize);
+    int result = (int)is->gcount();
+    return result;
+}
+
+static int rj_putstr(void* stream, const char* s)
+{
+    ostringstream* os = (ostringstream*)stream;
+    (*os) << s;
+    return 0;
+}
+
+static int rj_flush(void* stream)
+{
+    ostringstream* os = (ostringstream*)stream;
+    os->flush();
+    return 0;
+}
+
+static Agiodisc_t memIoDisc = { rj_afread, rj_putstr, rj_flush };
+static Agdisc_t memDisc = { 0, 0, &memIoDisc };
+
 extern "C" {
 
     __declspec(dllexport) void free_str(char* str);
@@ -31,8 +57,6 @@ extern "C" {
     // Some wrappers around existing cgraph functions to handle string marshaling
     __declspec(dllexport) const char* rj_agmemwrite(Agraph_t* g);
     __declspec(dllexport) Agraph_t* rj_agmemread(const char* s);
-    __declspec(dllexport) const char* rj_agget(void* obj, char* name);
-    __declspec(dllexport) const char* rj_agnameof(void* obj);
     __declspec(dllexport) Agraph_t* rj_agopen(char* name, int graphtype);
     __declspec(dllexport) const char* rj_sym_key(Agsym_t* sym);
 
@@ -140,7 +164,6 @@ extern "C" {
     __declspec(dllexport) int test_agread();
     __declspec(dllexport) int test_agmemread();
     __declspec(dllexport) int test_rj_agmemread();
-    __declspec(dllexport) int test_xdot();
 #pragma endregion
 }
 

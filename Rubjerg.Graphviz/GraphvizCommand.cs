@@ -46,12 +46,14 @@ namespace Rubjerg.Graphviz
             // Read from stdout
             string output;
             using (StreamReader sr = process.StandardOutput)
-                output = sr.ReadToEnd();
+                output = sr.ReadToEnd()
+                    .Replace("\r\n", "\n"); // File operations do this automatically, but stream operations do not
 
             // Read from stderr
             string error;
             using (StreamReader sr = process.StandardError)
-                error = sr.ReadToEnd();
+                error = sr.ReadToEnd()
+                    .Replace("\r\n", "\n"); // File operations do this automatically, but stream operations do not
 
             process.WaitForExit();
 

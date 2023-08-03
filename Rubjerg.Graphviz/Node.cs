@@ -172,7 +172,7 @@ namespace Rubjerg.Graphviz
         /// Return null if label not set.
         /// </summary>
         /// <returns></returns>
-        [Obsolete("This method is only available after ComputeLayout(). It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
+        [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
         public GraphvizLabel GetLabel()
         {
             IntPtr labelptr = NodeLabel(_ptr);
@@ -210,9 +210,7 @@ namespace Rubjerg.Graphviz
 
         private RectangleF ParseRect(string rect)
         {
-            string pattern = @"[\s\\]+";
-            string cleaned = Regex.Replace(rect, pattern, "");
-            string[] points = cleaned.Split(',');
+            string[] points = rect.Split(',');
             float leftX = float.Parse(points[0], NumberStyles.Any, CultureInfo.InvariantCulture);
             float upperY = float.Parse(points[1], NumberStyles.Any, CultureInfo.InvariantCulture);
             float rightX = float.Parse(points[2], NumberStyles.Any, CultureInfo.InvariantCulture);

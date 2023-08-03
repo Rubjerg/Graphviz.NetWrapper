@@ -5,6 +5,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NoWarn>1701;1702;NU5100</NoWarn>
     <Version>1.1.0</Version>
@@ -35,11 +37,6 @@
       <Pack>true</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="C:\Users\chiel.tenbrinke\prj\RMFMagic\source\Graphviz.NetWrapper\Rubjerg.Graphviz\.editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EditorConfigFiles Remove="C:\Users\chiel.tenbrinke\prj\RMFMagic\source\Graphviz.NetWrapper\Rubjerg.Graphviz\.editorconfig" />
   </ItemGroup>
 
 </Project>

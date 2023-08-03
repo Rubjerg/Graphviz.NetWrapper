@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
-using static Rubjerg.Graphviz.Test.Utils;
 
 namespace Rubjerg.Graphviz.Test
 {
@@ -12,13 +11,17 @@ namespace Rubjerg.Graphviz.Test
         public void TestXDotTranslate()
         {
             // FIXNOW: parse a sample in which all directives occur
-            string xdotString = @"c 7 -#000000 p 4 569.18 36.75 569.18 81.51 590.82 81.51 590.82 36.75 c 7 -#000000 L 2 569.18 70.32 581.12 70.32 c 7 -#000000 L 2 
-    569.18 59.13 581.12 59.13 c 7 -#000000 L 2 581.12 47.94 581.12 81.51 c 7 -#000000 L 2 581.12 70.32 590.82 70.32 c 7 -#000000 L 2 
-    581.12 59.13 590.82 59.13 c 7 -#000000 L 2 569.18 47.94 590.82 47.94 ";
+            string xdotString = @"
+F 14 11 -Times-Roman c 7 -#000000 T 11.38 30.7 0 6.75 1 -1 F 14 11 -Times-Roman c 7 -#000000 T 34.12 30.7 0 6.75 1 -2 F 14 11 -Times-Roman \
+c 7 -#000000 T 56.88 30.7 0 6.75 1 -3 F 14 11 -Times-Roman c 7 -#000000 T 79.62 48.95 0 6.75 1 -4 F 14 11 -Times-Roman c 7 -#000000 \
+T 79.62 13.7 0 6.75 1 -5 F 14 11 -Times-Roman c 7 -#000000 T 102.38 30.7 0 6.75 1 -6 F 14 11 -Times-Roman c 7 -#000000 T 125.12 \
+54.45 0 6.75 1 -7 F 14 11 -Times-Roman c 7 -#000000 T 125.12 30.7 0 6.75 1 -8 F 14 11 -Times-Roman c 7 -#000000 T 125.12 6.95 0 \
+6.75 1 -9 ";
             IntPtr xdot = XDotFFI.parseXDot(xdotString);
             try
             {
                 var result = XDotTranslator.TranslateXDot(xdot);
+                Assert.AreEqual(27, result.Count());
             }
             finally
             {
@@ -32,14 +35,14 @@ namespace Rubjerg.Graphviz.Test
         [Test()]
         public void TestRecordShapeOrder()
         {
-            RootGraph root = CreateUniqueTestGraph();
+            RootGraph root = Utils.CreateUniqueTestGraph();
             Node nodeA = root.GetOrAddNode("A");
 
             nodeA.SafeSetAttribute("shape", "record", "");
             nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
 
 
-            var xdotGraph = root.CreateDotLayout();
+            var xdotGraph = root.CreateLayout();
 
             var xNodeA = xdotGraph.GetNode("A");
             var rects = xNodeA.GetRecordRectangles().ToList();
@@ -55,12 +58,12 @@ namespace Rubjerg.Graphviz.Test
         [Test()]
         public void TestEmptyRecordShapes()
         {
-            RootGraph root = CreateUniqueTestGraph();
+            RootGraph root = Utils.CreateUniqueTestGraph();
             Node nodeA = root.GetOrAddNode("A");
             nodeA.SafeSetAttribute("shape", "record", "");
             nodeA.SafeSetAttribute("label", "||||", "");
 
-            var xdotGraph = root.CreateDotLayout();
+            var xdotGraph = root.CreateLayout();
 
             var xNodeA = xdotGraph.GetNode("A");
             var rects = xNodeA.GetRecordRectangles().ToList();
