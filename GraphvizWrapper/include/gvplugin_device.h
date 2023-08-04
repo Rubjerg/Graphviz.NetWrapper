@@ -1,3 +1,5 @@
+/// @file
+/// @ingroup plugin_api
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -8,8 +10,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GVDEVICE_PLUGIN_H
-#define GVDEVICE_PLUGIN_H
+#pragma once
 
 #include "types.h"
 #include "gvplugin.h"
@@ -19,6 +20,7 @@
 extern "C" {
 #endif
 
+    /// @ingroup plugin_api
     struct gvdevice_engine_s {
 	void (*initialize) (GVJ_t * firstjob);
 	void (*format) (GVJ_t * firstjob);
@@ -28,4 +30,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVDEVICE_PLUGIN_H */

@@ -1,3 +1,5 @@
+/// @file
+/// @ingroup plugin_api
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -8,23 +10,23 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GVPLUGIN_TEXTLAYOUT_H
-#define GVPLUGIN_TEXTLAYOUT_H
+#pragma once
 
 #include "types.h"
 #include "gvplugin.h"
 #include "gvcjob.h"
 #include "gvcommon.h"
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+    /// @ingroup plugin_api
     struct gvtextlayout_engine_s {
-	boolean (*textlayout) (textspan_t *span, char** fontpath);
+	bool (*textlayout) (textspan_t *span, char** fontpath);
     };
 
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVPLUGIN_TEXTLAYOUT_H */

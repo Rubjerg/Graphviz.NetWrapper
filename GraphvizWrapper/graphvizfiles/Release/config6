@@ -49,9 +49,6 @@ gvplugin_core.dll core {
 		tk:tk 1
 	}
 	device {
-		vml:vml 1
-	}
-	device {
 		pic:pic -1
 	}
 	device {
@@ -84,9 +81,6 @@ gvplugin_core.dll core {
 	}
 	render {
 		tk 1
-	}
-	render {
-		vml 1
 	}
 	render {
 		pic -1
@@ -138,11 +132,6 @@ gvplugin_core.dll core {
 		eps:xdot 1
 		svg:xdot 1
 		svg:svg 1
-		png:vml 1
-		gif:vml 1
-		jpeg:vml 1
-		jpe:vml 1
-		jpg:vml 1
 		gif:tk 1
 	}
 }

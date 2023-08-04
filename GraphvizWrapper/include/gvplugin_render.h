@@ -1,3 +1,5 @@
+/// @file
+/// @ingroup plugin_api
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -8,8 +10,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GVPLUGIN_RENDER_H
-#define GVPLUGIN_RENDER_H
+#pragma once
 
 #include "types.h"
 #include "gvplugin.h"
@@ -19,6 +20,7 @@
 extern "C" {
 #endif
 
+    /// @ingroup plugin_api
     struct gvrender_engine_s {
 	void (*begin_job) (GVJ_t * job);
 	void (*end_job) (GVJ_t * job);
@@ -48,8 +50,7 @@ extern "C" {
 	void (*resolve_color) (GVJ_t * job, gvcolor_t * color);
 	void (*ellipse) (GVJ_t * job, pointf * A, int filled);
 	void (*polygon) (GVJ_t * job, pointf * A, int n, int filled);
-	void (*beziercurve) (GVJ_t * job, pointf * A, int n,
-			     int arrow_at_start, int arrow_at_end, int);
+	void (*beziercurve) (GVJ_t * job, pointf * A, int n, int);
 	void (*polyline) (GVJ_t * job, pointf * A, int n);
 	void (*comment) (GVJ_t * job, char *comment);
 	void (*library_shape) (GVJ_t * job, char *name, pointf * A, int n, int filled);
@@ -58,4 +59,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVPLUGIN_RENDER_H */

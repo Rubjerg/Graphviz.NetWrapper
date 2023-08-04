@@ -1,3 +1,5 @@
+/// @file
+/// @ingroup gvc_api
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -10,8 +12,7 @@
 
 /* Common header used by both clients and plugins */
 
-#ifndef GVCJOB_H
-#define GVCJOB_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,6 +20,7 @@ extern "C" {
 
 #include "gvcommon.h"
 #include "color.h"
+#include <stdbool.h>
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 
@@ -54,14 +56,13 @@ extern "C" {
  GVDEVICE_DOES_TRUECOLOR	supports alpha channel -Tpng, -Tgtk, -Txlib 
  GVDEVICE_BINARY_FORMAT		Suppresses \r\n substitution for linends 
  GVDEVICE_COMPRESSED_FORMAT	controls libz compression		
- GVDEVICE_NO_WRITER		used when gvdevice is not used because device uses its own writer, -Tming, devil outputs   (FIXME seems to overlap OUTPUT_NOT_REQUIRED)
+ GVDEVICE_NO_WRITER		used when gvdevice is not used because device uses its own writer, devil outputs   (FIXME seems to overlap OUTPUT_NOT_REQUIRED)
 
  GVRENDER_Y_GOES_DOWN		device origin top left, y goes down, otherwise
   				device origin lower left, y goes up	
  GVRENDER_DOES_TRANSFORM	device uses scale, translate, rotate to do its own
  				coordinate transformations, otherwise coordinates 
   				are pre-transformed			
- GVRENDER_DOES_ARROWS		renderer has its own idea of arrow shapes (deprecated) 
  GVRENDER_DOES_LABELS		basically, maps don't need labels	
  GVRENDER_DOES_MAPS		renderer encodes mapping information for mouse events -Tcmapx -Tsvg 
  GVRENDER_DOES_MAP_RECTANGLE	supports a 2 coord rectngle optimization 
@@ -92,7 +93,6 @@ extern "C" {
 #define GVDEVICE_NO_WRITER (1<<11)
 #define GVRENDER_Y_GOES_DOWN (1<<12)
 #define GVRENDER_DOES_TRANSFORM (1<<13)
-#define GVRENDER_DOES_ARROWS (1<<14)
 #define GVRENDER_DOES_LABELS (1<<15)
 #define GVRENDER_DOES_MAPS (1<<16)
 #define GVRENDER_DOES_MAP_RECTANGLE (1<<17)
@@ -229,20 +229,20 @@ extern "C" {
 	char *tailtarget;
 	char *headtarget; 
 
-	int explicit_tooltip:1;
-	int explicit_tailtooltip:1;
-	int explicit_headtooltip:1;
-	int explicit_labeltooltip:1;
-	int explicit_tailtarget:1;
-	int explicit_headtarget:1;
-	int explicit_edgetarget:1;
-	int explicit_tailurl:1;
-	int explicit_headurl:1;
-	int labeledgealigned:1;
+	unsigned explicit_tooltip:1;
+	unsigned explicit_tailtooltip:1;
+	unsigned explicit_headtooltip:1;
+	unsigned explicit_labeltooltip:1;
+	unsigned explicit_tailtarget:1;
+	unsigned explicit_headtarget:1;
+	unsigned explicit_edgetarget:1;
+	unsigned explicit_tailurl:1;
+	unsigned explicit_headurl:1;
+	unsigned labeledgealigned:1;
 
 	/* primary mapped region - node shape, edge labels */
 	map_shape_t url_map_shape; 
-	int url_map_n;                  /* number of points for url map if GVRENDER_DOES_MAPS */
+	size_t url_map_n; // number of points for url map if GVRENDER_DOES_MAPS
 	pointf *url_map_p;
 
 	/* additional mapped regions for edges */
@@ -293,13 +293,13 @@ extern "C" {
 	gvplugin_active_loadimage_t loadimage;
 	gvdevice_callbacks_t *callbacks;
 	pointf device_dpi;
-	boolean device_sets_dpi;
+	bool device_sets_dpi;
 
 	void *display;
 	int screen;
 
 	void *context;		/* gd or cairo surface */
-	boolean external_context;	/* context belongs to caller */
+	bool external_context;	/* context belongs to caller */
 	char *imagedata;	/* location of imagedata */
 
         int flags;		/* emit_graph flags */
@@ -339,7 +339,7 @@ extern "C" {
 	pointf  translation;    /* composite translation */
 	pointf  devscale;	/* composite device to points: dpi, y_goes_down */
 
-	boolean	fit_mode,
+	bool	fit_mode,
 		needs_refresh,
 		click,
 		has_grown,
@@ -371,4 +371,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVCJOB_H */

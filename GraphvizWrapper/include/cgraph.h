@@ -1,3 +1,18 @@
+/**
+ * @file
+ * @brief abstract graph C library, @ref cgraph_api
+ * @ingroup cgraph_api
+ *
+ * [man 3 cgraph](https://graphviz.org/pdf/cgraph.3.pdf)
+ *
+ * @defgroup cgraph_api Cgraph API
+ * @brief Abstract graph C library
+ * @ingroup public_apis
+ *
+ * Main types @ref Agraph_t, @ref Agnode_t, @ref Agedge_t.
+ * @{
+ */
+
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
@@ -8,8 +23,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef ATT_GRAPH_H
-#define ATT_GRAPH_H
+#pragma once
 
 #include <inttypes.h>
 #include "cdt.h"
@@ -18,14 +32,18 @@
 extern "C" {
 #endif
 
-#ifdef _WIN32
-#   ifdef EXPORT_CGRAPH
-#       define CGRAPH_API __declspec(dllexport)
-#   else
-#       define CGRAPH_API __declspec(dllimport)
-#   endif
+/// @cond
+
+#ifdef GVDLL
+#ifdef EXPORT_CGRAPH
+#define CGRAPH_API __declspec(dllexport)
 #else
-#   define CGRAPH_API extern
+#define CGRAPH_API __declspec(dllimport)
+#endif
+#endif
+
+#ifndef CGRAPH_API
+#define CGRAPH_API /* nothing */
 #endif
 
 #ifndef FALSE
@@ -34,57 +52,74 @@ extern "C" {
 #ifndef TRUE
 #define TRUE (!FALSE)
 #endif
-#ifndef NOT
-#define	NOT(x)			(!(x))
-#endif
-#ifndef NIL
-#define NIL(type)		((type)0)
-#endif
-#define NILgraph		NIL(Agraph_t*)
-#define NILnode			NIL(Agnode_t*)
-#define NILedge			NIL(Agedge_t*)
-#define NILsym			NIL(Agsym_t*)
 
+/// @endcond
+
+/// @defgroup cgraph_other other
+/// @{
 typedef uint64_t IDTYPE;
 
 /* forward struct type declarations */
 typedef struct Agtag_s Agtag_t;
-typedef struct Agobj_s Agobj_t;	/* generic object header */
-typedef struct Agraph_s Agraph_t;	/* graph, subgraph (or hyperedge) */
-typedef struct Agnode_s Agnode_t;	/* node (atom) */
-typedef struct Agedge_s Agedge_t;	/* node pair */
-typedef struct Agdesc_s Agdesc_t;	/* graph descriptor */
-typedef struct Agmemdisc_s Agmemdisc_t;	/* memory allocator */
-typedef struct Agiddisc_s Agiddisc_t;	/* object ID allocator */
-typedef struct Agiodisc_s Agiodisc_t;	/* IO services */
-typedef struct Agdisc_s Agdisc_t;	/* union of client discipline methods */
-typedef struct Agdstate_s Agdstate_t;	/* client state (closures) */
-typedef struct Agsym_s Agsym_t;	/* string attribute descriptors */
-typedef struct Agattr_s Agattr_t;	/* string attribute container */
-typedef struct Agcbdisc_s Agcbdisc_t;	/* client event callbacks */
-typedef struct Agcbstack_s Agcbstack_t;	/* enclosing state for cbdisc */
-typedef struct Agclos_s Agclos_t;	/* common fields for graph/subgs */
-typedef struct Agrec_s Agrec_t;	/* generic runtime record */
-typedef struct Agdatadict_s Agdatadict_t;	/* set of dictionaries per graph */
-typedef struct Agedgepair_s Agedgepair_t;	/* the edge object */
+typedef struct Agobj_s Agobj_t;         ///< generic object header
+/// @}
+/// @ingroup cgraph_graph
+typedef struct Agraph_s Agraph_t;       ///< graph, subgraph (or hyperedge)
+/// @ingroup cgraph_node
+typedef struct Agnode_s Agnode_t;       ///< node (atom)
+/// @ingroup cgraph_edge
+typedef struct Agedge_s Agedge_t;       ///< node pair
+/// @ingroup cgraph_graph
+typedef struct Agdesc_s Agdesc_t;       ///< graph descriptor
+/// @addtogroup cgraph_other
+/// @{
+typedef struct Agmemdisc_s Agmemdisc_t; ///< memory allocator
+typedef struct Agiddisc_s Agiddisc_t;   ///< object ID allocator
+typedef struct Agiodisc_s Agiodisc_t;   ///< IO services
+typedef struct Agdisc_s Agdisc_t;       ///< union of client discipline methods
+typedef struct Agdstate_s Agdstate_t;   ///< client state (closures)
+typedef struct Agsym_s Agsym_t;         ///< string attribute descriptors
+typedef struct Agattr_s Agattr_t;       ///< string attribute container
+typedef struct Agcbdisc_s Agcbdisc_t;   ///< client event callbacks
+typedef struct Agcbstack_s Agcbstack_t; ///< enclosing state for cbdisc
+typedef struct Agclos_s Agclos_t;       ///< common fields for graph/subgs
+typedef struct Agdatadict_s Agdatadict_t; ///< set of dictionaries per graph
+typedef struct Agedgepair_s Agedgepair_t; ///< the edge object
 typedef struct Agsubnode_s Agsubnode_t;
+/// @}
 
-/* Header of a user record.  These records are attached by client programs
-dynamically at runtime.  A unique string ID must be given to each record
-attached to the same object.  Cgraph has functions to create, search for,
-and delete these records.   The records are maintained in a circular list,
-with obj->data pointing somewhere in the list.  The search function has
-an option to lock this pointer on a given record.  The application must
-be written so only one such lock is outstanding at a time. */
+/** @addtogroup cgraph_attr
+ *  @{
+ *
+ *  @defgroup cgraph_rec records
+ *  @brief These records are attached by client programs dynamically at runtime.
+ *  @{
+ *
+ *  A unique string ID (stored in @ref Agrec_s.name) must be given
+ *  to each record attached to the same object.
+ *  Cgraph has functions to create, search for, and delete these records.
+ *  The records are maintained in a circular list,
+ *  with @ref Agobj_s.data pointing somewhere in the list.
+ *  The search function @ref aggetrec has an option to lock this pointer on a given record.
+ *  The application must be written so only one such lock is outstanding at a time.
+ */
 
+typedef struct Agrec_s Agrec_t;
+///< generic header of @ref Agattr_s, @ref Agdatadict_s and user records
+
+/// implementation of @ref Agrec_t
 struct Agrec_s {
     char *name;
     Agrec_t *next;
     /* following this would be any programmer-defined data */
 };
+/// @}
 
-/* Object tag for graphs, nodes, and edges.  While there may be several structs
+/** @brief Object tag for graphs, nodes, and edges.
+
+While there may be several structs
 for a given node or edges, there is only one unique ID (per main graph).  */
+
 struct Agtag_s {
     unsigned objtype:2;		/* see literal tags below */
     unsigned mtflock:1;		/* move-to-front lock, see above */
@@ -100,7 +135,7 @@ struct Agtag_s {
 #define AGINEDGE			3	/* (1 << 1) indicates an edge tag.   */
 #define AGEDGE 				AGOUTEDGE	/* synonym in object kind args */
 
-	/* a generic graph/node/edge header */
+/// a generic graph/node/edge header
 struct Agobj_s {
     Agtag_t tag;
     Agrec_t *data;
@@ -112,12 +147,17 @@ struct Agobj_s {
 #define AGSEQ(obj)		(AGTAG(obj).seq)
 #define AGATTRWF(obj)		(AGTAG(obj).attrwf)
 #define AGDATA(obj)		(((Agobj_t*)(obj))->data)
+/// @}
 
-/* This is the node struct allocated per graph (or subgraph).  It resides
-in the n_dict of the graph.  The node set is maintained by libdict, but
-transparently to libgraph callers.  Every node may be given an optional
-string name at its time of creation, or it is permissible to pass NIL(char*)
-for the name. */
+/// @addtogroup cgraph_node
+/// @{
+
+/** @brief This is the node struct allocated per graph (or subgraph).
+
+It resides in the n_dict of the graph.
+The node set is maintained by libdict, but transparently to libgraph callers.
+Every node may be given an optional string name at its time of creation,
+or it is permissible to pass NIL(char*) for the name. */
 
 struct Agsubnode_s {		/* the node-per-graph-or-subgraph record */
     Dtlink_t seq_link;		/* must be first */
@@ -132,7 +172,10 @@ struct Agnode_s {
     Agraph_t *root;
     Agsubnode_t mainsub;	/* embedded for main graph */
 };
+/// @}
 
+/// @addtogroup cgraph_edge
+/// @{
 struct Agedge_s {
     Agobj_t base;
     Dtlink_t id_link;		/* main graph only */
@@ -143,7 +186,10 @@ struct Agedge_s {
 struct Agedgepair_s {
     Agedge_t out, in;
 };
+/// @}
 
+/// @addtogroup cgraph_graph
+/// @{
 struct Agdesc_s {		/* graph descriptor */
     unsigned directed:1;	/* if edges are asymmetric */
     unsigned strict:1;		/* if multi-edges forbidden */
@@ -154,18 +200,26 @@ struct Agdesc_s {		/* graph descriptor */
     unsigned has_attrs:1;	/* if string attr tables should be initialized */
     unsigned has_cmpnd:1;	/* if may contain collapsed nodes */
 };
+/// @}
 
-/* disciplines for external resources needed by libgraph */
+/** @defgroup cgraph_disc disciplines
+ *  @brief disciplines for external resources needed by libgraph
+ *  @{
+ */
 
-struct Agmemdisc_s {		/* memory allocator */
-    void *(*open) (Agdisc_t*);	/* independent of other resources */
+/// memory allocator discipline, independent of other resources
+
+struct Agmemdisc_s {
+    void *(*open) (Agdisc_t*);
     void *(*alloc) (void *state, size_t req);
     void *(*resize) (void *state, void *ptr, size_t old, size_t req);
     void (*free) (void *state, void *ptr);
     void (*close) (void *state);
 };
 
-struct Agiddisc_s {		/* object ID allocator */
+/// object ID allocator discipline
+
+struct Agiddisc_s {
     void *(*open) (Agraph_t * g, Agdisc_t*);	/* associated with a graph */
     long (*map) (void *state, int objtype, char *str, IDTYPE *id,
 		 int createflag);
@@ -183,7 +237,9 @@ struct Agiodisc_s {
     /* error messages? */
 };
 
-struct Agdisc_s {		/* user's discipline */
+/// user's discipline
+
+struct Agdisc_s {
     Agmemdisc_t *mem;
     Agiddisc_t *id;
     Agiodisc_t *io;
@@ -191,12 +247,16 @@ struct Agdisc_s {		/* user's discipline */
 
 	/* default resource disciplines */
 
-CGRAPH_API Agmemdisc_t AgMemDisc;
-CGRAPH_API Agiddisc_t AgIdDisc;
-CGRAPH_API Agiodisc_t AgIoDisc;
+CGRAPH_API extern Agmemdisc_t AgMemDisc;
+CGRAPH_API extern Agiddisc_t AgIdDisc;
+CGRAPH_API extern Agiodisc_t AgIoDisc;
 
-CGRAPH_API Agdisc_t AgDefaultDisc;
+CGRAPH_API extern Agdisc_t AgDefaultDisc;
+/// @}
 
+/** @defgroup cgraph_graph graphs
+ *  @{
+ */
 struct Agdstate_s {
     void *mem;
     void *id;
@@ -216,7 +276,9 @@ struct Agcbdisc_s {
     } graph, node, edge;
 };
 
-struct Agcbstack_s {		/* object event callbacks */
+/// object event callbacks
+
+struct Agcbstack_s {
     Agcbdisc_t *f;		/* methods */
     void *state;		/* closure */
     Agcbstack_t *prev;		/* kept in a stack, unlike other disciplines */
@@ -256,15 +318,17 @@ CGRAPH_API Agraph_t *agread(void *chan, Agdisc_t * disc);
 CGRAPH_API Agraph_t *agmemread(const char *cp);
 CGRAPH_API Agraph_t *agmemconcat(Agraph_t *g, const char *cp);
 CGRAPH_API void agreadline(int);
-CGRAPH_API void agsetfile(char *);
+CGRAPH_API void agsetfile(const char *);
 CGRAPH_API Agraph_t *agconcat(Agraph_t * g, void *chan, Agdisc_t * disc);
 CGRAPH_API int agwrite(Agraph_t * g, void *chan);
 CGRAPH_API int agisdirected(Agraph_t * g);
 CGRAPH_API int agisundirected(Agraph_t * g);
 CGRAPH_API int agisstrict(Agraph_t * g);
 CGRAPH_API int agissimple(Agraph_t * g);
+/// @}
 
-/* nodes */
+/// @defgroup cgraph_node nodes
+/// @{
 CGRAPH_API Agnode_t *agnode(Agraph_t * g, char *name, int createflag);
 CGRAPH_API Agnode_t *agidnode(Agraph_t * g, IDTYPE id, int createflag);
 CGRAPH_API Agnode_t *agsubnode(Agraph_t * g, Agnode_t * n, int createflag);
@@ -275,8 +339,10 @@ CGRAPH_API Agnode_t *agprvnode(Agraph_t * g, Agnode_t * n);
 
 CGRAPH_API Agsubnode_t *agsubrep(Agraph_t * g, Agnode_t * n);
 CGRAPH_API int agnodebefore(Agnode_t *u, Agnode_t *v); /* we have no shame */
+/// @}
 
-/* edges */
+/// @defgroup cgraph_edge edges
+/// @{
 CGRAPH_API Agedge_t *agedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
 			char *name, int createflag);
 CGRAPH_API Agedge_t *agidedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
@@ -288,38 +354,44 @@ CGRAPH_API Agedge_t *agfstout(Agraph_t * g, Agnode_t * n);
 CGRAPH_API Agedge_t *agnxtout(Agraph_t * g, Agedge_t * e);
 CGRAPH_API Agedge_t *agfstedge(Agraph_t * g, Agnode_t * n);
 CGRAPH_API Agedge_t *agnxtedge(Agraph_t * g, Agedge_t * e, Agnode_t * n);
+/// @}
 
-/* generic */
+/// @defgroup cgraph_generic generic
+/// @{
 CGRAPH_API Agraph_t *agraphof(void* obj);
 CGRAPH_API Agraph_t *agroot(void* obj);
 CGRAPH_API int agcontains(Agraph_t *, void *);
 CGRAPH_API char *agnameof(void *);
-CGRAPH_API int agrelabel(void *obj, char *name);	/* scary */
 CGRAPH_API int agrelabel_node(Agnode_t * n, char *newname);
 CGRAPH_API int agdelete(Agraph_t * g, void *obj);
 CGRAPH_API int agdelsubg(Agraph_t * g, Agraph_t * sub);	/* could be agclose */
 CGRAPH_API int agdelnode(Agraph_t * g, Agnode_t * arg_n);
 CGRAPH_API int agdeledge(Agraph_t * g, Agedge_t * arg_e);
 CGRAPH_API int agobjkind(void *);
+/// @}
 
-/* strings */
-CGRAPH_API char *agstrdup(Agraph_t *, char *);
-CGRAPH_API char *agstrdup_html(Agraph_t *, char *);
-CGRAPH_API int aghtmlstr(char *);
-CGRAPH_API char *agstrbind(Agraph_t * g, char *);
-CGRAPH_API int agstrfree(Agraph_t *, char *);
+/// @defgroup cgraph_attr strings, symbols, attributes and records
+/// @{
+CGRAPH_API char *agstrdup(Agraph_t *, const char *);
+CGRAPH_API char *agstrdup_html(Agraph_t *, const char *);
+CGRAPH_API int aghtmlstr(const char *);
+CGRAPH_API char *agstrbind(Agraph_t * g, const char *);
+CGRAPH_API int agstrfree(Agraph_t *, const char *);
 CGRAPH_API char *agcanon(char *, int);
 CGRAPH_API char *agstrcanon(char *, char *);
 CGRAPH_API char *agcanonStr(char *str);  /* manages its own buf */
 
-/* definitions for dynamic string attributes */
+/// definitions for dynamic string attributes
+
 struct Agattr_s {		/* dynamic string attributes */
     Agrec_t h;			/* common data header */
     Dict_t *dict;		/* shared dict to interpret attr field */
     char **str;			/* the attribute string values */
 };
 
-struct Agsym_s {		/* symbol in one of the above dictionaries */
+/// symbol in one of the above dictionaries
+
+struct Agsym_s {
     Dtlink_t link;
     char *name;			/* attribute's name */
     char *defval;		/* its default value for initialization */
@@ -336,40 +408,55 @@ struct Agdatadict_s {		/* set of dictionaries per graph */
     } dict;
 };
 
-CGRAPH_API Agsym_t *agattr(Agraph_t * g, int kind, char *name, char *value);
+CGRAPH_API Agsym_t *agattr(Agraph_t * g, int kind, char *name,
+                           const char *value);
 CGRAPH_API Agsym_t *agattrsym(void *obj, char *name);
 CGRAPH_API Agsym_t *agnxtattr(Agraph_t * g, int kind, Agsym_t * attr);
 CGRAPH_API int      agcopyattr(void *oldobj, void *newobj);
 
-CGRAPH_API void *agbindrec(void *obj, char *name, unsigned int size,
+/// @addtogroup cgraph_rec
+/// @{
+CGRAPH_API void *agbindrec(void *obj, const char *name, unsigned int recsize,
 		       int move_to_front);
-CGRAPH_API Agrec_t *aggetrec(void *obj, char *name, int move_to_front);
-CGRAPH_API int agdelrec(void *obj, char *name);
-CGRAPH_API void aginit(Agraph_t * g, int kind, char *rec_name, int rec_size,
-		   int move_to_front);
+///< attach a new record of the given size to the object.
+
+CGRAPH_API Agrec_t *aggetrec(void *obj, const char *name, int move_to_front);
+///< find record in circular list and do optional move-to-front and lock
+
+CGRAPH_API int agdelrec(void *obj, const char *name);
+CGRAPH_API void aginit(Agraph_t * g, int kind, const char *rec_name,
+                       int rec_size, int move_to_front);
 CGRAPH_API void agclean(Agraph_t * g, int kind, char *rec_name);
+/// @}
 
 CGRAPH_API char *agget(void *obj, char *name);
 CGRAPH_API char *agxget(void *obj, Agsym_t * sym);
-CGRAPH_API int agset(void *obj, char *name, char *value);
-CGRAPH_API int agxset(void *obj, Agsym_t * sym, char *value);
-CGRAPH_API int agsafeset(void* obj, char* name, char* value, char* def);
+CGRAPH_API int agset(void *obj, char *name, const char *value);
+CGRAPH_API int agxset(void *obj, Agsym_t * sym, const char *value);
+CGRAPH_API int agsafeset(void* obj, char* name, const char* value,
+                         const char* def);
+/// @}
 
-/* definitions for subgraphs */
+/// @defgroup cgraph_subgraph definitions for subgraphs
+/// @{
 CGRAPH_API Agraph_t *agsubg(Agraph_t * g, char *name, int cflag);	/* constructor */
 CGRAPH_API Agraph_t *agidsubg(Agraph_t * g, IDTYPE id, int cflag);	/* constructor */
 CGRAPH_API Agraph_t *agfstsubg(Agraph_t * g);
 CGRAPH_API Agraph_t *agnxtsubg(Agraph_t * subg);
 CGRAPH_API Agraph_t *agparent(Agraph_t * g);
+/// @}
 
-/* set cardinality */
+/// @defgroup card set cardinality
+/// @{
 CGRAPH_API int agnnodes(Agraph_t * g);
 CGRAPH_API int agnedges(Agraph_t * g);
 CGRAPH_API int agnsubg(Agraph_t * g);
 CGRAPH_API int agdegree(Agraph_t * g, Agnode_t * n, int in, int out);
 CGRAPH_API int agcountuniqedges(Agraph_t * g, Agnode_t * n, int in, int out);
+/// @}
 
-/* memory */
+/// @defgroup cgmem memory
+/// @{
 CGRAPH_API void *agalloc(Agraph_t * g, size_t size);
 CGRAPH_API void *agrealloc(Agraph_t * g, void *ptr, size_t oldsize,
 		       size_t size);
@@ -380,6 +467,9 @@ CGRAPH_API void aginternalmapclearlocalnames(Agraph_t * g);
 
 #define agnew(g,t)		((t*)agalloc(g,sizeof(t)))
 #define agnnew(g,n,t)	((t*)agalloc(g,(n)*sizeof(t)))
+/// @}
+
+/// @cond
 
 /* support for extra API misuse warnings if available */
 #ifdef __GNUC__
@@ -388,7 +478,10 @@ CGRAPH_API void aginternalmapclearlocalnames(Agraph_t * g);
   #define PRINTF_LIKE(index, first) /* nothing */
 #endif
 
-/* error handling */
+/// @endcond
+
+/// @defgroup cgraph_err error handling
+/// @{
 typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
 typedef int (*agusererrf) (char*);
 CGRAPH_API agerrlevel_t agseterr(agerrlevel_t);
@@ -400,9 +493,12 @@ CGRAPH_API void agwarningf(const char *fmt, ...) PRINTF_LIKE(1, 2);
 CGRAPH_API int agerrors(void);
 CGRAPH_API int agreseterrors(void);
 CGRAPH_API agusererrf agseterrf(agusererrf);
+/// @}
 
 #undef PRINTF_LIKE
 
+/// @addtogroup cgraph_other
+/// @{
 /* data access macros */
 /* this assumes that e[0] is out and e[1] is inedge, see edgepair in edge.c  */
 #define AGIN2OUT(e)		((e)-1)
@@ -421,13 +517,18 @@ CGRAPH_API agusererrf agseterrf(agusererrf);
 
 #define TAILPORT_ID		"tailport"
 #define HEADPORT_ID		"headport"
+/// @}
 
-CGRAPH_API Agdesc_t Agdirected;
-CGRAPH_API Agdesc_t Agstrictdirected;
-CGRAPH_API Agdesc_t Agundirected;
-CGRAPH_API Agdesc_t Agstrictundirected;
+/// @addtogroup cgraph_graph
+/// @{
+CGRAPH_API extern Agdesc_t Agdirected;
+CGRAPH_API extern Agdesc_t Agstrictdirected;
+CGRAPH_API extern Agdesc_t Agundirected;
+CGRAPH_API extern Agdesc_t Agstrictundirected;
+/// @}
 
-/* fast graphs */
+/// @defgroup cgraph_fast fast graphs
+/// @{
 void agflatten(Agraph_t * g, int flag);
 typedef Agsubnode_t	Agnoderef_t;
 typedef Dtlink_t	Agedgeref_t;
@@ -454,8 +555,9 @@ typedef Dtlink_t	Agedgeref_t;
 and edges are embedded in main graph objects but allocated separately in subgraphs */
 #define AGSNMAIN(sn)        ((sn)==(&((sn)->node->mainsub)))
 #define EDGEOF(sn,rep)		(AGSNMAIN(sn)?((Agedge_t*)((unsigned char*)(rep) - offsetof(Agedge_t,seq_link))) : ((Dthold_t*)(rep))->obj)
+/// @}
 
 #ifdef __cplusplus
 }
 #endif
-#endif
+/// @}

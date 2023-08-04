@@ -1,3 +1,5 @@
+/// @file
+/// @ingroup public_apis
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -8,8 +10,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GV_COLOR_H
-#define GV_COLOR_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,5 +46,4 @@ typedef struct color_s {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

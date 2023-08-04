@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <ProjectReference Include="..\Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj" />
+    <ProjectReference Include="..\Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +28,9 @@
     <PackageReference Include="OpenCover">
       <Version>4.7.1221</Version>
     </PackageReference>
+    <!--We need both packages below to run the tests in VS https://github.com/microsoft/vstest/issues/1870-->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
   </ItemGroup>
 
 </Project>

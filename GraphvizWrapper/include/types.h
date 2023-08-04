@@ -1,3 +1,9 @@
+/**
+ * @file
+ * @brief graphs, nodes and edges info: Agraphinfo_t, Agnodeinfo_t and Agedgeinfo_t
+ * @ingroup public_apis
+ */
+
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
@@ -8,26 +14,28 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GV_TYPES_H
-#define GV_TYPES_H
+#pragma once
 
 /* Define if you want CGRAPH */
 #define WITH_CGRAPH 1
 
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <assert.h>
 #include <signal.h>
 
-typedef unsigned char boolean;
-#ifndef NOT
-#define NOT(v) (!(v))
-#endif
+/// @cond
+
 #ifndef FALSE
 #define FALSE 0
 #endif
 #ifndef TRUE
-#define TRUE NOT(FALSE)
+#define TRUE (!FALSE)
 #endif
+
+/// @endcond
 
 #include "geom.h"
 #include "gvcext.h"
@@ -67,10 +75,10 @@ extern "C" {
 	boxf *bp;		/* if not null, points to bbox of
 				 * rectangular area that is port target
 				 */
-	boolean	defined;        /* if true, edge has port info at this end */
-	boolean	constrained;    /* if true, constraints such as theta are set */
-	boolean clip;           /* if true, clip end to node/port shape */
-	boolean dyna;           /* if true, assign compass point dynamically */
+	bool defined;        /* if true, edge has port info at this end */
+	bool constrained;    /* if true, constraints such as theta are set */
+	bool clip;           /* if true, clip end to node/port shape */
+	bool dyna;           /* if true, assign compass point dynamically */
 	unsigned char order;	/* for mincross */
 	unsigned char side;	/* if port is on perimeter of node, this
                                  * contains the bitwise OR of the sides (TOP,
@@ -80,10 +88,10 @@ extern "C" {
     } port;
 
     typedef struct {
-	boolean(*swapEnds) (edge_t * e);	/* Should head and tail be swapped? */
-	boolean(*splineMerge) (node_t * n);	/* Is n a node in the middle of an edge? */
-	boolean ignoreSwap;                     /* Test for swapped edges if false */
-	boolean isOrtho;                        /* Orthogonal routing used */
+	bool(*swapEnds) (edge_t * e);	/* Should head and tail be swapped? */
+	bool(*splineMerge) (node_t * n);	/* Is n a node in the middle of an edge? */
+	bool ignoreSwap;                     /* Test for swapped edges if false */
+	bool isOrtho;                        /* Orthogonal routing used */
     } splineInfo;
 
     typedef struct pathend_t {
@@ -105,8 +113,8 @@ extern "C" {
     typedef struct bezier {
 	pointf *list;
 	int size;
-	int sflag;
-	int eflag;
+	uint32_t sflag;
+	uint32_t eflag;
 	pointf sp;
 	pointf ep;
     } bezier;
@@ -131,13 +139,13 @@ extern "C" {
 	union {
 	    struct {
 		textspan_t *span;
-		short nspans;
+		size_t nspans;
 	    } txt;
 	    htmllabel_t *html;
 	} u;
 	char valign;  /* 't' 'c' 'b' */
-	boolean set;  /* true if position is set */
-	boolean html; /* true if html label */
+	bool set;  /* true if position is set */
+	bool html; /* true if html label */
     } textlabel_t;
 
     typedef struct polygon_t {	/* mutable shape information for a node */
@@ -153,29 +161,15 @@ extern "C" {
 
     typedef struct stroke_t {	/* information about a single stroke */
 	/* we would have called it a path if that term wasn't already used */
-	int nvertices;		/* number of points in the stroke */
-	int flags;		/* stroke style flags */
+	size_t nvertices; ///< number of points in the stroke
 	pointf *vertices;	/* array of vertex points */
     } stroke_t;
-
-/* flag definitions for stroke_t */
-#define STROKE_CLOSED (1 << 0)
-#define STROKE_FILLED (1 << 1)
-#define STROKE_PENDOWN (1 << 2)
-#define STROKE_VERTICES_ALLOCATED (1 << 3)
-
-    typedef struct shape_t {	/* mutable shape information for a node */
-	int nstrokes;		/* number of strokes in array */
-	stroke_t *strokes;	/* array of strokes */
-	/* The last stroke must always be closed, but can be pen_up.
-	 * It is used as the clipping path */
-    } shape_t;
 
     typedef struct shape_functions {	/* read-only shape functions */
 	void (*initfn) (node_t *);	/* initializes shape from node u.shape_info structure */
 	void (*freefn) (node_t *);	/* frees  shape from node u.shape_info structure */
 	 port(*portfn) (node_t *, char *, char *);	/* finds aiming point and slope of port */
-	 boolean(*insidefn) (inside_t * inside_context, pointf);	/* clips incident gvc->e spline on shape of gvc->n */
+	 bool(*insidefn) (inside_t * inside_context, pointf);	/* clips incident gvc->e spline on shape of gvc->n */
 	int (*pboxfn)(node_t* n, port* p, int side, boxf rv[], int *kptr); /* finds box path to reach port */
 	void (*codefn) (GVJ_t * job, node_t * n);	/* emits graphics code for node */
     } shape_functions;
@@ -186,7 +180,7 @@ extern "C" {
 	char *name;		/* as read from graph file */
 	shape_functions *fns;
 	polygon_t *polygon;	/* base polygon info */
-	boolean usershape;
+	bool usershape;
     } shape_desc;
 
 #include "usershape.h"		/* usershapes needed by gvc */
@@ -213,8 +207,8 @@ extern "C" {
 	double ht2;	/* height below/above centerline    */
 	double pht1;	/* as above, but only primitive nodes   */
 	double pht2;	/* as above, but only primitive nodes   */
-	boolean candidate;	/* for transpose () */
-	boolean valid;
+	bool candidate;	/* for transpose () */
+	bool valid;
 	int cache_nc;		/* caches number of crossings */
 	adjmatrix_t *flat;
     } rank_t;
@@ -230,9 +224,9 @@ extern "C" {
 	pointf margin;
 	pointf page;
 	pointf size;
-	boolean filled;
-	boolean landscape;
-	boolean centered;
+	bool filled;
+	bool landscape;
+	bool centered;
 	ratio_t ratio_kind;
 	void* xdots;
 	char* id;
@@ -252,12 +246,12 @@ extern "C" {
 
     typedef struct nlist_t {
 	node_t **list;
-	int size;
+	size_t size;
     } nlist_t;
 
     typedef struct elist {
 	edge_t **list;
-	int size;
+	size_t size;
     } elist;
 
 #define GUI_STATE_ACTIVE    (1<<0)
@@ -265,13 +259,14 @@ extern "C" {
 #define GUI_STATE_VISITED   (1<<2)
 #define GUI_STATE_DELETED   (1<<3)
 
-#define elist_fastapp(item,L) do {L.list[L.size++] = item; L.list[L.size] = NULL;} while(0)
 #define elist_append(item,L)  do {L.list = ALLOC(L.size + 2,L.list,edge_t*); L.list[L.size++] = item; L.list[L.size] = NULL;} while(0)
 #define alloc_elist(n,L)      do {L.size = 0; L.list = N_NEW(n + 1,edge_t*); } while (0)
 #define free_list(L)          free(L.list)
 
 typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
+/// @addtogroup cgraph_graph
+/// @{
     typedef struct Agraphinfo_t {
 	Agrec_t hdr;
 	/* to generate code */
@@ -281,7 +276,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	pointf border[4];	/* sizes of margins for graph labels */
 	unsigned char gui_state; /* Graph state for GUI ops */
 	unsigned char has_labels;
-	boolean has_images;
+	bool has_images;
 	unsigned char charset; /* input character set */
 	int rankdir;
 	double ht1; /* below and above extremal ranks */
@@ -319,15 +314,13 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	/* connected components */
 	node_t *minset; /* set leaders */
 	node_t *maxset;	/* set leaders */
-	long n_nodes;
+	size_t n_nodes;
 	/* includes virtual */
 	int minrank;
 	int maxrank;
 
 	/* various flags */
-	boolean has_flat_edges;
-	boolean has_sourcerank;
-	boolean has_sinkrank;
+	bool has_flat_edges;
 	unsigned char	showboxes;
 	fontname_kind fontnames;		/* to override mangling in SVG */
 
@@ -339,11 +332,11 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	/* for clusters */
 	node_t *leader;
 	node_t **rankleader;
-	boolean expanded;
+	bool expanded;
 	char installed;
 	char set_type;
 	char label_pos;
-	boolean exact_ranksep;
+	bool exact_ranksep;
 #endif
 
     } Agraphinfo_t;
@@ -357,7 +350,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define GD_dist(g) (((Agraphinfo_t*)AGDATA(g))->dist)
 #define GD_alg(g) (((Agraphinfo_t*)AGDATA(g))->alg)
 #define GD_border(g) (((Agraphinfo_t*)AGDATA(g))->border)
-#define GD_cl_cnt(g) (((Agraphinfo_t*)AGDATA(g))->cl_nt)
 #define GD_clust(g) (((Agraphinfo_t*)AGDATA(g))->clust)
 #define GD_dotroot(g) (((Agraphinfo_t*)AGDATA(g))->dotroot)
 #define GD_comp(g) (((Agraphinfo_t*)AGDATA(g))->comp)
@@ -369,11 +361,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define GD_has_labels(g) (((Agraphinfo_t*)AGDATA(g))->has_labels)
 #define GD_has_images(g) (((Agraphinfo_t*)AGDATA(g))->has_images)
 #define GD_has_flat_edges(g) (((Agraphinfo_t*)AGDATA(g))->has_flat_edges)
-#define GD_has_sourcerank(g)	(((Agraphinfo_t*)AGDATA(g))->has_sourcerank)
-#define GD_has_sinkrank(g)	(((Agraphinfo_t*)AGDATA(g))->has_sinkrank)
 #define GD_ht1(g) (((Agraphinfo_t*)AGDATA(g))->ht1)
 #define GD_ht2(g) (((Agraphinfo_t*)AGDATA(g))->ht2)
-#define GD_inleaf(g) (((Agraphinfo_t*)AGDATA(g))->inleaf)
 #define GD_installed(g) (((Agraphinfo_t*)AGDATA(g))->installed)
 #define GD_label(g) (((Agraphinfo_t*)AGDATA(g))->label)
 #define GD_leader(g) (((Agraphinfo_t*)AGDATA(g))->leader)
@@ -397,7 +386,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define GD_neato_nlist(g) (((Agraphinfo_t*)AGDATA(g))->neato_nlist)
 #define GD_nlist(g) (((Agraphinfo_t*)AGDATA(g))->nlist)
 #define GD_nodesep(g) (((Agraphinfo_t*)AGDATA(g))->nodesep)
-#define GD_outleaf(g) (((Agraphinfo_t*)AGDATA(g))->outleaf)
 #define GD_rank(g) (((Agraphinfo_t*)AGDATA(g))->rank)
 #define GD_rankleader(g) (((Agraphinfo_t*)AGDATA(g))->rankleader)
 #define GD_ranksep(g) (((Agraphinfo_t*)AGDATA(g))->ranksep)
@@ -409,7 +397,10 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define GD_spring(g) (((Agraphinfo_t*)AGDATA(g))->spring)
 #define GD_sum_t(g) (((Agraphinfo_t*)AGDATA(g))->sum_t)
 #define GD_t(g) (((Agraphinfo_t*)AGDATA(g))->t)
+/// @}
 
+/// @addtogroup cgraph_node
+/// @{
     typedef struct Agnodeinfo_t {
 	Agrec_t hdr;
 	shape_desc *shape;
@@ -421,12 +412,14 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	double ht;
 	double lw;
 	double rw;
+	double outline_width;  /* width in points with penwidth taken into account */
+	double outline_height; /* height in points with penwidth taken into account */
 	textlabel_t *label;
 	textlabel_t *xlabel;
 	void *alg;
 	char state;
 	unsigned char gui_state; /* Node state for GUI ops */
-	boolean clustnode;
+	bool clustnode;
 
 #ifndef DOT_ONLY
 	unsigned char pinned;
@@ -438,13 +431,13 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #endif
 #ifndef NEATO_ONLY
 	unsigned char showboxes;
-	boolean  has_port;
+	bool  has_port;
 	node_t* rep;
 	node_t *set;
 
 	/* fast graph */
 	char node_type;
-	char mark;
+	size_t mark;
 	char onstack;
 	char ranktype;
 	char weight_class;
@@ -460,8 +453,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	/* for union-find and collapsing nodes */
 	int UF_size;
 	node_t *UF_parent;
-	node_t *inleaf;
-	node_t *outleaf;
 
 	/* for placing nodes */
 	int rank;
@@ -502,7 +493,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_hops(n) (((Agnodeinfo_t*)AGDATA(n))->hops)
 #define ND_ht(n) (((Agnodeinfo_t*)AGDATA(n))->ht)
 #define ND_in(n) (((Agnodeinfo_t*)AGDATA(n))->in)
-#define ND_inleaf(n) (((Agnodeinfo_t*)AGDATA(n))->inleaf)
 #define ND_label(n) (((Agnodeinfo_t*)AGDATA(n))->label)
 #define ND_xlabel(n) (((Agnodeinfo_t*)AGDATA(n))->xlabel)
 #define ND_lim(n) (((Agnodeinfo_t*)AGDATA(n))->lim)
@@ -517,7 +507,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_order(n) (((Agnodeinfo_t*)AGDATA(n))->order)
 #define ND_other(n) (((Agnodeinfo_t*)AGDATA(n))->other)
 #define ND_out(n) (((Agnodeinfo_t*)AGDATA(n))->out)
-#define ND_outleaf(n) (((Agnodeinfo_t*)AGDATA(n))->outleaf)
+#define ND_outline_width(n) (((Agnodeinfo_t*)AGDATA(n))->outline_width)
+#define ND_outline_height(n) (((Agnodeinfo_t*)AGDATA(n))->outline_height)
 #define ND_par(n) (((Agnodeinfo_t*)AGDATA(n))->par)
 #define ND_pinned(n) (((Agnodeinfo_t*)AGDATA(n))->pinned)
 #define ND_pos(n) (((Agnodeinfo_t*)AGDATA(n))->pos)
@@ -539,7 +530,10 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_width(n) (((Agnodeinfo_t*)AGDATA(n))->width)
 #define ND_xsize(n) (ND_lw(n)+ND_rw(n))
 #define ND_ysize(n) (ND_ht(n))
+/// @}
 
+/// @addtogroup cgraph_edge
+/// @{
     typedef struct Agedgeinfo_t {
 	Agrec_t hdr;
 	splines *spl;
@@ -564,7 +558,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #endif
 #ifndef NEATO_ONLY
 	unsigned char showboxes;
-	boolean conc_opp_flag;
+	bool conc_opp_flag;
 	short xpenalty;
 	int weight;
 	int cutvalue;
@@ -601,13 +595,19 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ED_xpenalty(e) (((Agedgeinfo_t*)AGDATA(e))->xpenalty)
 #define ED_dist(e) (((Agedgeinfo_t*)AGDATA(e))->dist)
 #define ED_weight(e) (((Agedgeinfo_t*)AGDATA(e))->weight)
+/// @}
 
 #define ag_xget(x,a) agxget(x,a)
 #define SET_RANKDIR(g,rd) (GD_rankdir2(g) = rd)
+/// @ingroup cgraph_edge
 #define agfindedge(g,t,h) (agedge(g,t,h,NULL,0))
+/// @ingroup cgraph_node
 #define agfindnode(g,n) (agnode(g,n,0))
+/// @ingroup cgraph_graph
 #define agfindgraphattr(g,a) (agattr(g,AGRAPH,a,NULL))
+/// @ingroup cgraph_node
 #define agfindnodeattr(g,a) (agattr(g,AGNODE,a,NULL))
+/// @ingroup cgraph_edge
 #define agfindedgeattr(g,a) (agattr(g,AGEDGE,a,NULL))
 
     typedef struct {
@@ -617,4 +617,4 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #ifdef __cplusplus
 }
 #endif
-#endif
+/// @defgroup public_apis Graphviz public APIs

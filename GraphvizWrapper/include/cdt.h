@@ -1,5 +1,10 @@
-#ifndef _CDT_H
-#define _CDT_H		1
+/**
+ * @file
+ * @brief container data types API
+ * @ingroup public_apis
+ */
+
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,14 +20,16 @@ extern "C" {
 #include <stddef.h>	/* size_t */
 #include <string.h>
 
-#ifdef _WIN32
-#   ifdef EXPORT_CDT
-#       define CDT_API __declspec(dllexport)
-#   else
-#       define CDT_API __declspec(dllimport)
-#   endif
+#ifdef GVDLL
+#ifdef EXPORT_CDT
+#define CDT_API __declspec(dllexport)
 #else
-#   define CDT_API extern
+#define CDT_API __declspec(dllimport)
+#endif
+#endif
+
+#ifndef CDT_API
+#define CDT_API /* nothing */
 #endif
 
 typedef struct _dtlink_s	Dtlink_t;
@@ -113,9 +120,9 @@ struct _dt_s
 struct _dtstat_s
 {	int	dt_meth;	/* method type				*/
 	int	dt_size;	/* number of elements			*/
-	int	dt_n;		/* number of chains or levels		*/
-	int	dt_max;		/* max size of a chain or a level	*/
-	int*	dt_count;	/* counts of chains or levels by size	*/
+	size_t dt_n; // number of chains or levels
+	size_t dt_max; // max size of a chain or a level
+	size_t* dt_count; // counts of chains or levels by size
 };
 
 /* flag set if the last search operation actually found the object */
@@ -161,26 +168,23 @@ struct _dtstat_s
 #define DT_ENDCLOSE	6	/* dtclose() is done			*/
 #define DT_HASHSIZE	7	/* setting hash table size		*/
 
-CDT_API Dtmethod_t* 	Dtset;
-CDT_API Dtmethod_t* 	Dtbag;
-CDT_API Dtmethod_t* 	Dtoset;
-CDT_API Dtmethod_t* 	Dtobag;
-CDT_API Dtmethod_t*	Dtlist;
-CDT_API Dtmethod_t*	Dtstack;
-CDT_API Dtmethod_t*	Dtqueue;
-CDT_API Dtmethod_t*	Dtdeque;
+CDT_API extern Dtmethod_t* 	Dtset; ///< set with unique elements
+CDT_API extern Dtmethod_t* 	Dtbag; ///< multiset
+CDT_API extern Dtmethod_t* 	Dtoset; ///< ordered set (self-adjusting tree)
+CDT_API extern Dtmethod_t* 	Dtobag; ///< ordered multiset
+CDT_API extern Dtmethod_t*	Dtlist; ///< linked list
+CDT_API extern Dtmethod_t*	Dtstack; ///< stack: insert/delete at top
+CDT_API extern Dtmethod_t*	Dtqueue; ///< queue: insert at top, delete at tail
+CDT_API extern Dtmethod_t*	Dtdeque; ///< deque: insert at top, append at tail
 
-/* compatibility stuff; will go away */
-#ifndef KPVDEL
-CDT_API Dtmethod_t*	Dtorder;
-CDT_API Dtmethod_t*	Dttree;
-CDT_API Dtmethod_t*	Dthash;
-CDT_API Dtmethod_t	_Dttree;
-CDT_API Dtmethod_t	_Dthash;
-CDT_API Dtmethod_t	_Dtlist;
-CDT_API Dtmethod_t	_Dtqueue;
-CDT_API Dtmethod_t	_Dtstack;
-#endif
+CDT_API extern Dtmethod_t*	Dtorder;
+CDT_API extern Dtmethod_t*	Dttree;
+CDT_API extern Dtmethod_t*	Dthash;
+CDT_API extern Dtmethod_t	_Dttree;
+CDT_API extern Dtmethod_t	_Dthash;
+CDT_API extern Dtmethod_t	_Dtlist;
+CDT_API extern Dtmethod_t	_Dtqueue;
+CDT_API extern Dtmethod_t	_Dtstack;
 
 CDT_API Dt_t*		dtopen(Dtdisc_t*, Dtmethod_t*);
 CDT_API int		dtclose(Dt_t*);
@@ -270,8 +274,11 @@ CDT_API unsigned int	dtstrhash(unsigned int, void*, int);
 #define DT_PRIME	17109811 /* 2#00000001 00000101 00010011 00110011 */
 #define dtcharhash(h,c) (((unsigned int)(h) + (unsigned int)(c)) * DT_PRIME )
 
+/**
+ * @dir lib/cdt
+ * @brief container data types, API cdt.h
+ */
+
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* _CDT_H */

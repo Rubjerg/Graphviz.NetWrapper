@@ -1,3 +1,5 @@
+/// @file
+/// @ingroup public_apis
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -8,12 +10,22 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-
-#ifndef _PATHGEOM_INCLUDE
-#define _PATHGEOM_INCLUDE
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#ifdef GVDLL
+#ifdef PATHPLAN_EXPORTS
+#define PATHGEOM_API __declspec(dllexport)
+#else
+#define PATHGEOM_API __declspec(dllimport)
+#endif
+#endif
+
+#ifndef PATHGEOM_API
+#define PATHGEOM_API /* nothing */
 #endif
 
 #ifdef HAVE_POINTF_S
@@ -42,8 +54,10 @@ extern "C" {
 /* opaque state handle for visibility graph operations */
     typedef struct vconfig_s vconfig_t;
 
-    void freePath(Ppolyline_t* p);
+    PATHGEOM_API void freePath(Ppolyline_t* p);
+
+#undef PATHGEOM_API
+
 #ifdef __cplusplus
 }
-#endif
 #endif
