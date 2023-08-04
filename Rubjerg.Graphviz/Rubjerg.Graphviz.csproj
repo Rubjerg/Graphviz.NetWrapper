@@ -21,6 +21,10 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\GraphvizWrapper\GraphvizWrapper.vcxproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

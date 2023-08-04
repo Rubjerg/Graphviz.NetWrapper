@@ -19,7 +19,7 @@ namespace Rubjerg.Graphviz.Test
             var xdotGraph = root.CreateLayout();
             // FIXNOW: parse a sample in which all directives occur
             var xNodeA = xdotGraph.GetNode("A");
-            var ldraw = xdotGraph.GetLabelDrawing(xNodeA);
+            var ldraw = xNodeA.GetLabelDrawing();
             Assert.AreEqual(27, ldraw.Count);
         }
 
