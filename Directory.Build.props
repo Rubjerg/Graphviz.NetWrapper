@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- We do not want warnings about outdated analyzers https://github.com/dotnet/docs/pull/27799 -->
+    <_SkipUpgradeNetAnalyzersNuGetWarning>true</_SkipUpgradeNetAnalyzersNuGetWarning>
+  </PropertyGroup>
+</Project>
