@@ -202,18 +202,7 @@ namespace Rubjerg.Graphviz
             if (xdotString is null)
                 return new List<XDotOp>();
 
-            IntPtr xdot = XDotFFI.parseXDot(xdotString);
-            try
-            {
-                return XDotTranslator.TranslateXDot(xdot);
-            }
-            finally
-            {
-                if (xdot != IntPtr.Zero)
-                {
-                    XDotFFI.freeXDot(xdot);
-                }
-            }
+            return XDotParser.ParseXDot(xdotString);
         }
     }
 }

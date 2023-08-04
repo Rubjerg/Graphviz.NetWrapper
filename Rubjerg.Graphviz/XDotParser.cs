@@ -30,9 +30,25 @@ namespace Rubjerg.Graphviz
         public XDotOp[] Ops { get; set; }  // xdot operations
     }
 
-    internal static class XDotTranslator
+    internal static class XDotParser
     {
-        public static List<XDotOp> TranslateXDot(IntPtr xdotPtr)
+        public static List<XDotOp> ParseXDot(string xdotString)
+        {
+            IntPtr xdot = XDotFFI.parseXDot(xdotString);
+            try
+            {
+                return TranslateXDot(xdot);
+            }
+            finally
+            {
+                if (xdot != IntPtr.Zero)
+                {
+                    XDotFFI.freeXDot(xdot);
+                }
+            }
+        }
+
+        internal static List<XDotOp> TranslateXDot(IntPtr xdotPtr)
         {
             if (xdotPtr == IntPtr.Zero)
                 throw new ArgumentNullException(nameof(xdotPtr));
