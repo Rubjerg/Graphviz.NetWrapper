@@ -204,8 +204,36 @@ namespace Rubjerg.Graphviz
             if (!HasAttribute("rects"))
                 yield break;
 
-            foreach (string rect in GetAttribute("rects").Split(' '))
-                yield return ParseRect(rect);
+            // There is a lingering issue in Graphviz where the x coordinates of the record rectangles may be off.
+            // As a workaround we consult the x coordinates, and attempt to map onto those.
+            // https://github.com/Rubjerg/Graphviz.NetWrapper/issues/30
+            var validXCoords = GetDrawing().OfType<XDotOp.PolyLine>()
+                .SelectMany(p => p.Polyline.Points).Select(p => p.X).ToList();
+
+            foreach (string rectStr in GetAttribute("rects").Split(' '))
+            {
+                var rect = ParseRect(rectStr);
+
+                var x1 = rect.X;
+                var x2 = rect.X + rect.Width;
+                var fixedX1 = (float)FindClosest(validXCoords, x1);
+                var fixedX2 = (float)FindClosest(validXCoords, x2);
+                var fixedRect = new RectangleF(
+                    new PointF(fixedX1, rect.Y),
+                    new SizeF(fixedX2 - rect.X, rect.Height));
+                yield return fixedRect;
+            }
+        }
+
+        /// <summary>
+        /// Return the value that is closest to the given target value.
+        /// Return target if the sequence if empty.
+        /// </summary>
+        private static double FindClosest(IEnumerable<double> self, double target)
+        {
+            if (self.Any())
+                return self.OrderBy(x => Math.Abs(x - target)).First();
+            return target;
         }
 
         private RectangleF ParseRect(string rect)
@@ -217,5 +245,8 @@ namespace Rubjerg.Graphviz
             float lowerY = float.Parse(points[3], NumberStyles.Any, CultureInfo.InvariantCulture);
             return new RectangleF(leftX, upperY, rightX - leftX, lowerY - upperY);
         }
+
+        public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
+        public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
     }
 }

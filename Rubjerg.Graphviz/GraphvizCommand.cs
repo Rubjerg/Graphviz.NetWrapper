@@ -9,7 +9,7 @@ namespace Rubjerg.Graphviz
     /// </summary>
     public class GraphvizCommand
     {
-        public static XDotGraph Layout(Graph input, string outputPath = null, string engine = LayoutEngines.Dot)
+        public static RootGraph Layout(Graph input, string outputPath = null, string engine = LayoutEngines.Dot)
         {
             string exeName = "dot.exe";
             string arguments = $"-Txdot -K{engine}";
@@ -65,7 +65,7 @@ namespace Rubjerg.Graphviz
             else
             {
                 // Process completed successfully.
-                var resultGraph = XDotGraph.FromDotString(output);
+                var resultGraph = RootGraph.FromDotString(output);
                 return resultGraph;
             }
         }

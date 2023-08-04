@@ -141,13 +141,17 @@ namespace Rubjerg.Graphviz
                 case XDotKind.FontChar:
                     return new XDotOp.FontChar()
                     {
-                        Value = XDotFFI.get_fontchar(xdotOpPtr)
+                        Value = TranslateFontChar(XDotFFI.get_fontchar(xdotOpPtr))
                     };
                 default:
                     throw new ArgumentException($"Unexpected XDotOp.Kind: {kind}");
             }
         }
 
+        private static XDotFontChar TranslateFontChar(uint value)
+        {
+            return (XDotFontChar)(int)value;
+        }
         private static XDotImage TranslateImage(IntPtr imagePtr)
         {
             XDotImage image = new XDotImage
@@ -183,23 +187,23 @@ namespace Rubjerg.Graphviz
             return ellipse;
         }
 
-        private static XDotColor TranslateGradColor(IntPtr colorPtr)
+        private static XDotGradColor TranslateGradColor(IntPtr colorPtr)
         {
             var type = XDotFFI.get_type(colorPtr);
             switch (type)
             {
                 case XDotGradType.None:
-                    return new XDotColor.Uniform()
+                    return new XDotGradColor.Uniform()
                     {
                         Color = XDotFFI.GetClr(colorPtr)
                     };
                 case XDotGradType.Linear:
-                    return new XDotColor.LinearGradient()
+                    return new XDotGradColor.LinearGradient()
                     {
                         LinearGrad = TranslateLinearGrad(XDotFFI.get_ling(colorPtr))
                     };
                 case XDotGradType.Radial:
-                    return new XDotColor.RadialGradient()
+                    return new XDotGradColor.RadialGradient()
                     {
                         RadialGrad = TranslateRadialGrad(XDotFFI.get_ring(colorPtr))
                     };

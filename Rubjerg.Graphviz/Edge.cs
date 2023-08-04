@@ -148,6 +148,13 @@ namespace Rubjerg.Graphviz
             return splinepoints;
         }
 
+        public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
+        public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
+        public IReadOnlyList<XDotOp> GetHeadArrowDrawing() => GetXDotValue(this, "_hdraw_");
+        public IReadOnlyList<XDotOp> GetTailArrowDrawing() => GetXDotValue(this, "_tdraw_");
+        public IReadOnlyList<XDotOp> GetHeadLabelDrawing() => GetXDotValue(this, "_hldraw_");
+        public IReadOnlyList<XDotOp> GetTailLabelDrawing() => GetXDotValue(this, "_tldraw_");
+
         /// <summary>
         /// An edge can define a cluster as logical tail.
         /// This is used to fake edges to and from clusters by clipping the edge on the borders of the logical tail.

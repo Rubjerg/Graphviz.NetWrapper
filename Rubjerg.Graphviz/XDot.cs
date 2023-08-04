@@ -1,7 +1,8 @@
+using System;
+using System.Drawing;
+
 namespace Rubjerg.Graphviz
 {
-    // FIXNOW: point to relevant documentation
-
     public record struct XDotColorStop
     {
         public float Frac { get; init; }
@@ -30,21 +31,62 @@ namespace Rubjerg.Graphviz
         public XDotColorStop[] Stops { get; init; }
     }
 
-    public abstract record class XDotColor
+    public abstract record class XDotGradColor
     {
-        private XDotColor() { }
-        public sealed record class Uniform : XDotColor
+        private XDotGradColor() { }
+        public sealed record class Uniform : XDotGradColor
         {
             public string Color { get; init; }
         }
-        public sealed record class LinearGradient : XDotColor
+        public sealed record class LinearGradient : XDotGradColor
         {
             public XDotLinearGrad LinearGrad { get; init; }
         }
-        public sealed record class RadialGradient : XDotColor
+        public sealed record class RadialGradient : XDotGradColor
         {
             public XDotRadialGrad RadialGrad { get; init; }
         }
+    }
+
+    public record struct XDotPoint
+    {
+        public double X { get; init; }
+        public double Y { get; init; }
+        public double Z { get; init; }
+
+        public PointF ToPointF()
+        {
+            return new PointF()
+            {
+                X = (float)X,
+                Y = (float)Y,
+            };
+        }
+    }
+
+    public record struct XDotRect
+    {
+        public double X { get; init; }
+        public double Y { get; init; }
+        public double Width { get; init; }
+        public double Height { get; init; }
+
+        public RectangleF ToRectangleF()
+        {
+            return new RectangleF()
+            {
+                X = (float)X,
+                Y = (float)Y,
+                Width = (float)Width,
+                Height = (float)Height,
+            };
+        }
+    }
+
+    public record struct XDotPolyline
+    {
+        public int Count { get; init; }
+        public XDotPoint[] Points { get; init; }
     }
 
     public enum XDotAlign
@@ -54,27 +96,6 @@ namespace Rubjerg.Graphviz
         Right
     }
 
-    public record struct XDotPoint
-    {
-        public double X { get; init; }
-        public double Y { get; init; }
-        public double Z { get; init; }
-    }
-
-    public record struct XDotRect
-    {
-        public double X { get; init; }
-        public double Y { get; init; }
-        public double Width { get; init; }
-        public double Height { get; init; }
-    }
-
-    public record struct XDotPolyline
-    {
-        public int Count { get; init; }
-        public XDotPoint[] Points { get; init; }
-    }
-
     public record struct XDotText
     {
         public double X { get; init; }
@@ -82,6 +103,20 @@ namespace Rubjerg.Graphviz
         public XDotAlign Align { get; init; }
         public double Width { get; init; }
         public string Text { get; init; }
+
+        /// <summary>
+        /// Compute the bounding box of this text element given the earlier specified font
+        /// </summary>
+        public RectangleF TextBoundingBox(XDotFont font)
+        {
+            return new RectangleF()
+            {
+                X = (float)X,
+                Y = (float)Y,
+                Width = (float)Width,
+                Height = (float)font.Size,
+            };
+        }
     }
 
     public record struct XDotImage
@@ -96,6 +131,22 @@ namespace Rubjerg.Graphviz
         public string Name { get; init; }
     }
 
+    [Flags]
+    public enum XDotFontChar
+    {
+        None = 0,
+        Bold = 1,
+        Italic = 2,
+        Underline = 4,
+        Superscript = 8,
+        Subscript = 16,
+        StrikeThrough = 32,
+        Overline = 64,
+    }
+
+    /// <summary>
+    /// See https://graphviz.org/docs/outputs/canon/#xdot for semantics
+    /// </summary>
     public abstract record class XDotOp
     {
         private XDotOp() { }
@@ -146,11 +197,11 @@ namespace Rubjerg.Graphviz
         }
         public sealed record class GradFillColor : XDotOp
         {
-            public XDotColor GradColor { get; init; }
+            public XDotGradColor GradColor { get; init; }
         }
         public sealed record class GradPenColor : XDotOp
         {
-            public XDotColor GradColor { get; init; }
+            public XDotGradColor GradColor { get; init; }
         }
         public sealed record class Font : XDotOp
         {
@@ -162,7 +213,7 @@ namespace Rubjerg.Graphviz
         }
         public sealed record class FontChar : XDotOp
         {
-            public uint Value { get; init; }
+            public XDotFontChar Value { get; init; }
         }
     }
 }

@@ -195,5 +195,25 @@ namespace Rubjerg.Graphviz
             }
             return result;
         }
+
+        protected static List<XDotOp> GetXDotValue(CGraphThing obj, string attrName)
+        {
+            var xdotString = obj.SafeGetAttribute(attrName, null);
+            if (xdotString is null)
+                return new List<XDotOp>();
+
+            IntPtr xdot = XDotFFI.parseXDot(xdotString);
+            try
+            {
+                return XDotTranslator.TranslateXDot(xdot);
+            }
+            finally
+            {
+                if (xdot != IntPtr.Zero)
+                {
+                    XDotFFI.freeXDot(xdot);
+                }
+            }
+        }
     }
 }

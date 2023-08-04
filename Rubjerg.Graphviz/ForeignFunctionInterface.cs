@@ -585,7 +585,7 @@ namespace Rubjerg.Graphviz
 
         [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr agget(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name);
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr agnameof(IntPtr obj);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void clone_attribute_declarations(IntPtr graphfrom, IntPtr graphto);

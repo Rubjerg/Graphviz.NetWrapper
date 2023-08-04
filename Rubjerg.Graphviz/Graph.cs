@@ -451,10 +451,10 @@ namespace Rubjerg.Graphviz
         }
 
         /// <summary>
-        /// Compute the layout in a separate process, and return a new graph, which is a copy of the old
+        /// Compute the layout in a separate process by calling dot.exe, and return a new graph, which is a copy of the old
         /// graph with the xdot information added to it.
         /// </summary>
-        public XDotGraph CreateLayout()
+        public RootGraph CreateLayout()
         {
             return GraphvizCommand.Layout(this);
         }
@@ -541,6 +541,9 @@ namespace Rubjerg.Graphviz
             float h = float.Parse(bb[3], NumberStyles.Any, CultureInfo.InvariantCulture) - y;
             return new RectangleF(x, y, w, h);
         }
+
+        public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
+        public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
 
         [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
         public GraphvizLabel GetLabel()
