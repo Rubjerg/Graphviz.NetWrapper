@@ -157,17 +157,6 @@ namespace Rubjerg.Graphviz
             return EdgesOut().Any(e => e.Head().Equals(node)) || EdgesIn().Any(e => e.Tail().Equals(node));
         }
 
-        public RectangleF BoundingBox()
-        {
-            // x and y are the center of the node
-            // Coords are in points, sizes in inches. 72 points = 1 inch
-            float x = Convert.ToSingle(NodeX(_ptr));
-            float y = Convert.ToSingle(NodeY(_ptr));
-            float w = Convert.ToSingle(NodeWidth(_ptr) * 72);
-            float h = Convert.ToSingle(NodeHeight(_ptr) * 72);
-            return new RectangleF(x - w / 2, y - h / 2, w, h);
-        }
-
         /// <summary>
         /// Return null if label not set.
         /// </summary>
@@ -181,9 +170,56 @@ namespace Rubjerg.Graphviz
             return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered, new PointF(0, 0));
         }
 
+        /// <summary>
+        /// The position of the center of the node.
+        /// </summary>
         public PointF Position()
         {
+            var size = Size();
+            // The "pos" attribute is available as part of xdot output
+            if (HasAttribute("pos"))
+            {
+                var posString = GetAttribute("pos");
+                var coords = posString.Split(',');
+                float x = float.Parse(coords[0], NumberStyles.Any, CultureInfo.InvariantCulture);
+                float y = float.Parse(coords[1], NumberStyles.Any, CultureInfo.InvariantCulture);
+                return new PointF(x, y);
+            }
+            // If the "pos" attribute is not available, try the following FFI functions,
+            // which are available after a ComputeLayout
             return new PointF(Convert.ToSingle(NodeX(_ptr)), Convert.ToSingle(NodeY(_ptr)));
+        }
+
+        /// <summary>
+        /// The size of bounding box of the node.
+        /// </summary>
+        public SizeF Size()
+        {
+            // The "width" and "height" attributes are available as part of xdot output
+            float w, h;
+            if (HasAttribute("width") && HasAttribute("height"))
+            {
+                w = float.Parse(GetAttribute("width"), NumberStyles.Any, CultureInfo.InvariantCulture);
+                h = float.Parse(GetAttribute("height"), NumberStyles.Any, CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                // If they are not available, try the following FFI functions,
+                // which are available after a ComputeLayout
+                w = Convert.ToSingle(NodeWidth(_ptr));
+                h = Convert.ToSingle(NodeHeight(_ptr));
+            }
+            // Coords are in points, sizes in inches. 72 points = 1 inch
+            // We return everything in terms of points.
+            return new SizeF(w * 72, h * 72);
+        }
+
+        public RectangleF BoundingBox()
+        {
+            var size = Size();
+            var center = Position();
+            var bottomleft = new PointF(center.X - size.Width / 2, center.Y - size.Height / 2);
+            return new RectangleF(bottomleft, size);
         }
 
         public void MakeInvisibleAndSmall()
