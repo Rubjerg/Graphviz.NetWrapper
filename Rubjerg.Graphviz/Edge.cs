@@ -82,6 +82,51 @@ namespace Rubjerg.Graphviz
             return IsAdjacentTo(node1) && IsAdjacentTo(node2);
         }
 
+        /// <summary>
+        /// An edge can define a cluster as logical tail.
+        /// This is used to fake edges to and from clusters by clipping the edge on the borders of the logical tail.
+        /// </summary>
+        /// <returns></returns>
+        public void SetLogicalTail(SubGraph ltail)
+        {
+            if (!ltail.IsCluster())
+                throw new InvalidOperationException("ltail must be a cluster");
+            if (!MyRootGraph.IsCompound())
+                throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
+            string ltailname = ltail.GetName();
+            SafeSetAttribute("ltail", ltailname, "");
+        }
+
+        /// <summary>
+        /// An edge can define a cluster as logical head.
+        /// This is used to fake edges to and from clusters by clipping the edge on the borders of the logical head.
+        /// </summary>
+        public void SetLogicalHead(SubGraph lhead)
+        {
+            if (!lhead.IsCluster())
+                throw new InvalidOperationException("ltail must be a cluster");
+            if (!MyRootGraph.IsCompound())
+                throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
+            string lheadname = lhead.GetName();
+            SafeSetAttribute("lhead", lheadname, "");
+        }
+
+        /// <summary>
+        /// Port names cannot contain certain characters, and other characters must be escaped.
+        /// This function converts a string to an ID that is valid as a port name.
+        /// It makes sure there are no collisions.
+        /// </summary>
+        public static string ConvertUidToPortName(string id)
+        {
+            string result = id;
+            foreach (char c in new[] { '<', '>', '{', '}', '|', ':' })
+            {
+                result = result.Replace("+", "[+]");
+                result = result.Replace(c, '+');
+            }
+            return result;
+        }
+
         // Because there are two valid pointers to each edge, we have to override the default equals behaviour
         // which simply compares the wrapped pointers.
         public override bool Equals(GraphvizThing obj)
@@ -98,6 +143,8 @@ namespace Rubjerg.Graphviz
             //return (int) agmkin(ptr);
             return (int)(long)Agmkin(_ptr);
         }
+
+        #region layout attributes
 
         /// <summary>
         /// The splines contain 3n+1 points, just like expected by .net drawing methods.
@@ -155,49 +202,6 @@ namespace Rubjerg.Graphviz
         public IReadOnlyList<XDotOp> GetHeadLabelDrawing() => GetXDotValue(this, "_hldraw_");
         public IReadOnlyList<XDotOp> GetTailLabelDrawing() => GetXDotValue(this, "_tldraw_");
 
-        /// <summary>
-        /// An edge can define a cluster as logical tail.
-        /// This is used to fake edges to and from clusters by clipping the edge on the borders of the logical tail.
-        /// </summary>
-        /// <returns></returns>
-        public void SetLogicalTail(SubGraph ltail)
-        {
-            if (!ltail.IsCluster())
-                throw new InvalidOperationException("ltail must be a cluster");
-            if (!MyRootGraph.IsCompound())
-                throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
-            string ltailname = ltail.GetName();
-            SafeSetAttribute("ltail", ltailname, "");
-        }
-
-        /// <summary>
-        /// An edge can define a cluster as logical head.
-        /// This is used to fake edges to and from clusters by clipping the edge on the borders of the logical head.
-        /// </summary>
-        public void SetLogicalHead(SubGraph lhead)
-        {
-            if (!lhead.IsCluster())
-                throw new InvalidOperationException("ltail must be a cluster");
-            if (!MyRootGraph.IsCompound())
-                throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
-            string lheadname = lhead.GetName();
-            SafeSetAttribute("lhead", lheadname, "");
-        }
-
-        /// <summary>
-        /// Port names cannot contain certain characters, and other characters must be escaped.
-        /// This function converts a string to an ID that is valid as a port name.
-        /// It makes sure there are no collisions.
-        /// </summary>
-        public static string ConvertUidToPortName(string id)
-        {
-            string result = id;
-            foreach (char c in new[] { '<', '>', '{', '}', '|', ':' })
-            {
-                result = result.Replace("+", "[+]");
-                result = result.Replace(c, '+');
-            }
-            return result;
-        }
+        #endregion
     }
 }

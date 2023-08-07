@@ -101,6 +101,7 @@ namespace Rubjerg.Graphviz
         public double X { get; init; }
         public double Y { get; init; }
         public XDotAlign Align { get; init; }
+        // FIXNOW: is this in points or inch?
         public double Width { get; init; }
         public string Text { get; init; }
 
@@ -117,6 +118,15 @@ namespace Rubjerg.Graphviz
                 Height = (float)font.Size,
             };
         }
+
+        public PointF BaselineStart()
+        {
+            return new PointF()
+            {
+                X = (float)X,
+                Y = (float)Y,
+            };
+        }
     }
 
     public record struct XDotImage
@@ -127,6 +137,9 @@ namespace Rubjerg.Graphviz
 
     public record struct XDotFont
     {
+        /// <summary>
+        /// Size in points
+        /// </summary>
         public double Size { get; init; }
         public string Name { get; init; }
     }

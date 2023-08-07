@@ -157,18 +157,16 @@ namespace Rubjerg.Graphviz
             return EdgesOut().Any(e => e.Head().Equals(node)) || EdgesIn().Any(e => e.Tail().Equals(node));
         }
 
-        /// <summary>
-        /// Return null if label not set.
-        /// </summary>
-        /// <returns></returns>
-        [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
-        public GraphvizLabel GetLabel()
+        public void MakeInvisibleAndSmall()
         {
-            IntPtr labelptr = NodeLabel(_ptr);
-            if (labelptr == IntPtr.Zero)
-                return null;
-            return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered, new PointF(0, 0));
+            SafeSetAttribute("style", "invis", "");
+            SafeSetAttribute("margin", "0", "");
+            SafeSetAttribute("width", "0", "");
+            SafeSetAttribute("height", "0", "");
+            SafeSetAttribute("shape", "point", "");
         }
+
+        #region layout attributes
 
         /// <summary>
         /// The position of the center of the node.
@@ -220,15 +218,6 @@ namespace Rubjerg.Graphviz
             var center = Position();
             var bottomleft = new PointF(center.X - size.Width / 2, center.Y - size.Height / 2);
             return new RectangleF(bottomleft, size);
-        }
-
-        public void MakeInvisibleAndSmall()
-        {
-            SafeSetAttribute("style", "invis", "");
-            SafeSetAttribute("margin", "0", "");
-            SafeSetAttribute("width", "0", "");
-            SafeSetAttribute("height", "0", "");
-            SafeSetAttribute("shape", "point", "");
         }
 
         /// <summary>
@@ -284,5 +273,16 @@ namespace Rubjerg.Graphviz
 
         public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
         public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
+
+        #endregion
+
+        [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
+        public GraphvizLabel GetLabel()
+        {
+            IntPtr labelptr = NodeLabel(_ptr);
+            if (labelptr == IntPtr.Zero)
+                return null;
+            return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered, new PointF(0, 0));
+        }
     }
 }

@@ -45,6 +45,7 @@ const char* rj_agmemwrite(Agraph_t* g)
 
 
 // Expose removed cgraph functions https://gitlab.com/graphviz/graphviz/-/issues/2433
+// When new GraphViz is released these are re-exposed and our wrappers can be removed
 Agnode_t* rj_aghead(Agedge_t* edge)
 {
     return AGHEAD(edge);

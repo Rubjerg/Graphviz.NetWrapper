@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace Rubjerg.Graphviz
 {
+    /// <summary>
+    /// See https://graphviz.org/docs/outputs/canon/#xdot
+    /// </summary>
     internal static class XDotFFI
     {
         [DllImport("xdot.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]

@@ -1,5 +1,6 @@
 #include "GraphvizWrapper.h"
 
+// See https://graphviz.org/docs/outputs/canon/#xdot for specifications
 
 // Accessors for xdot
 size_t get_cnt(xdot* xdot) { return xdot->cnt; }
