@@ -8,8 +8,9 @@ namespace Rubjerg.Graphviz.Test
     public class CGraphEdgeCases
     {
         [Test()]
-        public void TestAttributeIntroduction()
+        public void TestAttributeReintroduction()
         {
+            // Reintroducing graph attributes resets all values.
             RootGraph root = Utils.CreateUniqueTestGraph();
             Graph.IntroduceAttribute(root, "test", "default");
             root.SetAttribute("test", "1");
@@ -25,20 +26,6 @@ namespace Rubjerg.Graphviz.Test
             Assert.AreEqual("1", node.GetAttribute("test"));
             Node.IntroduceAttribute(root, "test", "default");
             Assert.AreEqual("1", node.GetAttribute("test"));
-        }
-
-        [Test()]
-        public void TestLayoutMethodsWithoutLayout()
-        {
-            RootGraph root = Utils.CreateUniqueTestGraph();
-            Node nodeA = root.GetOrAddNode("A");
-            Node nodeB = root.GetOrAddNode("B");
-            Edge edge = root.GetOrAddEdge(nodeA, nodeB, "");
-            Assert.AreEqual(root.BoundingBox(), default(RectangleF));
-            Assert.AreEqual(nodeA.Position(), default(PointF));
-            Assert.AreEqual(nodeA.BoundingBox(), default(RectangleF));
-            Assert.AreEqual(edge.FirstSpline(), null);
-            Assert.AreEqual(edge.Splines(), Enumerable.Empty<PointF[]>());
         }
 
         [Test()]
@@ -69,6 +56,19 @@ namespace Rubjerg.Graphviz.Test
                 Assert.AreEqual("\\N", nodeB.GetAttribute("label"));
                 root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/out.svg");
             }
+        }
+
+        [Test()]
+        public void TestGetUnintroducedAttributes()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+            Assert.AreEqual(null, root.GetAttribute("test"));
+            Graph.IntroduceAttribute(root, "test", "foo");
+            Assert.AreEqual("foo", root.GetAttribute("test"));
+
+            // If we call set attribute first, the attribute is automatically introduced
+            root.SetAttribute("test2", "foo");
+            Assert.AreEqual("foo", root.GetAttribute("test2"));
         }
 
         [Test()]

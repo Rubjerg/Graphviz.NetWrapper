@@ -69,17 +69,17 @@ namespace Rubjerg.Graphviz.Test
 
             // Or programatically read out the layout attributes
             Node nodeA = root.GetNode("A");
-            PointF position = nodeA.Position();
+            PointF position = nodeA.GetPosition();
             Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+}", position.ToString());
 
             // Like a bounding box of an object
-            RectangleF nodeboundingbox = nodeA.BoundingBox();
+            RectangleF nodeboundingbox = nodeA.GetBoundingBox();
             Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", nodeboundingbox.ToString());
 
             // Or splines between nodes
             Node nodeB = root.GetNode("B");
             Edge edge = root.GetEdge(nodeA, nodeB, "Some edge name");
-            PointF[] spline = edge.FirstSpline();
+            PointF[] spline = edge.GetFirstSpline();
             string splineString = string.Join(", ", spline.Select(p => p.ToString()));
             string expectedSplinePattern =
                 @"{X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+},"
@@ -137,8 +137,8 @@ namespace Rubjerg.Graphviz.Test
             root.ComputeLayout();
 
             SubGraph cluster = root.GetSubgraph("cluster_1");
-            RectangleF clusterbox = cluster.BoundingBox();
-            RectangleF rootgraphbox = root.BoundingBox();
+            RectangleF clusterbox = cluster.GetBoundingBox();
+            RectangleF rootgraphbox = root.GetBoundingBox();
             Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", clusterbox.ToString());
             Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", rootgraphbox.ToString());
         }

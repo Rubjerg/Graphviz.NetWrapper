@@ -153,7 +153,7 @@ namespace Rubjerg.Graphviz
         /// This method only returns the first spline that is defined.
         /// Edge arrows are ignored.
         /// </summary>
-        public PointF[] FirstSpline()
+        public PointF[] GetFirstSpline()
         {
             if (!HasPosition())
                 return null;
@@ -167,7 +167,7 @@ namespace Rubjerg.Graphviz
         /// https://github.com/ellson/graphviz/issues/1277
         /// Edge arrows are ignored.
         /// </summary>
-        public IEnumerable<PointF[]> Splines()
+        public IEnumerable<PointF[]> GetSplines()
         {
             if (!HasPosition())
                 yield break;
@@ -182,12 +182,10 @@ namespace Rubjerg.Graphviz
             var splinepoints = new PointF[points.Length];
             for (int i = 0; i < points.Length; i++)
             {
-                if (points[i].StartsWith("e"))
+                if (points[i].StartsWith("e") || points[i].StartsWith("s"))
                     continue; // Ignore arrow indicators
                 string xstring = points[i].Split(',')[0];
                 string ystring = points[i].Split(',')[1];
-                // NOTE: if a parse error occurs here, we probably missed a case and e.g. don't deal correctly
-                // with edges having arrows
                 float x = float.Parse(xstring, NumberStyles.Any, CultureInfo.InvariantCulture);
                 float y = float.Parse(ystring, NumberStyles.Any, CultureInfo.InvariantCulture);
                 splinepoints[i] = new PointF(x, y);

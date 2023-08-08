@@ -171,9 +171,8 @@ namespace Rubjerg.Graphviz
         /// <summary>
         /// The position of the center of the node.
         /// </summary>
-        public PointF Position()
+        public PointF GetPosition()
         {
-            var size = Size();
             // The "pos" attribute is available as part of xdot output
             if (HasAttribute("pos"))
             {
@@ -191,7 +190,7 @@ namespace Rubjerg.Graphviz
         /// <summary>
         /// The size of bounding box of the node.
         /// </summary>
-        public SizeF Size()
+        public SizeF GetSize()
         {
             // The "width" and "height" attributes are available as part of xdot output
             float w, h;
@@ -212,10 +211,10 @@ namespace Rubjerg.Graphviz
             return new SizeF(w * 72, h * 72);
         }
 
-        public RectangleF BoundingBox()
+        public RectangleF GetBoundingBox()
         {
-            var size = Size();
-            var center = Position();
+            var size = GetSize();
+            var center = GetPosition();
             var bottomleft = new PointF(center.X - size.Width / 2, center.Y - size.Height / 2);
             return new RectangleF(bottomleft, size);
         }

@@ -560,7 +560,7 @@ namespace Rubjerg.Graphviz
         }
 
         // FIXNOW: make sure these functions are still valid
-        public RectangleF BoundingBox()
+        public RectangleF GetBoundingBox()
         {
             string bb_string = Agget(_ptr, "bb");
             if (string.IsNullOrEmpty(bb_string))

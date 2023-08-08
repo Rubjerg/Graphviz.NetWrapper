@@ -34,7 +34,7 @@ namespace Rubjerg.Graphviz
         }
 
         /// <summary>
-        /// Also works if the attribute has not been introduced for this kind.
+        /// Set attribute, and introduce it with the given default if it is not introduced yet.
         /// </summary>
         public void SafeSetAttribute(string name, string value, string deflt)
         {
@@ -43,15 +43,16 @@ namespace Rubjerg.Graphviz
         }
 
         /// <summary>
-        /// Precondition: the attribute has been introduced for this kind.
+        /// Set attribute, and introduce it with the empty string if it does not exist yet.
         /// </summary>
         public void SetAttribute(string name, string value)
         {
-            Agset(_ptr, name, value);
+            Agsafeset(_ptr, name, value, "");
         }
 
         /// <summary>
-        /// Precondition: the attribute has been introduced for this kind.
+        /// Get the attribute value for this object, or the default value of the attribute if no explicit value was set.
+        /// If the attribute was not introduced, return null.
         /// </summary>
         public string GetAttribute(string name)
         {
@@ -59,7 +60,7 @@ namespace Rubjerg.Graphviz
         }
 
         /// <summary>
-        /// Get the attribute if it was introduced, otherwise return deflt.
+        /// Get the attribute if it was introduced and contains a non-empty value, otherwise return deflt.
         /// </summary>
         public string SafeGetAttribute(string name, string deflt)
         {
@@ -154,27 +155,6 @@ namespace Rubjerg.Graphviz
             return 0;
         }
 
-        public Color GetColor()
-        {
-            string colorstring = SafeGetAttribute("color", "Black");
-            return Color.FromName(colorstring);
-        }
-
-        public bool HasPosition()
-        {
-            return HasAttribute("pos");
-        }
-
-        public void MakeInvisible()
-        {
-            SafeSetAttribute("style", "invis", "");
-        }
-
-        public bool IsInvisible()
-        {
-            return SafeGetAttribute("style", "") == "invis";
-        }
-
         /// <summary>
         /// Some characters and character sequences have a special meaning.
         /// If you intend to display a literal string, use this function to properly escape the string.
@@ -196,6 +176,29 @@ namespace Rubjerg.Graphviz
             return result;
         }
 
+        #region layout functions
+
+        public Color GetColor()
+        {
+            string colorstring = SafeGetAttribute("color", "Black");
+            return Color.FromName(colorstring);
+        }
+
+        public bool HasPosition()
+        {
+            return HasAttribute("pos");
+        }
+
+        public void MakeInvisible()
+        {
+            SafeSetAttribute("style", "invis", "");
+        }
+
+        public bool IsInvisible()
+        {
+            return SafeGetAttribute("style", "") == "invis";
+        }
+
         protected static List<XDotOp> GetXDotValue(CGraphThing obj, string attrName)
         {
             var xdotString = obj.SafeGetAttribute(attrName, null);
@@ -204,5 +207,7 @@ namespace Rubjerg.Graphviz
 
             return XDotParser.ParseXDot(xdotString);
         }
+
+        #endregion
     }
 }
