@@ -101,9 +101,20 @@ namespace Rubjerg.Graphviz
             return attributes;
         }
 
+        /// <summary>
+        /// Unique identifier for this edge. Used to distinghuish multi edges.
+        /// For graphs that are imported from a dotstring, names are not a unique identifier anymore,
+        /// and may simply be null.
+        /// </summary>
+        /// <returns></returns>
         public string GetName()
         {
-            return Rjagnameof(_ptr);
+            // Because graphviz does not properly export empty string edgenames to dot, this opens a can of worms.
+            // So we disallow it, and map it onto null.
+            var result = Rjagnameof(_ptr);
+            if (result == string.Empty)
+                return null;
+            return result;
         }
 
         public override string ToString()

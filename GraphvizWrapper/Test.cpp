@@ -99,7 +99,7 @@ int test_agread() {
     FILE* fp = fopen(filename, "r");
     if (fp == nullptr)
         return 1;
-    auto graph = agread(fp, nullptr);
+    auto graph = agread(fp, NULL);
     if (graph == nullptr)
         return 2;
     fclose(fp);
@@ -127,3 +127,4 @@ int test_rj_agmemread() {
         return 2;
     return 0;
 }
+

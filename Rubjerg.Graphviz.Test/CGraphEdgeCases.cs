@@ -8,6 +8,69 @@ namespace Rubjerg.Graphviz.Test
     public class CGraphEdgeCases
     {
         [Test()]
+        public void TestReadDotFile()
+        {
+            RootGraph root = RootGraph.FromDotString(@"
+digraph test {
+    """";
+    A;
+    B;
+    A -> B[key = edgename];
+    A -> B[key = edgename];
+    A -> B;
+    A -> B;
+}
+");
+            var nodes = root.Nodes().ToList();
+            var edges = root.Edges().ToList();
+            var names = edges.Select(e => e.GetName());
+            // The attribute 'key' maps to the edgename
+            // Note that omitted key values will result in unique edges
+            Assert.AreEqual(1, names.Count(n => n == "edgename"));
+            Assert.AreEqual(2, names.Count(n => n == null));
+            Assert.AreEqual(3, nodes.Count);
+        }
+
+        [Test()]
+        public void TestWriteDotFile()
+        {
+            var root = RootGraph.CreateNew(GraphType.Directed);
+
+            // Vice versa, empty edge names and node names will result in unique objects as well
+            var E = root.GetOrAddNode("");
+            var E2 = root.GetOrAddNode("");
+            var N = root.GetOrAddNode(null);
+            var N2 = root.GetOrAddNode(null);
+            var A = root.GetOrAddNode("A");
+            var B = root.GetOrAddNode("B");
+            _ = root.GetOrAddEdge(A, B, null);
+            _ = root.GetOrAddEdge(A, B, null);
+            _ = root.GetOrAddEdge(A, B, "");
+            _ = root.GetOrAddEdge(A, B, "");
+            _ = root.GetOrAddEdge(A, B, "edge2");
+            _ = root.GetOrAddEdge(A, B, "edge2");
+            var dot = root.ToDotString();
+
+            // Passing null to GetEdge will return any edge between the given endpoints.
+            var edge = root.GetEdge(A, B, null);
+            Assert.Contains(edge.GetName(), new[] { null, "edge2" });
+
+            Assert.AreEqual(dot, @"digraph {
+	node [label=""\N""];
+	""%5"";
+	""%7"";
+	""%9"";
+	""%11"";
+	A -> B;
+	A -> B;
+	A -> B;
+	A -> B;
+	A -> B	[key=edge2];
+}
+".Replace("\r", ""));
+        }
+
+        [Test()]
         public void TestAttributeReintroduction()
         {
             // Reintroducing graph attributes resets all values.

@@ -8,38 +8,6 @@ namespace Rubjerg.Graphviz.Test
     public class CGraphBasicOperations
     {
         [Test()]
-        public void TestReadDotFile()
-        {
-            RootGraph root = RootGraph.FromDotString(@"
-digraph test {
-    A;
-    B;
-    B -> B;
-    A -> B[key = edgename];
-    A -> B;
-    A -> B;
-}
-");
-            var edges = root.Edges().ToList();
-            var names = edges.Select(e => e.GetName());
-            // The attribute 'key' maps to the edgename
-            Assert.IsTrue(names.Any(n => n == "edgename"));
-            Assert.IsTrue(names.All(n => n == "edgename" || string.IsNullOrEmpty(n)));
-
-            // However, it is strange that the other two edges both seem to have the same name, namely ""
-            // According to the documentation, the name is used to distinguish between multi-edges
-            var A = root.GetNode("A");
-            var B = root.GetNode("B");
-            Assert.AreEqual(3, A.EdgesOut().Count());
-
-            // The documentation seem to be correct for edges that are added through the C interface
-            _ = root.GetOrAddEdge(A, B, "");
-            Assert.AreEqual(4, A.EdgesOut().Count());
-            _ = root.GetOrAddEdge(A, B, "");
-            Assert.AreEqual(4, A.EdgesOut().Count());
-        }
-
-        [Test()]
         public void TestCopyAttributes()
         {
             RootGraph root = Utils.CreateUniqueTestGraph();

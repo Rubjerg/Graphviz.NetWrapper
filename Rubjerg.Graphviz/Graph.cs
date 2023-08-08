@@ -140,17 +140,30 @@ namespace Rubjerg.Graphviz
             return Node.Get(this, name);
         }
 
-        public Edge GetOrAddEdge(Node tail, Node head, string name)
+        /// <param name="name">
+        /// Passing null as edge name (the default) will result in a new unique edge without a name.
+        /// Passing the empty string has the same effect as passing null.
+        /// </param>
+        public Edge GetOrAddEdge(Node tail, Node head, string name = null)
         {
             return Edge.GetOrCreate(this, tail, head, name);
         }
 
-        public Edge GetEdge(Node tail, Node head, string name)
+        /// <param name="name">
+        /// Passing null as edge name will return any edge between the given endpoints, regardless of their name.
+        /// Passing the empty string has the same effect as passing null.
+        /// </param>
+        public Edge GetEdge(Node tail, Node head, string name = null)
         {
             return Edge.Get(this, tail, head, name);
         }
 
-        public Edge GetEdgeBetween(Node node1, Node node2, string name)
+        ///<summary>Return an edge between two nodes, disregarding it's direction.</summary>
+        /// <param name="name">
+        /// Passing null as edge name will return any edge between the given endpoints, regardless of their name.
+        /// Passing the empty string has the same effect as passing null.
+        /// </param>
+        public Edge GetEdgeBetween(Node node1, Node node2, string name = null)
         {
             return Edge.Get(this, node1, node2, name) ?? Edge.Get(this, node2, node1, name);
         }
@@ -303,7 +316,7 @@ namespace Rubjerg.Graphviz
         /// <returns></returns>
         public RootGraph Clone(string resultname)
         {
-            RootGraph result = RootGraph.CreateNew(resultname, GetGraphType());
+            RootGraph result = RootGraph.CreateNew(GetGraphType(), resultname);
             _ = CopyAttributesTo(result);
             CloneInto(result);
             result.UpdateMemoryPressure();

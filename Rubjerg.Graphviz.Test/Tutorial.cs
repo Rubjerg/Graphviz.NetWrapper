@@ -14,7 +14,7 @@ namespace Rubjerg.Graphviz.Test
         public void GraphConstruction()
         {
             // You can programmatically construct graphs as follows
-            RootGraph root = RootGraph.CreateNew("Some Unique Identifier", GraphType.Directed);
+            RootGraph root = RootGraph.CreateNew(GraphType.Directed, "Some Unique Identifier");
 
             // The node names are unique identifiers within a graph in Graphviz
             Node nodeA = root.GetOrAddNode("A");
@@ -104,7 +104,7 @@ namespace Rubjerg.Graphviz.Test
         [Test, Order(3)]
         public void Clusters()
         {
-            RootGraph root = RootGraph.CreateNew("Graph with clusters", GraphType.Directed);
+            RootGraph root = RootGraph.CreateNew(GraphType.Directed, "Graph with clusters");
             Node nodeA = root.GetOrAddNode("A");
             Node nodeB = root.GetOrAddNode("B");
             Node nodeC = root.GetOrAddNode("C");
@@ -143,7 +143,7 @@ namespace Rubjerg.Graphviz.Test
         [Test, Order(4)]
         public void Records()
         {
-            RootGraph root = RootGraph.CreateNew("Graph with records", GraphType.Directed);
+            RootGraph root = RootGraph.CreateNew(GraphType.Directed, "Graph with records");
             Node nodeA = root.GetOrAddNode("A");
             nodeA.SafeSetAttribute("shape", "record", "");
             nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
@@ -158,7 +158,7 @@ namespace Rubjerg.Graphviz.Test
         [Test, Order(5)]
         public void StringEscaping()
         {
-            RootGraph root = RootGraph.CreateNew("Graph with escaped strings", GraphType.Directed);
+            RootGraph root = RootGraph.CreateNew(GraphType.Directed, "Graph with escaped strings");
             Node.IntroduceAttribute(root, "label", "\\N");
             Node nodeA = root.GetOrAddNode("A");
 

@@ -51,8 +51,11 @@ namespace Rubjerg.Graphviz
         /// Create a new graph.
         /// </summary>
         /// <param name="name">Unique identifier</param>
-        public static RootGraph CreateNew(string name, GraphType graphtype)
+        public static RootGraph CreateNew(GraphType graphtype, string name=null)
         {
+            // Because graphviz does not properly export empty strings to dot, this opens a can of worms.
+            // So we disallow it, and map it onto null.
+            name = name == string.Empty ? null : name;
             var ptr = Rjagopen(name, (int)graphtype);
             return new RootGraph(ptr);
         }

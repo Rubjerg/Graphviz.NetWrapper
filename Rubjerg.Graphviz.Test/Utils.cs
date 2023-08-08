@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -7,13 +7,13 @@ namespace Rubjerg.Graphviz.Test
 {
     public static class Utils
     {
-        private static readonly Random rand = new Random();
+        private static readonly Random _rand = new Random();
 
-        static int RootGraphCounter = 0;
+        internal static int _rootGraphCounter = 0;
         public static RootGraph CreateUniqueTestGraph()
         {
-            RootGraphCounter += 1;
-            return RootGraph.CreateNew("test graph " + RootGraphCounter.ToString(), GraphType.Directed);
+            _rootGraphCounter += 1;
+            return RootGraph.CreateNew(GraphType.Directed, "test graph " + _rootGraphCounter.ToString());
         }
 
         public static string GetTestFilePath(string fileName)
@@ -40,7 +40,7 @@ namespace Rubjerg.Graphviz.Test
                 for (int x = 0; x < out_degree - 2; x++)
                 {
                     var node = root.GetNode(i.ToString());
-                    int j = rand.Next(size - 1);
+                    int j = _rand.Next(size - 1);
                     var neighbor = root.GetNode(j.ToString());
                     _ = root.GetOrAddEdge(node, neighbor, $"{i} to {j}");
                 }

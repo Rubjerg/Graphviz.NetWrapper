@@ -96,7 +96,7 @@ namespace Rubjerg.Graphviz.Test
             var xroot = root.CreateLayout();
             var xnodeA = xroot.GetNode("A");
             var xnodeB = xroot.GetNode("B");
-            Edge xedge = xroot.GetOrAddEdge(xnodeA, xnodeB, "");
+            Edge xedge = xroot.GetEdge(xnodeA, xnodeB, "");
 
             Assert.AreEqual(xroot.GetColor(), Color.Black);
             Assert.AreNotEqual(xroot.GetBoundingBox(), default(RectangleF));

@@ -17,13 +17,20 @@ namespace Rubjerg.Graphviz
 
         internal static Edge Get(Graph graph, Node tail, Node head, string name)
         {
+            // Because graphviz does not properly export empty strings to dot, this opens a can of worms.
+            // So we disallow it, and map it onto null.
+            name = name == string.Empty ? null : name;
             IntPtr ptr = Agedge(graph._ptr, tail._ptr, head._ptr, name, 0);
             if (ptr == IntPtr.Zero)
                 return null;
             return new Edge(ptr, graph.MyRootGraph);
         }
+
         internal static Edge GetOrCreate(Graph graph, Node tail, Node head, string name)
         {
+            // Because graphviz does not properly export empty strings to dot, this opens a can of worms.
+            // So we disallow it, and map it onto null.
+            name = name == string.Empty ? null : name;
             IntPtr ptr = Agedge(graph._ptr, tail._ptr, head._ptr, name, 1);
             return new Edge(ptr, graph.MyRootGraph);
         }
@@ -152,13 +159,11 @@ namespace Rubjerg.Graphviz
         /// https://github.com/ellson/graphviz/issues/1277
         /// This method only returns the first spline that is defined.
         /// Edge arrows are ignored.
+        /// Returns null if no splines exist.
         /// </summary>
         public PointF[] GetFirstSpline()
         {
-            if (!HasPosition())
-                return null;
-            string pos_string = GetAttribute("pos");
-            return ParseSpline(pos_string.Split(';').First());
+            return GetSplines().FirstOrDefault();
         }
 
         /// <summary>
@@ -169,28 +174,8 @@ namespace Rubjerg.Graphviz
         /// </summary>
         public IEnumerable<PointF[]> GetSplines()
         {
-            if (!HasPosition())
-                yield break;
-
-            foreach (string spline in GetAttribute("pos").Split(';'))
-                yield return ParseSpline(spline);
-        }
-
-        private PointF[] ParseSpline(string spline)
-        {
-            string[] points = spline.Split(' ');
-            var splinepoints = new PointF[points.Length];
-            for (int i = 0; i < points.Length; i++)
-            {
-                if (points[i].StartsWith("e") || points[i].StartsWith("s"))
-                    continue; // Ignore arrow indicators
-                string xstring = points[i].Split(',')[0];
-                string ystring = points[i].Split(',')[1];
-                float x = float.Parse(xstring, NumberStyles.Any, CultureInfo.InvariantCulture);
-                float y = float.Parse(ystring, NumberStyles.Any, CultureInfo.InvariantCulture);
-                splinepoints[i] = new PointF(x, y);
-            }
-            return splinepoints;
+            return GetDrawing().OfType<XDotOp.UnfilledBezier>()
+                .Select(x => x.Value.Points.Select(p => new PointF((float)p.X, (float)p.Y)).ToArray());
         }
 
         public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
