@@ -72,8 +72,7 @@ namespace Rubjerg.Graphviz
         protected static T FromDotString<T>(string graph, Func<IntPtr, T> constructor)
             where T : RootGraph
         {
-            // Just to be safe, make sure the input has unix line endings, as you would expect from a .NET string,
-            // because we can't be sure where the string comes from. Moreover, Graphviz does not properly support
+            // Just to be safe, make sure the input has unix line endings. Graphviz does not properly support
             // windows line endings passed to stdin when it comes to attribute line continuations.
             var normalizedDotString = graph.Replace("\r\n", "\n");
             IntPtr ptr = Rjagmemread(normalizedDotString);

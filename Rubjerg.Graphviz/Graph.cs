@@ -572,7 +572,6 @@ namespace Rubjerg.Graphviz
             return GraphvizCommand.CreateLayout(this, engine: engine);
         }
 
-        // FIXNOW: make sure these functions are still valid
         public RectangleF GetBoundingBox()
         {
             string bb_string = Agget(_ptr, "bb");
