@@ -554,9 +554,9 @@ namespace Rubjerg.Graphviz
         /// Compute the layout in a separate process by calling dot.exe, and return a new graph, which is a copy of the old
         /// graph with the xdot information added to it.
         /// </summary>
-        public RootGraph CreateLayout()
+        public RootGraph CreateLayout(string engine = LayoutEngines.Dot)
         {
-            return GraphvizCommand.Layout(this);
+            return GraphvizCommand.CreateLayout(this, engine: engine);
         }
 
         // FIXNOW: make sure these functions are still valid
@@ -578,6 +578,15 @@ namespace Rubjerg.Graphviz
         public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
         public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
 
+        private void ToFile(string filepath, string format, string engine)
+        {
+            _ = GraphvizCommand.Exec(this, format: format, filepath, engine: engine);
+        }
+
+        public void ToSvgFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "svg", engine);
+        public void ToPngFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "png", engine);
+        public void ToPdfFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "pdf", engine);
+        public void ToPsFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "ps", engine);
         #endregion
 
 
@@ -618,39 +627,16 @@ namespace Rubjerg.Graphviz
                 throw new ApplicationException($"Graphviz render returned error code {free_rc}");
         }
 
-        // FIXNOW: replace with CreateLayout-based alternatives
-        private void RenderToFile(string filename, string format)
+        /// <summary>
+        /// Should only be called after <see cref="ComputeLayout"/> has been called.
+        /// </summary>
+        [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by the other ToXXXFile methods.")]
+        public void RenderToFile(string filename, string format)
         {
             var render_rc = GvRenderFilename(GVC, _ptr, format, filename);
             if (render_rc != 0)
                 throw new ApplicationException($"Graphviz render returned error code {render_rc}");
         }
-
-        /// <summary>
-        /// Should only be called after <see cref="ComputeLayout"/> has been called.
-        /// </summary>
-        public void ToSvgFile(string filename)
-        {
-            RenderToFile(filename, "svg");
-        }
-
-        /// <summary>
-        /// Should only be called after <see cref="ComputeLayout"/> has been called.
-        /// </summary>
-        public void ToPngFile(string filename)
-        {
-            RenderToFile(filename, "png");
-        }
-
-        /// <summary>
-        /// Should only be called after <see cref="ComputeLayout"/> has been called.
-        /// </summary>        
-        public void ToPdfFile(string filename) => RenderToFile(filename, "pdf");
-
-        /// <summary>
-        /// Should only be called after <see cref="ComputeLayout"/> has been called.
-        /// </summary>
-        public void ToPsFile(string filename) => RenderToFile(filename, "ps");
 
         [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
         public GraphvizLabel GetLabel()

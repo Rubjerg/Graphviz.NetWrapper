@@ -9,10 +9,17 @@ namespace Rubjerg.Graphviz
     /// </summary>
     public class GraphvizCommand
     {
-        public static RootGraph Layout(Graph input, string outputPath = null, string engine = LayoutEngines.Dot)
+        public static RootGraph CreateLayout(Graph input, string engine = LayoutEngines.Dot)
+        {
+            var output = Exec(input, engine: engine);
+            var resultGraph = RootGraph.FromDotString(output);
+            return resultGraph;
+        }
+
+        public static string Exec(Graph input, string format = "xdot", string outputPath = null, string engine = LayoutEngines.Dot)
         {
             string exeName = "dot.exe";
-            string arguments = $"-Txdot -K{engine}";
+            string arguments = $"-T{format} -K{engine}";
             if (outputPath != null)
             {
                 arguments = $"{arguments} -o{outputPath}";
@@ -64,8 +71,7 @@ namespace Rubjerg.Graphviz
             else
             {
                 // Process completed successfully.
-                var resultGraph = RootGraph.FromDotString(output);
-                return resultGraph;
+                return output;
             }
         }
     }

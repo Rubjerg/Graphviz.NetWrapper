@@ -4,6 +4,8 @@ using System.Linq;
 
 namespace Rubjerg.Graphviz.Test
 {
+#pragma warning disable CS0618 // Type or member is obsolete
+
     // FIXNOW: rename this tutorial to OldTutorial for test coverage reasons and write a new, adapted tutorial
     [TestFixture()]
     public class Tutorial
@@ -60,7 +62,7 @@ namespace Rubjerg.Graphviz.Test
             root.ComputeLayout();
 
             // We can export this to svg
-            root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/dot_out.svg");
+            root.RenderToFile(TestContext.CurrentContext.TestDirectory + "/dot_out.svg", "svg");
 
             // Or programatically read out the layout attributes
             Node nodeA = root.GetNode("A");
@@ -96,7 +98,7 @@ namespace Rubjerg.Graphviz.Test
 
             // We can use layout engines other than dot by explicitly passing the engine we want
             root.ComputeLayout(LayoutEngines.Neato);
-            root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/neato_out.svg");
+            root.RenderToFile(TestContext.CurrentContext.TestDirectory + "/neato_out.svg", "svg");
         }
 
         [Test, Order(3)]
