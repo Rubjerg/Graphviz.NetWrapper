@@ -20,7 +20,6 @@ namespace Rubjerg.Graphviz
             string inputToStdin = input.ToDotString();
 
             // Get the location of the currently executing DLL
-            //string dllDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string exeDirectory = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
 
             // Construct the path to the executable

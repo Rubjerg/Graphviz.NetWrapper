@@ -230,10 +230,10 @@ namespace Rubjerg.Graphviz
                 yield break;
 
             // There is a lingering issue in Graphviz where the x coordinates of the record rectangles may be off.
-            // As a workaround we consult the x coordinates, and attempt to map onto those.
+            // As a workaround we consult the x coordinates, and attempt to snap onto those.
             // https://github.com/Rubjerg/Graphviz.NetWrapper/issues/30
             var validXCoords = GetDrawing().OfType<XDotOp.PolyLine>()
-                .SelectMany(p => p.Polyline.Points).Select(p => p.X).ToList();
+                .SelectMany(p => p.Value.Points).Select(p => p.X).ToList();
 
             foreach (string rectStr in GetAttribute("rects").Split(' '))
             {

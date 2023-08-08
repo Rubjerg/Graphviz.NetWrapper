@@ -31,19 +31,45 @@ I 90 10 5 5 8 -image.png
             Assert.AreEqual(14, result.Count);
 
         }
+
         [Test()]
-        public void TestXDotTranslateFromGraph()
+        public void TestXDotRecordNode()
         {
             RootGraph root = Utils.CreateUniqueTestGraph();
             Node nodeA = root.GetOrAddNode("A");
 
             nodeA.SafeSetAttribute("shape", "record", "");
-            nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+            // FIXNOW: document that newlines are not supported in record labels
+            nodeA.SafeSetAttribute("label", "1|{2\n3}", "\\N");
 
             var xdotGraph = root.CreateLayout();
             var xNodeA = xdotGraph.GetNode("A");
             var ldraw = xNodeA.GetLabelDrawing();
-            Assert.AreEqual(27, ldraw.Count);
+            Assert.IsTrue(ldraw.OfType<XDotOp.Text>().Any(t => t.Value.Text == "23"));
+            // Even though the attribute still contains the newline
+            Assert.IsTrue(xNodeA.GetAttribute("label") == "1|{2\n3}");
+            Assert.AreEqual(6, ldraw.Count);
+        }
+
+        [Test()]
+        public void TestXDotNewLines()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+            SubGraph cluster = root.GetOrAddSubgraph("cluster_1");
+            cluster.SafeSetAttribute("label", "1\n2", "");
+            Node nodeA = cluster.GetOrAddNode("A");
+            nodeA.SafeSetAttribute("label", "a\nb", "");
+
+            var xdotGraph = root.CreateLayout();
+
+            // New lines result in separate text operations
+            var xCluster = xdotGraph.GetSubgraph("cluster_1");
+            var ldraw = xCluster.GetLabelDrawing();
+            Assert.AreEqual(6, ldraw.Count);
+
+            var xNodeA = xdotGraph.GetNode("A");
+            ldraw = xNodeA.GetLabelDrawing();
+            Assert.AreEqual(6, ldraw.Count);
         }
 
         [Test()]

@@ -82,37 +82,37 @@ namespace Rubjerg.Graphviz
                 case XDotKind.FilledEllipse:
                     return new XDotOp.FilledEllipse()
                     {
-                        Ellipse = TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr))
+                        Value = TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr))
                     };
                 case XDotKind.UnfilledEllipse:
                     return new XDotOp.UnfilledEllipse()
                     {
-                        Ellipse = TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr))
+                        Value = TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr))
                     };
                 case XDotKind.FilledPolygon:
                     return new XDotOp.FilledPolygon()
                     {
-                        Polygon = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                        Value = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
                     };
                 case XDotKind.UnfilledPolygon:
                     return new XDotOp.FilledPolygon()
                     {
-                        Polygon = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                        Value = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
                     };
                 case XDotKind.FilledBezier:
                     return new XDotOp.FilledBezier()
                     {
-                        Bezier = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                        Value = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
                     };
                 case XDotKind.UnfilledBezier:
                     return new XDotOp.UnfilledBezier()
                     {
-                        Bezier = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                        Value = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
                     };
                 case XDotKind.Polyline:
                     return new XDotOp.PolyLine()
                     {
-                        Polyline = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                        Value = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
                     };
                 case XDotKind.Text:
                     return new XDotOp.Text()
@@ -122,22 +122,22 @@ namespace Rubjerg.Graphviz
                 case XDotKind.FillColor:
                     return new XDotOp.FillColor()
                     {
-                        Color = XDotFFI.GetColor(xdotOpPtr)
+                        Value = XDotFFI.GetColor(xdotOpPtr)
                     };
                 case XDotKind.PenColor:
                     return new XDotOp.PenColor()
                     {
-                        Color = XDotFFI.GetColor(xdotOpPtr)
+                        Value = XDotFFI.GetColor(xdotOpPtr)
                     };
                 case XDotKind.GradFillColor:
                     return new XDotOp.GradFillColor()
                     {
-                        GradColor = TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr))
+                        Value = TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr))
                     };
                 case XDotKind.GradPenColor:
                     return new XDotOp.GradPenColor()
                     {
-                        GradColor = TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr))
+                        Value = TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr))
                     };
                 case XDotKind.Font:
                     return new XDotOp.Font()

@@ -49,12 +49,13 @@ documents presented at the [Graphviz documentation page](https://graphviz.org/do
 ## Tutorial
 
 ```cs 
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using System.Drawing;
 using System.Linq;
 
 namespace Rubjerg.Graphviz.Test
 {
+    // FIXNOW: rename this tutorial to OldTutorial for test coverage reasons and write a new, adapted tutorial
     [TestFixture()]
     public class Tutorial
     {

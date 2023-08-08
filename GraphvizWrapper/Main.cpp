@@ -34,6 +34,7 @@ Agraph_t* rj_agmemread(const char* s)
 
 // Note: for this function to work, the graph has to be created with the memDisc, e.g. using rj_agopen
 // This function transfers ownership of the string result.
+// The caller has to call free_str to free it.
 const char* rj_agmemwrite(Agraph_t* g)
 {
     ostringstream os;
@@ -92,7 +93,7 @@ void clone_attribute_declarations(Agraph_t* from, Agraph_t* to)
 {
     for (int kind = 0; kind < 3; kind++)
     {
-        Agsym_t* current = agnxtattr(from, kind, NULL);
+        Agsym_t* current = agnxtattr(from, kind, nullptr);
         while (current)
         {
             agattr(to, kind, current->name, current->defval);

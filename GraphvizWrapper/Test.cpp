@@ -59,7 +59,7 @@ int renderToSvg(char* dotString)
     // See https://gitlab.com/graphviz/graphviz/-/issues/2434
     auto gvc = gvContext();
     auto graph = agmemread(dotString);
-    if (graph == NULL)
+    if (graph == nullptr)
         return 1;
     gvLayout(gvc, graph, "dot");
     gvRenderFilename(gvc, graph, "svg", "test.svg");
@@ -72,13 +72,13 @@ int renderToSvg(char* dotString)
 int missing_label_repro() {
     const std::string filename = "missing-label-repro.dot";
     char* dotString = readFile(filename);
-    if (dotString == NULL)
+    if (dotString == nullptr)
         return 1;
     if (renderToSvg(dotString) > 0) return 2;
 
     char* svgText = readFile("test.svg");
     char* expected = ">OpenNode</text>";
-    if (strstr(svgText, expected) == NULL)
+    if (strstr(svgText, expected) == nullptr)
         return 3;
     return 0;
 }
@@ -87,7 +87,7 @@ int stackoverflow_repro() {
 
     const std::string filename = "stackoverflow-repro.dot";
     char* dotString = readFile(filename);
-    if (dotString == NULL)
+    if (dotString == nullptr)
         return 1;
     return renderToSvg(dotString);
 }
@@ -97,10 +97,10 @@ int test_agread() {
     char* filename = "missing-label-repro.dot";
     // Open the file for reading
     FILE* fp = fopen(filename, "r");
-    if (fp == NULL)
+    if (fp == nullptr)
         return 1;
-    auto graph = agread(fp, NULL);
-    if (graph == 0)
+    auto graph = agread(fp, nullptr);
+    if (graph == nullptr)
         return 2;
     fclose(fp);
     return 0;
@@ -109,10 +109,10 @@ int test_agread() {
 int test_agmemread() {
     const std::string filename = "missing-label-repro.dot";
     char* dotString = readFile(filename);
-    if (dotString == NULL)
+    if (dotString == nullptr)
         return 1;
     auto graph = agmemread(dotString);
-    if (graph == 0)
+    if (graph == nullptr)
         return 1;
     return 0;
 }
@@ -120,10 +120,10 @@ int test_agmemread() {
 int test_rj_agmemread() {
     const std::string filename = "missing-label-repro.dot";
     char* dotString = readFile(filename);
-    if (dotString == NULL)
+    if (dotString == nullptr)
         return 1;
     auto graph = rj_agmemread(dotString);
-    if (graph == NULL)
+    if (graph == nullptr)
         return 2;
     return 0;
 }
