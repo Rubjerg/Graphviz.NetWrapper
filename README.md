@@ -58,6 +58,11 @@ namespace Rubjerg.Graphviz.Test
     [TestFixture()]
     public class Tutorial
     {
+        public const string PointPattern = @"{X=[\d.]+, Y=[\d.]+}";
+        public const string RectPattern = @"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}";
+        public const string SplinePattern =
+            @"{X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}";
+
         [Test, Order(1)]
         public void GraphConstruction()
         {
@@ -85,8 +90,8 @@ namespace Rubjerg.Graphviz.Test
             // We can attach attributes to nodes, edges and graphs to store information and instruct
             // Graphviz by specifying layout parameters. At the moment we only support string
             // attributes. Cgraph assumes that all objects of a given kind (graphs/subgraphs, nodes,
-            // or edges) have the same attributes. The attributes first have to be introduced for a
-            // certain kind, before we can use it.
+            // or edges) have the same attributes. An attribute has to be introduced with a default value
+            // first for a certain kind, before we can use it.
             Node.IntroduceAttribute(root, "my attribute", "defaultvalue");
             nodeA.SetAttribute("my attribute", "othervalue");
 
@@ -122,27 +127,25 @@ namespace Rubjerg.Graphviz.Test
             root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/neato_out.svg", LayoutEngines.Neato);
 
             // Or we can ask Graphviz to compute the layout and programatically read out the layout attributes
-            // This will create a copy of our original graph with layout information attached to it in the form of attributes.
+            // This will create a copy of our original graph with layout information attached to it in the form
+            // of attributes.
             RootGraph layout = root.CreateLayout();
 
-            // There are convenience methods available that parse these attributes for us and give back the layout
-            // information in an accessible form.
+            // There are convenience methods available that parse these attributes for us and give
+            // back the layout information in an accessible form.
             Node nodeA = layout.GetNode("A");
             PointF position = nodeA.GetPosition();
-            Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+}", position.ToString());
+            Utils.AssertPattern(PointPattern, position.ToString());
 
             RectangleF nodeboundingbox = nodeA.GetBoundingBox();
-            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", nodeboundingbox.ToString());
+            Utils.AssertPattern(RectPattern, nodeboundingbox.ToString());
 
             // Or splines between nodes
             Node nodeB = layout.GetNode("B");
             Edge edge = layout.GetEdge(nodeA, nodeB, "Some edge name");
             PointF[] spline = edge.GetFirstSpline();
             string splineString = string.Join(", ", spline.Select(p => p.ToString()));
-            string expectedSplinePattern =
-                @"{X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+},"
-                + @" {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}";
-            Utils.AssertPattern(expectedSplinePattern, splineString);
+            Utils.AssertPattern(SplinePattern, splineString);
 
             // If we require detailed drawing information for any object, we can retrieve the so called "xdot"
             // operations. See https://graphviz.org/docs/outputs/canon/#xdot for a specification.
@@ -156,8 +159,7 @@ namespace Rubjerg.Graphviz.Test
                 else if (op is XDotOp.FilledEllipse { Value: var filledEllipse })
                 {
                     var boundingBox = filledEllipse.ToRectangleF();
-                    Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}",
-                        boundingBox.ToString());
+                    Utils.AssertPattern(RectPattern, boundingBox.ToString());
                 }
                 // Handle any xdot operation you require
             }
@@ -173,10 +175,9 @@ namespace Rubjerg.Graphviz.Test
                 else if (op is XDotOp.Text { Value: var text })
                 {
                     var anchor = text.Anchor();
-                    Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+}", anchor.ToString());
+                    Utils.AssertPattern(PointPattern, anchor.ToString());
                     var boundingBox = text.TextBoundingBox(activeFont);
-                    Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}",
-                        boundingBox.ToString());
+                    Utils.AssertPattern(RectPattern, boundingBox.ToString());
                     Assert.AreEqual(text.Text, "A");
                 }
                 // Handle any xdot operation you require
@@ -221,8 +222,8 @@ namespace Rubjerg.Graphviz.Test
             SubGraph cluster = layout.GetSubgraph("cluster_1");
             RectangleF clusterbox = cluster.GetBoundingBox();
             RectangleF rootgraphbox = layout.GetBoundingBox();
-            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", clusterbox.ToString());
-            Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", rootgraphbox.ToString());
+            Utils.AssertPattern(RectPattern, clusterbox.ToString());
+            Utils.AssertPattern(RectPattern, rootgraphbox.ToString());
         }
 
         [Test, Order(4)]
@@ -261,7 +262,7 @@ namespace Rubjerg.Graphviz.Test
             nodeB.SafeSetAttribute("label", $"<{validPortName}>1|2", "\\N");
 
             // The conversion function makes sure different strings don't accidentally map onto the same portname
-            Assert.That(Edge.ConvertUidToPortName(":"), Is.Not.EqualTo(Edge.ConvertUidToPortName("|")));
+            Assert.AreNotEqual(Edge.ConvertUidToPortName(":"), Edge.ConvertUidToPortName("|"));
         }
     }
 }

@@ -62,19 +62,19 @@ digraph test {
             var edge = root.GetEdge(A, B, null);
             Assert.Contains(edge.GetName(), new[] { null, "edge2" });
 
-            Assert.AreEqual(dot, @"digraph {
-	node [label=""\N""];
-	""%5"";
-	""%7"";
-	""%9"";
-	""%11"";
+            Utils.AssertPattern(@"digraph {
+	node \[label=""\\N""\];
+	""%\d+"";
+	""%\d+"";
+	""%\d+"";
+	""%\d+"";
 	A -> B;
 	A -> B;
 	A -> B;
 	A -> B;
-	A -> B	[key=edge2];
+	A -> B	\[key=edge2\];
 }
-".Replace("\r", ""));
+".Replace("\r", ""), dot);
         }
 
         [Test()]

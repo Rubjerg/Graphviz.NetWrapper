@@ -154,11 +154,7 @@ namespace Rubjerg.Graphviz
         #region layout attributes
 
         /// <summary>
-        /// The splines contain 3n+1 points, just like expected by .net drawing methods.
-        /// Sometimes there are multiple splines per edge. However, this is not always correct:
-        /// https://github.com/ellson/graphviz/issues/1277
         /// This method only returns the first spline that is defined.
-        /// Edge arrows are ignored.
         /// Returns null if no splines exist.
         /// </summary>
         public PointF[] GetFirstSpline()

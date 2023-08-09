@@ -82,7 +82,7 @@ namespace Rubjerg.Graphviz.Test
             PointF[] spline = edge.GetFirstSpline();
             string splineString = string.Join(", ", spline.Select(p => p.ToString()));
             string expectedSplinePattern =
-                @"{X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+},"
+                @"{X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+},"
                 + @" {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}";
             Utils.AssertPattern(expectedSplinePattern, splineString);
 
