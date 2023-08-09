@@ -103,10 +103,8 @@ namespace Rubjerg.Graphviz
 
         /// <summary>
         /// Unique identifier for this edge. Used to distinghuish multi edges.
-        /// For graphs that are imported from a dotstring, names are not a unique identifier anymore,
-        /// and may simply be null.
+        /// Edges can be nameless, and in that case this method returns null.
         /// </summary>
-        /// <returns></returns>
         public string GetName()
         {
             // Because graphviz does not properly export empty string edgenames to dot, this opens a can of worms.
