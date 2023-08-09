@@ -3,111 +3,106 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace Rubjerg.Graphviz.Test
+namespace Rubjerg.Graphviz.Test;
+
+/// <summary>
+/// Test various scenarios that have caused problems in the past.
+/// </summary>
+[TestFixture()]
+public class Reproductions
 {
-    /// <summary>
-    /// Test various scenarios that have caused problems in the past.
-    /// </summary>
-    [TestFixture()]
-    public class Reproductions
+    private string _testDir;
+
+    [SetUp]
+    public void SetUp()
     {
-        private string _testDir;
+        // Store the test directory.
+        _testDir = TestContext.CurrentContext.TestDirectory;
+    }
 
-        [SetUp]
-        public void SetUp()
-        {
-            // Store the test directory.
-            _testDir = TestContext.CurrentContext.TestDirectory;
-        }
+    [Test()]
+    [TestCase("Times-Roman", 7, 0.01)]
+    [TestCase("Times-Roman", 7, 0.5)]
+    public void TestRecordShapeAlignment(string fontname, double fontsize, double margin)
+    {
+        RootGraph root = Utils.CreateUniqueTestGraph();
+        // Margin between label and node boundary in inches
+        Node.IntroduceAttribute(root, "margin", margin.ToString(CultureInfo.InvariantCulture));
+        Node.IntroduceAttribute(root, "fontsize", fontsize.ToString(CultureInfo.InvariantCulture));
+        Node.IntroduceAttribute(root, "fontname", fontname);
 
-        /// <summary>
-        /// This test used to fail: https://gitlab.com/graphviz/graphviz/-/issues/1894
-        /// It still fails on github hosted VMs: https://gitlab.com/graphviz/graphviz/-/issues/1905
-        /// </summary>
-        [Test()]
-        [TestCase("Times-Roman", 7, 0.01)]
-        [TestCase("Times-Roman", 7, 0.5)]
-        [Category("Flaky")]
-        public void TestRecordShapeAlignment(string fontname, double fontsize, double margin)
-        {
-            RootGraph root = Utils.CreateUniqueTestGraph();
-            // Margin between label and node boundary in inches
-            Node.IntroduceAttribute(root, "margin", margin.ToString(CultureInfo.InvariantCulture));
-            Node.IntroduceAttribute(root, "fontsize", fontsize.ToString(CultureInfo.InvariantCulture));
-            Node.IntroduceAttribute(root, "fontname", fontname);
+        Node nodeA = root.GetOrAddNode("A");
 
-            Node nodeA = root.GetOrAddNode("A");
+        nodeA.SafeSetAttribute("shape", "record", "");
+        nodeA.SafeSetAttribute("label", "{20 VH|{1|2}}", "");
 
-            nodeA.SafeSetAttribute("shape", "record", "");
-            nodeA.SafeSetAttribute("label", "{20 VH|{1|2}}", "");
+        //TestContext.Write(root.ToDotString());
+        root.ComputeLayout();
+        //TestContext.Write(root.ToDotString());
 
-            //TestContext.Write(root.ToDotString());
-            root.ComputeLayout();
-            //TestContext.Write(root.ToDotString());
+        var rects = nodeA.GetRecordRectangles().ToList();
+        Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
+    }
 
-            var rects = nodeA.GetRecordRectangles().ToList();
-            Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
-        }
+    // This test only failed when running in isolation
+    [Test()]
+    public void MissingLabelRepro()
+    {
+        var graph = RootGraph.FromDotFile($"{_testDir}/missing-label-repro.dot");
+        graph.ComputeLayout();
+        graph.ToSvgFile($"{_testDir}/test.svg");
+        string svgString = File.ReadAllText($"{_testDir}/test.svg");
+        Assert.IsTrue(svgString.Contains(">OpenNode</text>"));
+    }
 
-        // This test only failed when running in isolation
-        [Test()]
-        public void MissingLabelRepro()
-        {
-            var graph = RootGraph.FromDotFile($"{_testDir}/missing-label-repro.dot");
-            graph.ComputeLayout();
-            graph.ToSvgFile($"{_testDir}/test.svg");
-            string svgString = File.ReadAllText($"{_testDir}/test.svg");
-            Assert.IsTrue(svgString.Contains(">OpenNode</text>"));
-        }
+    [Test()]
+    public void StackOverflowRepro()
+    {
+        var graph = RootGraph.FromDotFile($"{_testDir}/stackoverflow-repro.dot");
+        graph.ComputeLayout();
+    }
 
-        [Test()]
-        public void StackOverflowRepro()
-        {
-            var graph = RootGraph.FromDotFile($"{_testDir}/stackoverflow-repro.dot");
-            graph.ComputeLayout();
-        }
+    [Test()]
+    public void TestFromDotFile()
+    {
+        _ = RootGraph.FromDotFile($"{_testDir}/missing-label-repro.dot");
+    }
 
-        [Test()]
-        public void TestFromDotFile()
-        {
-            _ = RootGraph.FromDotFile($"{_testDir}/missing-label-repro.dot");
-        }
+    [Test()]
+    public void TestDotNewlines()
+    {
+        RootGraph root = Utils.CreateUniqueTestGraph();
+        Node nodeA = root.GetOrAddNode("A");
 
-        [Test()]
-        public void TestDotNewlines()
-        {
-            RootGraph root = Utils.CreateUniqueTestGraph();
-            Node nodeA = root.GetOrAddNode("A");
+        nodeA.SafeSetAttribute("shape", "record", "");
+        nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
 
-            nodeA.SafeSetAttribute("shape", "record", "");
-            nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
-
-            var dotString = root.ToDotString();
-            Assert.IsFalse(dotString.Contains("\r"));
-        }
+        var dotString = root.ToDotString();
+        Assert.IsFalse(dotString.Contains("\r"));
+    }
 
 
-        [Test()]
-        public void TestDotNewlines2()
-        {
-            RootGraph root = Utils.CreateUniqueTestGraph();
-            Node nodeA = root.GetOrAddNode("A");
+    [Test()]
+    public void TestDotNewlines2()
+    {
+        RootGraph root = Utils.CreateUniqueTestGraph();
+        Node nodeA = root.GetOrAddNode("A");
 
-            nodeA.SafeSetAttribute("shape", "record", "");
-            nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+        nodeA.SafeSetAttribute("shape", "record", "");
+        nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
 
-            var xdotGraph = root.CreateLayout();
-            var xNodeA = xdotGraph.GetNode("A");
-            var ldraw = xNodeA.GetAttribute("_ldraw_");
-            Assert.IsFalse(ldraw.Contains("\n"));
-            Assert.IsFalse(ldraw.Contains("\r"));
-            Assert.IsFalse(ldraw.Contains("\\"));
-        }
+        var xdotGraph = root.CreateLayout();
+        var xNodeA = xdotGraph.GetNode("A");
+        var ldraw = xNodeA.GetAttribute("_ldraw_");
+        Assert.IsFalse(ldraw.Contains("\n"));
+        Assert.IsFalse(ldraw.Contains("\r"));
+        Assert.IsFalse(ldraw.Contains("\\"));
+    }
 
-        [Test()]
-        public void TestDotNewlines3()
-        {
-            var dotstrCrLf = @"
+    [Test()]
+    public void TestDotNewlines3()
+    {
+        var dotstrCrLf = @"
 digraph ""test graph 1"" {
     graph[_draw_ = ""c 9 -#fffffe00 C 7 -#ffffff P 4 0 0 0 72.25 136.5 72.25 136.5 0 "",
         bb = ""0,0,136.5,72.25"",
@@ -130,14 +125,13 @@ rects = ""0,0.5,22.75,71.75 22.75,0.5,45.5,71.75 45.5,0.5,68.25,71.75 68.25,37,9
 shape = record,
 width = 1.8958];
 }";
-            var graph = RootGraph.FromDotString(dotstrCrLf);
-            var nodeA = graph.GetNode("A");
-            var ldraw = nodeA.GetAttribute("_ldraw_");
+        var graph = RootGraph.FromDotString(dotstrCrLf);
+        var nodeA = graph.GetNode("A");
+        var ldraw = nodeA.GetAttribute("_ldraw_");
 
-            Assert.IsFalse(ldraw.Contains("\n"));
-            Assert.IsFalse(ldraw.Contains("\r"));
-            Assert.IsFalse(ldraw.Contains("\\"));
-        }
-
+        Assert.IsFalse(ldraw.Contains("\n"));
+        Assert.IsFalse(ldraw.Contains("\r"));
+        Assert.IsFalse(ldraw.Contains("\\"));
     }
+
 }

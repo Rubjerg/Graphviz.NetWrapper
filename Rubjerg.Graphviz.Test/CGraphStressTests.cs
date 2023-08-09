@@ -1,11 +1,10 @@
 ﻿using NUnit.Framework;
 
-namespace Rubjerg.Graphviz.Test
+namespace Rubjerg.Graphviz.Test;
+
+[TestFixture()]
+[Category("Slow")]
+public class CGraphStressTests : CGraphIntegrationTests
 {
-    [TestFixture()]
-    [Category("Slow")]
-    public class CGraphStressTests : CGraphIntegrationTests
-    {
-        protected override int SizeMultiplier => 100;
-    }
+    protected override int SizeMultiplier => 100;
 }
