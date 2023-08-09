@@ -112,6 +112,9 @@ namespace Rubjerg.Graphviz.Test
 
             // We can simply export this graph to a text file in dot format
             root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
+
+            // A word of advice, Graphviz doesn't play very well with empty strings.
+            // Try to avoid them when possible. (https://gitlab.com/graphviz/graphviz/-/issues/1887)
         }
 
         [Test, Order(2)]
