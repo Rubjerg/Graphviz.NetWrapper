@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Linq;
 using NUnit.Framework;
 
@@ -7,6 +6,14 @@ namespace Rubjerg.Graphviz.Test
     [TestFixture()]
     public class CGraphEdgeCases
     {
+        [Test()]
+        public void TestUniqueGraphs()
+        {
+            var g1 = RootGraph.CreateNew(GraphType.Directed, "test");
+            var g2 = RootGraph.CreateNew(GraphType.Directed, "test");
+            Assert.AreNotEqual(g1, g2);
+        }
+
         [Test()]
         public void TestReadDotFile()
         {

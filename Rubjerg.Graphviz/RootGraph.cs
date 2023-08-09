@@ -51,7 +51,6 @@ namespace Rubjerg.Graphviz
         /// Create a new graph.
         /// </summary>
         /// <param name="name">Unique identifier</param>
-        // FIXNOW: handle the case where a name is not unique without crashing
         public static RootGraph CreateNew(GraphType graphtype, string name = null)
         {
             // Because graphviz does not properly export empty strings to dot, this opens a can of worms.

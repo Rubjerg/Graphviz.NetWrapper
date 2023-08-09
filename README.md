@@ -63,13 +63,13 @@ namespace Rubjerg.Graphviz.Test
         {
             // You can programmatically construct graphs as follows
             RootGraph root = RootGraph.CreateNew(GraphType.Directed, "Some Unique Identifier");
-            // The graph name is optional, and can be omitted. But if it is specified, it must be unique.
+            // The graph name is optional, and can be omitted. The name is not interpreted by Graphviz,
+            // except it is recorded and preserved when the graph is written as a file.
 
             // The node names are unique identifiers within a graph in Graphviz
             Node nodeA = root.GetOrAddNode("A");
             Node nodeB = root.GetOrAddNode("B");
             Node nodeC = root.GetOrAddNode("C");
-            Node nodeD = root.GetOrAddNode("D");
 
             // The edge name is only unique between two nodes
             Edge edgeAB = root.GetOrAddEdge(nodeA, nodeB, "Some edge name");
@@ -83,7 +83,7 @@ namespace Rubjerg.Graphviz.Test
             Assert.AreNotEqual(edgeAB1, edgeAB2);
 
             // We can attach attributes to nodes, edges and graphs to store information and instruct
-            // graphviz by specifying layout parameters. At the moment we only support string
+            // Graphviz by specifying layout parameters. At the moment we only support string
             // attributes. Cgraph assumes that all objects of a given kind (graphs/subgraphs, nodes,
             // or edges) have the same attributes. The attributes first have to be introduced for a
             // certain kind, before we can use it.
@@ -101,7 +101,7 @@ namespace Rubjerg.Graphviz.Test
             edgeBC.SetAttribute("new attr", "value");
 
             // Some attributes - like "label" - accept HTML strings as value
-            // To tell graphviz that a string should be interpreted as HTML use the designated methods
+            // To tell Graphviz that a string should be interpreted as HTML use the designated methods
             Node.IntroduceAttribute(root, "label", "defaultlabel");
             nodeB.SetAttributeHtml("label", "<b>Some HTML string</b>");
 
@@ -115,13 +115,13 @@ namespace Rubjerg.Graphviz.Test
             // If we have a given dot file (in this case the one we generated above), we can also read it back in
             RootGraph root = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
 
-            // We can ask GraphViz to compute a layout and render it to svg
+            // We can ask Graphviz to compute a layout and render it to svg
             root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/dot_out.svg");
 
             // We can use layout engines other than dot by explicitly passing the engine we want
             root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/neato_out.svg", LayoutEngines.Neato);
 
-            // Or we can ask GraphViz to compute the layout and programatically read out the layout attributes
+            // Or we can ask Graphviz to compute the layout and programatically read out the layout attributes
             // This will create a copy of our original graph with layout information attached to it in the form of attributes.
             RootGraph layout = root.CreateLayout();
 

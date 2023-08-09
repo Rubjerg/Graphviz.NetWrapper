@@ -7,6 +7,8 @@
 
 using namespace std;
 
+// Relevant Graphviz Documentation: https://graphviz.org/docs/library/
+
 void free_str(char* str) {
     free(str);
 }
