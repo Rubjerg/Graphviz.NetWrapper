@@ -86,11 +86,6 @@ public class OldTutorial
             + @" {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}";
         Utils.AssertPattern(expectedSplinePattern, splineString);
 
-        GraphvizLabel nodeLabel = nodeA.GetLabel();
-        Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}",
-            nodeLabel.BoundingBox().ToString());
-        Utils.AssertPattern(@"Times-Roman", nodeLabel.FontName().ToString());
-
         // Once all layout information is obtained from the graph, the resources should be
         // reclaimed. To do this, the application should call the cleanup routine associated
         // with the layout algorithm used to draw the graph. This is done by a call to

@@ -183,8 +183,8 @@ public class Tutorial
     {
         RootGraph root = RootGraph.CreateNew(GraphType.Directed, "Graph with records");
         Node nodeA = root.GetOrAddNode("A");
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
         var layout = root.CreateLayout();
 
@@ -210,8 +210,8 @@ public class Tutorial
         var somePortId = "port id with :| special characters";
         var validPortName = Edge.ConvertUidToPortName(somePortId);
         Node nodeB = root.GetOrAddNode("B");
-        nodeB.SafeSetAttribute("shape", "record", "");
-        nodeB.SafeSetAttribute("label", $"<{validPortName}>1|2", "\\N");
+        nodeB.SetAttribute("shape", "record");
+        nodeB.SetAttribute("label", $"<{validPortName}>1|2");
 
         // The conversion function makes sure different strings don't accidentally map onto the same portname
         Assert.AreNotEqual(Edge.ConvertUidToPortName(":"), Edge.ConvertUidToPortName("|"));

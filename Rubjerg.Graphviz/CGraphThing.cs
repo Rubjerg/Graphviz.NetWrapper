@@ -203,16 +203,17 @@ public abstract class CGraphThing : GraphvizThing
 
     public void MakeInvisible()
     {
-        SafeSetAttribute("style", "invis", "");
+        SetAttribute("style", "invis");
     }
 
     public bool IsInvisible()
     {
-        return SafeGetAttribute("style", "") == "invis";
+        return GetAttribute("style") == "invis";
     }
 
     protected static List<XDotOp> GetXDotValue(CGraphThing obj, string attrName)
     {
+        // FIXNOW
         var xdotString = obj.SafeGetAttribute(attrName, null);
         if (xdotString is null)
             return new List<XDotOp>();

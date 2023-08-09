@@ -372,8 +372,8 @@ digraph test {
         RootGraph root = Utils.CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
 
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
         root.ComputeLayout();
         var dotstr = root.ToDotString();

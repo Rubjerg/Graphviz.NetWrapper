@@ -574,6 +574,7 @@ public class Graph : CGraphThing
 
     public RectangleF GetBoundingBox()
     {
+        // FIXNOW
         string bb_string = Agget(_ptr, "bb");
         if (string.IsNullOrEmpty(bb_string))
             return default;
@@ -648,15 +649,6 @@ public class Graph : CGraphThing
         var render_rc = GvRenderFilename(GVC, _ptr, format, filename);
         if (render_rc != 0)
             throw new ApplicationException($"Graphviz render returned error code {render_rc}");
-    }
-
-    [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
-    public GraphvizLabel GetLabel()
-    {
-        IntPtr labelptr = GraphLabel(_ptr);
-        if (labelptr == IntPtr.Zero)
-            return null;
-        return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered);
     }
 
     #endregion

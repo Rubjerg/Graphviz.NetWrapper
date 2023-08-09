@@ -96,7 +96,7 @@ public class Edge : CGraphThing
         if (!MyRootGraph.IsCompound())
             throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
         string ltailname = ltail.GetName();
-        SafeSetAttribute("ltail", ltailname, "");
+        SetAttribute("ltail", ltailname);
     }
 
     /// <summary>
@@ -110,7 +110,7 @@ public class Edge : CGraphThing
         if (!MyRootGraph.IsCompound())
             throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
         string lheadname = lhead.GetName();
-        SafeSetAttribute("lhead", lheadname, "");
+        SetAttribute("lhead", lheadname);
     }
 
     /// <summary>
@@ -165,6 +165,7 @@ public class Edge : CGraphThing
     /// </summary>
     public IEnumerable<PointF[]> GetSplines()
     {
+        // FIXNOW
         return GetDrawing().OfType<XDotOp.UnfilledBezier>()
             .Select(x => x.Value.Points.Select(p => new PointF((float)p.X, (float)p.Y)).ToArray());
     }

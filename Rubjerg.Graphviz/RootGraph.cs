@@ -5,6 +5,9 @@ using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz;
 
+/// <summary>
+/// Strict means that there can be at most one edge between any two nodes.
+/// </summary>
 public enum GraphType
 {
     Directed = 0,
@@ -14,13 +17,40 @@ public enum GraphType
 }
 
 /// <summary>
+/// In Graphviz, the default coordinate system has the origin on the bottom left.
+/// Many rendering applications use a coordinate system with the origin at the top left.
+/// </summary>
+public enum CoordinateSystem
+{
+    BottomLeft = 0,
+    TopLeft = 1,
+}
+
+public record SizeD(double Width, double Height);
+public record PointD(double X, double Y)
+{
+    public PointD ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    {
+        if (coordSystem == CoordinateSystem.BottomLeft)
+            return this;
+        return new PointD(X, maxY - Y);
+    }
+}
+
+/// <summary>
 /// Wraps a cgraph root graph.
 /// NB: If there is no .net wrapper left that points to any part of a root graph, the root graph is destroyed.
 /// </summary>
 public class RootGraph : Graph
 {
     private long _added_pressure = 0;
-    protected RootGraph(IntPtr ptr) : base(ptr, null) { }
+
+    public CoordinateSystem CoordinateSystem { get; }
+
+    protected RootGraph(IntPtr ptr, CoordinateSystem coordinateSystem) : base(ptr, null)
+    {
+        CoordinateSystem = coordinateSystem;
+    }
     ~RootGraph()
     {
         if (_added_pressure > 0)
@@ -54,11 +84,11 @@ public class RootGraph : Graph
     /// The name is not interpreted by Graphviz,
     /// except it is recorded and preserved when the graph is written as a file
     /// </param>
-    public static RootGraph CreateNew(GraphType graphtype, string name = null)
+    public static RootGraph CreateNew(GraphType graphtype, string name = null, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
         name = NameString(name);
         var ptr = Rjagopen(name, (int)graphtype);
-        return new RootGraph(ptr);
+        return new RootGraph(ptr, coordinateSystem);
     }
 
     public static RootGraph FromDotFile(string filename)
@@ -86,9 +116,9 @@ public class RootGraph : Graph
         return result;
     }
 
-    public static RootGraph FromDotString(string graph)
+    public static RootGraph FromDotString(string graph, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
-        return FromDotString(graph, ptr => new RootGraph(ptr));
+        return FromDotString(graph, ptr => new RootGraph(ptr, coordinateSystem));
     }
 
     public void ConvertToUndirectedGraph()

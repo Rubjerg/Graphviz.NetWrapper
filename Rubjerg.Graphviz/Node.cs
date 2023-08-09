@@ -160,11 +160,11 @@ public class Node : CGraphThing
 
     public void MakeInvisibleAndSmall()
     {
-        SafeSetAttribute("style", "invis", "");
-        SafeSetAttribute("margin", "0", "");
-        SafeSetAttribute("width", "0", "");
-        SafeSetAttribute("height", "0", "");
-        SafeSetAttribute("shape", "point", "");
+        SetAttribute("style", "invis");
+        SetAttribute("margin", "0");
+        SetAttribute("width", "0");
+        SetAttribute("height", "0");
+        SetAttribute("shape", "point");
     }
 
     #region layout attributes
@@ -174,6 +174,7 @@ public class Node : CGraphThing
     /// </summary>
     public PointF GetPosition()
     {
+        // FIXNOW
         // The "pos" attribute is available as part of xdot output
         if (HasAttribute("pos"))
         {
@@ -193,6 +194,7 @@ public class Node : CGraphThing
     /// </summary>
     public SizeF GetSize()
     {
+        // FIXNOW
         // The "width" and "height" attributes are available as part of xdot output
         float w, h;
         if (HasAttribute("width") && HasAttribute("height"))
@@ -226,6 +228,7 @@ public class Node : CGraphThing
     /// </summary>
     public IEnumerable<RectangleF> GetRecordRectangles()
     {
+        // FIXNOW
         if (!HasAttribute("rects"))
             yield break;
 
@@ -275,13 +278,4 @@ public class Node : CGraphThing
     public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
 
     #endregion
-
-    [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
-    public GraphvizLabel GetLabel()
-    {
-        IntPtr labelptr = NodeLabel(_ptr);
-        if (labelptr == IntPtr.Zero)
-            return null;
-        return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered, new PointF(0, 0));
-    }
 }

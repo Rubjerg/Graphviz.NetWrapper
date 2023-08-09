@@ -38,9 +38,9 @@ I 90 10 5 5 8 -image.png
         RootGraph root = Utils.CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
 
-        nodeA.SafeSetAttribute("shape", "record", "");
+        nodeA.SetAttribute("shape", "record");
         // FIXNOW: document that newlines are not supported in record labels
-        nodeA.SafeSetAttribute("label", "1|{2\n3}", "\\N");
+        nodeA.SetAttribute("label", "1|{2\n3}");
 
         var xdotGraph = root.CreateLayout();
         var xNodeA = xdotGraph.GetNode("A");
@@ -56,9 +56,9 @@ I 90 10 5 5 8 -image.png
     {
         RootGraph root = Utils.CreateUniqueTestGraph();
         SubGraph cluster = root.GetOrAddSubgraph("cluster_1");
-        cluster.SafeSetAttribute("label", "1\n2", "");
+        cluster.SetAttribute("label", "1\n2");
         Node nodeA = cluster.GetOrAddNode("A");
-        nodeA.SafeSetAttribute("label", "a\nb", "");
+        nodeA.SetAttribute("label", "a\nb");
 
         var xdotGraph = root.CreateLayout();
 
@@ -78,8 +78,8 @@ I 90 10 5 5 8 -image.png
         RootGraph root = Utils.CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
 
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
 
         var xdotGraph = root.CreateLayout();
@@ -100,8 +100,8 @@ I 90 10 5 5 8 -image.png
     {
         RootGraph root = Utils.CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "||||", "");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "||||");
 
         var xdotGraph = root.CreateLayout();
 

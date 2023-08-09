@@ -179,8 +179,8 @@ public class TestDotLayout
         RootGraph root = CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
 
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
         root.ComputeLayout();
 
@@ -196,8 +196,8 @@ public class TestDotLayout
     {
         RootGraph root = CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "||||", "");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "||||");
 
         root.ComputeLayout();
 
@@ -223,11 +223,11 @@ public class TestDotLayout
         {
             RootGraph root = CreateUniqueTestGraph();
             Node node = root.GetOrAddNode("N");
-            node.SafeSetAttribute("shape", "record", "");
-            node.SafeSetAttribute("label", label, "");
+            node.SetAttribute("shape", "record");
+            node.SetAttribute("label", label);
             Edge edge = root.GetOrAddEdge(node, node, "");
-            edge.SafeSetAttribute("tailport", port1 + ":n", "");
-            edge.SafeSetAttribute("headport", port2 + ":s", "");
+            edge.SetAttribute("tailport", port1 + ":n");
+            edge.SetAttribute("headport", port2 + ":s");
             root.ToDotFile(GetTestFilePath("out.gv"));
         }
 
@@ -269,12 +269,12 @@ public class TestDotLayout
         {
             RootGraph root = CreateUniqueTestGraph();
             Node node1 = root.GetOrAddNode("1");
-            node1.SafeSetAttribute("shape", "record", "");
-            node1.SafeSetAttribute("label", label1, "");
+            node1.SetAttribute("shape", "record");
+            node1.SetAttribute("label", label1);
             Node node2 = root.GetOrAddNode("2");
-            node2.SafeSetAttribute("label", label2, "");
+            node2.SetAttribute("label", label2);
             Node node3 = root.GetOrAddNode("3");
-            node3.SafeSetAttribute("label", label3, "");
+            node3.SetAttribute("label", label3);
             root.ToDotFile(GetTestFilePath("out.gv"));
         }
 
