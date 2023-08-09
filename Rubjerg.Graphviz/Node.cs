@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz
@@ -17,9 +16,7 @@ namespace Rubjerg.Graphviz
 
         internal static Node Get(Graph graph, string name)
         {
-            // Because graphviz does not properly export empty strings to dot, this opens a can of worms.
-            // So we disallow it, and map it onto null.
-            name = name == string.Empty ? null : name;
+            name = NameString(name);
             IntPtr ptr = Agnode(graph._ptr, name, 0);
             if (ptr != IntPtr.Zero)
                 return new Node(ptr, graph.MyRootGraph);
@@ -28,9 +25,7 @@ namespace Rubjerg.Graphviz
 
         internal static Node GetOrCreate(Graph graph, string name)
         {
-            // Because graphviz does not properly export empty strings to dot, this opens a can of worms.
-            // So we disallow it, and map it onto null.
-            name = name == string.Empty ? null : name;
+            name = NameString(name);
             IntPtr ptr = Agnode(graph._ptr, name, 1);
             return new Node(ptr, graph.MyRootGraph);
         }

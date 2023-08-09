@@ -28,6 +28,23 @@ namespace Rubjerg.Graphviz
                 MyRootGraph = root;
         }
 
+        protected static string NameString(string name)
+        {
+            // Because graphviz does not properly export empty strings to dot, this opens a can of worms.
+            // So we disallow it, and map it onto null.
+            // Related issue: https://gitlab.com/graphviz/graphviz/-/issues/1887
+            return name == string.Empty ? null : name;
+        }
+
+        /// <summary>
+        /// Identifier for this object. Used to distinghuish multi edges.
+        /// Edges can be nameless, and in that case this method returns null.
+        /// </summary>
+        public string GetName()
+        {
+            return NameString(Rjagnameof(_ptr));
+        }
+
         public bool HasAttribute(string name)
         {
             return !new[] { null, "" }.Contains(GetAttribute(name));
@@ -99,20 +116,6 @@ namespace Rubjerg.Graphviz
                 }
             }
             return attributes;
-        }
-
-        /// <summary>
-        /// Unique identifier for this edge. Used to distinghuish multi edges.
-        /// Edges can be nameless, and in that case this method returns null.
-        /// </summary>
-        public string GetName()
-        {
-            // Because graphviz does not properly export empty string edgenames to dot, this opens a can of worms.
-            // So we disallow it, and map it onto null.
-            var result = Rjagnameof(_ptr);
-            if (result == string.Empty)
-                return null;
-            return result;
         }
 
         public override string ToString()

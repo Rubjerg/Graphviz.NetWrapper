@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
@@ -41,6 +40,7 @@ namespace Rubjerg.Graphviz
             if (_added_pressure > 0)
                 GC.RemoveMemoryPressure(_added_pressure);
 
+            // Up memory pressure proportional to the amount of unmanaged memory in use.
             long unmanaged_bytes_estimate = Nodes().Count() * 104 + Edges().Count() * 64;
             if (unmanaged_bytes_estimate > 0)
                 GC.AddMemoryPressure(unmanaged_bytes_estimate);
@@ -50,12 +50,13 @@ namespace Rubjerg.Graphviz
         /// <summary>
         /// Create a new graph.
         /// </summary>
-        /// <param name="name">Unique identifier</param>
+        /// <param name="name">
+        /// The name is not interpreted by Graphviz,
+        /// except it is recorded and preserved when the graph is written as a file
+        /// </param>
         public static RootGraph CreateNew(GraphType graphtype, string name = null)
         {
-            // Because graphviz does not properly export empty strings to dot, this opens a can of worms.
-            // So we disallow it, and map it onto null.
-            name = name == string.Empty ? null : name;
+            name = NameString(name);
             var ptr = Rjagopen(name, (int)graphtype);
             return new RootGraph(ptr);
         }

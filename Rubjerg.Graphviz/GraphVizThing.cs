@@ -1,5 +1,4 @@
 using System;
-using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz
 {

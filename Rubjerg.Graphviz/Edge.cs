@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.Linq;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
@@ -17,9 +16,7 @@ namespace Rubjerg.Graphviz
 
         internal static Edge Get(Graph graph, Node tail, Node head, string name)
         {
-            // Because graphviz does not properly export empty strings to dot, this opens a can of worms.
-            // So we disallow it, and map it onto null.
-            name = name == string.Empty ? null : name;
+            name = NameString(name);
             IntPtr ptr = Agedge(graph._ptr, tail._ptr, head._ptr, name, 0);
             if (ptr == IntPtr.Zero)
                 return null;
@@ -28,9 +25,7 @@ namespace Rubjerg.Graphviz
 
         internal static Edge GetOrCreate(Graph graph, Node tail, Node head, string name)
         {
-            // Because graphviz does not properly export empty strings to dot, this opens a can of worms.
-            // So we disallow it, and map it onto null.
-            name = name == string.Empty ? null : name;
+            name = NameString(name);
             IntPtr ptr = Agedge(graph._ptr, tail._ptr, head._ptr, name, 1);
             return new Edge(ptr, graph.MyRootGraph);
         }
