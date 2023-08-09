@@ -1,7 +1,6 @@
 bin/
 obj/
 *.csproj.user
-*.svg
 *.dll
 *.exe
 *.exp
@@ -11,3 +10,5 @@ config6
 *.ipdb
 *.iobj
 *.exe
+*.svg
+*.dot

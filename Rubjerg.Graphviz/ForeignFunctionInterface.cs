@@ -1,8 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
 
-#pragma warning disable IDE1006 // Naming Styles
-
 namespace Rubjerg.Graphviz
 {
     /// <summary>
@@ -25,27 +23,6 @@ namespace Rubjerg.Graphviz
             lock (_mutex)
             {
                 return gvFreeContext(gvc);
-            }
-        }
-        public static string GvcVersion(IntPtr gvc)
-        {
-            lock (_mutex)
-            {
-                return gvcVersion(gvc);
-            }
-        }
-        public static string GvcInfo(IntPtr gvc)
-        {
-            lock (_mutex)
-            {
-                return gvcInfo(gvc);
-            }
-        }
-        public static string GvcBuildDate(IntPtr gvc)
-        {
-            lock (_mutex)
-            {
-                return gvcBuildDate(gvc);
             }
         }
         public static int GvLayout(IntPtr gvc, IntPtr graph, string engine)
@@ -352,7 +329,10 @@ namespace Rubjerg.Graphviz
         {
             lock (_mutex)
             {
-                return rj_agmemwrite(graph);
+                var ptr = rj_agmemwrite(graph);
+                var result = Marshal.PtrToStringAnsi(ptr);
+                free_str(ptr);
+                return result;
             }
         }
         public static IntPtr GraphLabel(IntPtr node)
@@ -362,18 +342,18 @@ namespace Rubjerg.Graphviz
                 return graph_label(node);
             }
         }
-        public static string Rjagget(IntPtr obj, string name)
+        public static string Agget(IntPtr obj, string name)
         {
             lock (_mutex)
             {
-                return rj_agget(obj, name);
+                return Marshal.PtrToStringAnsi(agget(obj, name));
             }
         }
         public static string Rjagnameof(IntPtr obj)
         {
             lock (_mutex)
             {
-                return rj_agnameof(obj);
+                return Marshal.PtrToStringAnsi(agnameof(obj));
             }
         }
         public static void CloneAttributeDeclarations(IntPtr graphfrom, IntPtr graphto)
@@ -387,7 +367,7 @@ namespace Rubjerg.Graphviz
         {
             lock (_mutex)
             {
-                return rj_sym_key(sym);
+                return Marshal.PtrToStringAnsi(rj_sym_key(sym));
             }
         }
         public static double LabelX(IntPtr label)
@@ -422,7 +402,7 @@ namespace Rubjerg.Graphviz
         {
             lock (_mutex)
             {
-                return label_text(label);
+                return Marshal.PtrToStringAnsi(label_text(label));
             }
         }
         public static double LabelFontsize(IntPtr label)
@@ -436,7 +416,7 @@ namespace Rubjerg.Graphviz
         {
             lock (_mutex)
             {
-                return label_fontname(label);
+                return Marshal.PtrToStringAnsi(label_fontname(label));
             }
         }
         public static double NodeX(IntPtr node)
@@ -496,19 +476,13 @@ namespace Rubjerg.Graphviz
             }
         }
 
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void free_str(IntPtr ptr);
+
         [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr gvContext();
         [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern int gvFreeContext(IntPtr gvc);
-        [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string gvcVersion(IntPtr gvc);
-        [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string gvcInfo(IntPtr gvc);
-        [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string gvcBuildDate(IntPtr gvc);
         [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern int gvLayout(IntPtr gvc, IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string engine);
         [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -605,22 +579,18 @@ namespace Rubjerg.Graphviz
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr edge_label(IntPtr node);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string rj_agmemwrite(IntPtr graph);
+        private static extern IntPtr rj_agmemwrite(IntPtr graph);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr graph_label(IntPtr node);
 
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string rj_agget(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name);
-        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string rj_agnameof(IntPtr obj);
+        [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr agget(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name);
+        [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr agnameof(IntPtr obj);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void clone_attribute_declarations(IntPtr graphfrom, IntPtr graphto);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string rj_sym_key(IntPtr sym);
+        private static extern IntPtr rj_sym_key(IntPtr sym);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern double label_x(IntPtr label);
@@ -631,13 +601,11 @@ namespace Rubjerg.Graphviz
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern double label_height(IntPtr label);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string label_text(IntPtr label);
+        private static extern IntPtr label_text(IntPtr label);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern double label_fontsize(IntPtr label);
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string label_fontname(IntPtr label);
+        private static extern IntPtr label_fontname(IntPtr label);
 
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern double node_x(IntPtr node);
@@ -704,6 +672,36 @@ namespace Rubjerg.Graphviz
         [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern int return_1();
 
+        public enum TestEnum
+        {
+            Val1, Val2, Val3, Val4, Val5
+        }
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern TestEnum return_enum1();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern TestEnum return_enum2();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern TestEnum return_enum5();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern TestEnum echo_enum(TestEnum e);
+
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr echo_string([MarshalAs(UnmanagedType.LPStr)] string str);
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr return_empty_string();
+        [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr return_hello();
+
+        public static string EchoString(string str)
+        {
+            // echo_string gives us ownership over the string, which means that we have to free it.
+            var ptr = echo_string(str);
+            var result = Marshal.PtrToStringAnsi(ptr);
+            free_str(ptr);
+            return result;
+        }
+        public static string ReturnEmptyString() => Marshal.PtrToStringAnsi(return_empty_string());
+        public static string ReturnHello() => Marshal.PtrToStringAnsi(return_hello());
         #endregion
     }
 }

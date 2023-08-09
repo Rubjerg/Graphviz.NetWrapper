@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz
@@ -12,16 +11,19 @@ namespace Rubjerg.Graphviz
         /// </summary>
         internal SubGraph(IntPtr ptr, RootGraph rootgraph) : base(ptr, rootgraph) { }
 
-        internal static SubGraph Get(Graph parent, string name)
+        internal static SubGraph Get(Graph parent, string name = null)
         {
+            name = NameString(name);
             IntPtr ptr = Agsubg(parent._ptr, name, 0);
             if (ptr == IntPtr.Zero)
                 return null;
             return new SubGraph(ptr, parent.MyRootGraph);
+
         }
 
-        internal static SubGraph GetOrCreate(Graph parent, string name)
+        internal static SubGraph GetOrCreate(Graph parent, string name = null)
         {
+            name = NameString(name);
             IntPtr ptr = Agsubg(parent._ptr, name, 1);
             return new SubGraph(ptr, parent.MyRootGraph);
         }

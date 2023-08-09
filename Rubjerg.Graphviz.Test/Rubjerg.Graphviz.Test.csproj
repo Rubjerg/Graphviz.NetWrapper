@@ -9,6 +9,11 @@
     <Company>Rubjerg</Company>
     <RestorePackagesPath>..\packages</RestorePackagesPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>

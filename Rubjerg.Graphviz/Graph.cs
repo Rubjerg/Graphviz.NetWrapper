@@ -17,7 +17,7 @@ namespace Rubjerg.Graphviz
         /// <summary>
         /// rootgraph may be null
         /// </summary>
-        internal Graph(IntPtr ptr, RootGraph rootgraph) : base(ptr, rootgraph) { }
+        protected Graph(IntPtr ptr, RootGraph rootgraph) : base(ptr, rootgraph) { }
         public bool IsStrict() { return Agisstrict(_ptr) != 0; }
         public bool IsDirected() { return Agisdirected(_ptr) != 0; }
         public bool IsUndirected() { return Agisundirected(_ptr) != 0; }
@@ -140,17 +140,30 @@ namespace Rubjerg.Graphviz
             return Node.Get(this, name);
         }
 
-        public Edge GetOrAddEdge(Node tail, Node head, string name)
+        /// <param name="name">
+        /// Passing null as edge name (the default) will result in a new unique edge without a name.
+        /// Passing the empty string has the same effect as passing null.
+        /// </param>
+        public Edge GetOrAddEdge(Node tail, Node head, string name = null)
         {
             return Edge.GetOrCreate(this, tail, head, name);
         }
 
-        public Edge GetEdge(Node tail, Node head, string name)
+        /// <param name="name">
+        /// Passing null as edge name will return any edge between the given endpoints, regardless of their name.
+        /// Passing the empty string has the same effect as passing null.
+        /// </param>
+        public Edge GetEdge(Node tail, Node head, string name = null)
         {
             return Edge.Get(this, tail, head, name);
         }
 
-        public Edge GetEdgeBetween(Node node1, Node node2, string name)
+        ///<summary>Return an edge between two nodes, disregarding it's direction.</summary>
+        /// <param name="name">
+        /// Passing null as edge name will return any edge between the given endpoints, regardless of their name.
+        /// Passing the empty string has the same effect as passing null.
+        /// </param>
+        public Edge GetEdgeBetween(Node node1, Node node2, string name = null)
         {
             return Edge.Get(this, node1, node2, name) ?? Edge.Get(this, node2, node1, name);
         }
@@ -303,7 +316,7 @@ namespace Rubjerg.Graphviz
         /// <returns></returns>
         public RootGraph Clone(string resultname)
         {
-            RootGraph result = RootGraph.CreateNew(resultname, GetGraphType());
+            RootGraph result = RootGraph.CreateNew(GetGraphType(), resultname);
             _ = CopyAttributesTo(result);
             CloneInto(result);
             result.UpdateMemoryPressure();
@@ -450,95 +463,6 @@ namespace Rubjerg.Graphviz
             MyRootGraph.Delete(merge);
         }
 
-        /// <summary>
-        /// Compute a layout for this graph.
-        /// NB: The method FreeLayout should always be called as soon as the layout information
-        /// of a graph is not needed anymore.
-        /// </summary>
-        public void ComputeLayout(string engine = LayoutEngines.Dot)
-        {
-            int layout_rc = GvLayout(GVC, _ptr, engine);
-            if (layout_rc != 0)
-                throw new ApplicationException($"Graphviz layout returned error code {layout_rc}");
-
-            // Calling gvRender this way sets attributes to the graph etc
-            // The engine specified here doesn't have to be the same as the above.
-            // We always want to use xdot here, independently of the layout algorithm,
-            // to ensure a consistent attribute layout.
-            int render_rc = GvRender(GVC, _ptr, "xdot", IntPtr.Zero);
-            if (render_rc != 0)
-                throw new ApplicationException($"Graphviz render returned error code {render_rc}");
-        }
-
-        /// <summary>
-        /// Clean up the layout information stored in this graph. This does not include the attributes set by GvRender.
-        /// This method should always be called as soon as the layout information of a graph is not needed anymore.
-        /// NB: this method must not be called after modifications to the graph have been made!
-        /// This could result an AccessViolationException.
-        /// </summary>
-        public void FreeLayout()
-        {
-            var free_rc = GvFreeLayout(GVC, _ptr);
-            if (free_rc != 0)
-                throw new ApplicationException($"Graphviz render returned error code {free_rc}");
-        }
-
-        private void RenderToFile(string filename, string format)
-        {
-            var render_rc = GvRenderFilename(GVC, _ptr, format, filename);
-            if (render_rc != 0)
-                throw new ApplicationException($"Graphviz render returned error code {render_rc}");
-        }
-
-        /// <summary>
-        /// Should only be called after <see cref="ComputeLayout"/> has been called.
-        /// </summary>
-        public void ToSvgFile(string filename)
-        {
-            RenderToFile(filename, "svg");
-        }
-
-        /// <summary>
-        /// Should only be called after <see cref="ComputeLayout"/> has been called.
-        /// </summary>
-        public void ToPngFile(string filename)
-        {
-            RenderToFile(filename, "png");
-        }
-
-        /// <summary>
-        /// Should only be called after <see cref="ComputeLayout"/> has been called.
-        /// </summary>        
-        public void ToPdfFile(string filename) => RenderToFile(filename, "pdf");
-
-        /// <summary>
-        /// Should only be called after <see cref="ComputeLayout"/> has been called.
-        /// </summary>
-        public void ToPsFile(string filename) => RenderToFile(filename, "ps");
-
-        public RectangleF BoundingBox()
-        {
-            string bb_string = Rjagget(_ptr, "bb");
-            if (string.IsNullOrEmpty(bb_string))
-                return default;
-            // x and y are the topleft point of the bb
-            char sep = ',';
-            string[] bb = bb_string.Split(sep);
-            float x = float.Parse(bb[0], NumberStyles.Any, CultureInfo.InvariantCulture);
-            float y = float.Parse(bb[1], NumberStyles.Any, CultureInfo.InvariantCulture);
-            float w = float.Parse(bb[2], NumberStyles.Any, CultureInfo.InvariantCulture) - x;
-            float h = float.Parse(bb[3], NumberStyles.Any, CultureInfo.InvariantCulture) - y;
-            return new RectangleF(x, y, w, h);
-        }
-
-        public GraphvizLabel GetLabel()
-        {
-            IntPtr labelptr = GraphLabel(_ptr);
-            if (labelptr == IntPtr.Zero)
-                return null;
-            return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered);
-        }
-
         public bool IsCluster()
         {
             return GetName().StartsWith("cluster");
@@ -636,5 +560,105 @@ namespace Rubjerg.Graphviz
             edge.SetLogicalHead(gvClusterHead);
             return edge;
         }
+
+        #region layout functions and attributes
+
+        /// <summary>
+        /// Compute the layout in a separate process by calling dot.exe, and return a new graph, which is a copy of the old
+        /// graph with the xdot information added to it.
+        /// </summary>
+        public RootGraph CreateLayout(string engine = LayoutEngines.Dot)
+        {
+            return GraphvizCommand.CreateLayout(this, engine: engine);
+        }
+
+        public RectangleF GetBoundingBox()
+        {
+            string bb_string = Agget(_ptr, "bb");
+            if (string.IsNullOrEmpty(bb_string))
+                return default;
+            // x and y are the topleft point of the bb
+            char sep = ',';
+            string[] bb = bb_string.Split(sep);
+            float x = float.Parse(bb[0], NumberStyles.Any, CultureInfo.InvariantCulture);
+            float y = float.Parse(bb[1], NumberStyles.Any, CultureInfo.InvariantCulture);
+            float w = float.Parse(bb[2], NumberStyles.Any, CultureInfo.InvariantCulture) - x;
+            float h = float.Parse(bb[3], NumberStyles.Any, CultureInfo.InvariantCulture) - y;
+            return new RectangleF(x, y, w, h);
+        }
+
+        public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
+        public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
+
+        private void ToFile(string filepath, string format, string engine)
+        {
+            _ = GraphvizCommand.Exec(this, format: format, filepath, engine: engine);
+        }
+
+        public void ToSvgFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "svg", engine);
+        public void ToPngFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "png", engine);
+        public void ToPdfFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "pdf", engine);
+        public void ToPsFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "ps", engine);
+        #endregion
+
+
+        #region in-place layout computation
+
+        /// <summary>
+        /// Compute a layout for this graph, in-process, on the given graph.
+        /// It is recommended to use <see cref="CreateLayout"/> instead, as that comes with less footguns and a better API. 
+        /// Moreover, experience shows it is less likely to trip over lingering graphviz bugs as well.
+        /// NB: The method FreeLayout should always be called as soon as the layout information
+        /// of a graph is not needed anymore.
+        /// </summary>
+        public void ComputeLayout(string engine = LayoutEngines.Dot)
+        {
+            int layout_rc = GvLayout(GVC, _ptr, engine);
+            if (layout_rc != 0)
+                throw new ApplicationException($"Graphviz layout returned error code {layout_rc}");
+
+            // Calling gvRender this way sets attributes to the graph etc
+            // The engine specified here doesn't have to be the same as the above.
+            // We always want to use xdot here, independently of the layout algorithm,
+            // to ensure a consistent attribute layout.
+            int render_rc = GvRender(GVC, _ptr, "xdot", IntPtr.Zero);
+            if (render_rc != 0)
+                throw new ApplicationException($"Graphviz render returned error code {render_rc}");
+        }
+
+        /// <summary>
+        /// Clean up the layout information stored in this graph. This does not include the attributes set by GvRender.
+        /// This method should always be called as soon as the layout information of a graph is not needed anymore.
+        /// NB: this method must not be called after modifications to the graph have been made!
+        /// This could result an AccessViolationException.
+        /// </summary>
+        public void FreeLayout()
+        {
+            var free_rc = GvFreeLayout(GVC, _ptr);
+            if (free_rc != 0)
+                throw new ApplicationException($"Graphviz render returned error code {free_rc}");
+        }
+
+        /// <summary>
+        /// Should only be called after <see cref="ComputeLayout"/> has been called.
+        /// </summary>
+        [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by the other ToXXXFile methods.")]
+        public void RenderToFile(string filename, string format)
+        {
+            var render_rc = GvRenderFilename(GVC, _ptr, format, filename);
+            if (render_rc != 0)
+                throw new ApplicationException($"Graphviz render returned error code {render_rc}");
+        }
+
+        [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
+        public GraphvizLabel GetLabel()
+        {
+            IntPtr labelptr = GraphLabel(_ptr);
+            if (labelptr == IntPtr.Zero)
+                return null;
+            return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered);
+        }
+
+        #endregion
     }
 }

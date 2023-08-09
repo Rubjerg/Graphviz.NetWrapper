@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -8,8 +9,118 @@ using static Rubjerg.Graphviz.Test.Utils;
 namespace Rubjerg.Graphviz.Test
 {
     [TestFixture()]
-    public class GraphvizBasicOperations
+    public class TestDotLayout
     {
+        private static void CreateSimpleTestGraph(out RootGraph root, out Node nodeA, out Edge edge)
+        {
+            root = CreateUniqueTestGraph();
+            root.SetAttribute("label", "g");
+            nodeA = root.GetOrAddNode("A");
+            nodeA.SetAttribute("shape", "record");
+            nodeA.SetAttribute("label", "{a|b}");
+            nodeA.SetAttribute("color", "red");
+            Node nodeB = root.GetOrAddNode("B");
+            edge = root.GetOrAddEdge(nodeA, nodeB, "");
+            edge.SetAttribute("label", "e");
+            edge.SetAttribute("headlabel", "h");
+            edge.SetAttribute("taillabel", "t");
+            edge.SetAttribute("dir", "both");
+            edge.SetAttribute("arrowtail", "vee");
+            edge.SetAttribute("arrowhead", "vee");
+        }
+
+        [Test()]
+        public void TestLayoutMethodsWithoutLayout()
+        {
+            CreateSimpleTestGraph(out RootGraph root, out Node nodeA, out Edge edge);
+
+            Assert.AreEqual(root.GetBoundingBox(), default(RectangleF));
+            Assert.AreEqual(root.GetColor(), Color.Black);
+            Assert.AreEqual(root.GetDrawing().Count, 0);
+            Assert.AreEqual(root.GetLabelDrawing().Count, 0);
+
+            Assert.AreEqual(nodeA.GetPosition(), default(PointF));
+            Assert.AreEqual(nodeA.GetBoundingBox(), default(RectangleF));
+            Assert.AreEqual(nodeA.GetSize(), default(SizeF));
+            Assert.AreEqual(nodeA.GetRecordRectangles().Count(), 0);
+            Assert.AreEqual(nodeA.GetDrawing().Count, 0);
+            Assert.AreEqual(nodeA.GetLabelDrawing().Count, 0);
+
+            Assert.AreEqual(edge.GetFirstSpline(), null);
+            Assert.AreEqual(edge.GetSplines().Count(), 0);
+            Assert.AreEqual(edge.GetDrawing().Count, 0);
+            Assert.AreEqual(edge.GetLabelDrawing().Count, 0);
+            Assert.AreEqual(edge.GetHeadArrowDrawing().Count, 0);
+            Assert.AreEqual(edge.GetTailArrowDrawing().Count, 0);
+            Assert.AreEqual(edge.GetHeadLabelDrawing().Count, 0);
+            Assert.AreEqual(edge.GetTailLabelDrawing().Count, 0);
+
+            //root.ToSvgFile("xxx.svg");
+        }
+
+        [Test()]
+        public void TestLayoutMethodsWithInProcessLayout()
+        {
+            CreateSimpleTestGraph(out RootGraph root, out Node nodeA, out Edge edge);
+
+            root.ComputeLayout();
+
+            Assert.AreEqual(root.GetColor(), Color.Black);
+            Assert.AreNotEqual(root.GetBoundingBox(), default(RectangleF));
+            Assert.AreNotEqual(root.GetDrawing().Count, 0);
+            Assert.AreNotEqual(root.GetLabelDrawing().Count, 0);
+
+            Assert.AreEqual(nodeA.GetColor(), Color.Red);
+            Assert.AreEqual(nodeA.GetRecordRectangles().Count(), 2);
+            Assert.AreNotEqual(nodeA.GetPosition(), default(PointF));
+            Assert.AreNotEqual(nodeA.GetBoundingBox(), default(RectangleF));
+            Assert.AreNotEqual(nodeA.GetSize(), default(SizeF));
+            Assert.AreNotEqual(nodeA.GetDrawing().Count, 0);
+            Assert.AreNotEqual(nodeA.GetLabelDrawing().Count, 0);
+
+            Assert.AreNotEqual(edge.GetFirstSpline(), null);
+            Assert.AreNotEqual(edge.GetSplines().Count(), 0);
+            Assert.AreNotEqual(edge.GetDrawing().Count, 0);
+            Assert.AreNotEqual(edge.GetLabelDrawing().Count, 0);
+            Assert.AreNotEqual(edge.GetHeadArrowDrawing().Count, 0);
+            Assert.AreNotEqual(edge.GetTailArrowDrawing().Count, 0);
+            Assert.AreNotEqual(edge.GetHeadLabelDrawing().Count, 0);
+            Assert.AreNotEqual(edge.GetTailLabelDrawing().Count, 0);
+        }
+
+        [Test()]
+        public void TestLayoutMethodsWithLayout()
+        {
+            CreateSimpleTestGraph(out RootGraph root, out Node nodeA, out Edge edge);
+
+            var xroot = root.CreateLayout();
+            var xnodeA = xroot.GetNode("A");
+            var xnodeB = xroot.GetNode("B");
+            Edge xedge = xroot.GetEdge(xnodeA, xnodeB, "");
+
+            Assert.AreEqual(xroot.GetColor(), Color.Black);
+            Assert.AreNotEqual(xroot.GetBoundingBox(), default(RectangleF));
+            Assert.AreNotEqual(xroot.GetDrawing().Count, 0);
+            Assert.AreNotEqual(xroot.GetLabelDrawing().Count, 0);
+
+            Assert.AreEqual(xnodeA.GetColor(), Color.Red);
+            Assert.AreEqual(xnodeA.GetRecordRectangles().Count(), 2);
+            Assert.AreNotEqual(xnodeA.GetPosition(), default(PointF));
+            Assert.AreNotEqual(xnodeA.GetBoundingBox(), default(RectangleF));
+            Assert.AreNotEqual(xnodeA.GetSize(), default(SizeF));
+            Assert.AreNotEqual(xnodeA.GetDrawing().Count, 0);
+            Assert.AreNotEqual(xnodeA.GetLabelDrawing().Count, 0);
+
+            Assert.AreNotEqual(xedge.GetFirstSpline(), null);
+            Assert.AreNotEqual(xedge.GetSplines().Count(), 0);
+            Assert.AreNotEqual(xedge.GetDrawing().Count, 0);
+            Assert.AreNotEqual(xedge.GetLabelDrawing().Count, 0);
+            Assert.AreNotEqual(xedge.GetHeadArrowDrawing().Count, 0);
+            Assert.AreNotEqual(xedge.GetTailArrowDrawing().Count, 0);
+            Assert.AreNotEqual(xedge.GetHeadLabelDrawing().Count, 0);
+            Assert.AreNotEqual(xedge.GetTailLabelDrawing().Count, 0);
+        }
+
         [Test()]
         public void TestHtmlLabels()
         {
@@ -185,12 +296,12 @@ namespace Rubjerg.Graphviz.Test
                 if (escape)
                 {
                     Assert.That(rects.Count, Is.EqualTo(1));
-                    Assert.That(node2.BoundingBox().Height, Is.EqualTo(node3.BoundingBox().Height));
+                    Assert.That(node2.GetBoundingBox().Height, Is.EqualTo(node3.GetBoundingBox().Height));
                 }
                 else
                 {
                     Assert.That(rects.Count, Is.EqualTo(2));
-                    Assert.That(node2.BoundingBox().Height, Is.Not.EqualTo(node3.BoundingBox().Height));
+                    Assert.That(node2.GetBoundingBox().Height, Is.Not.EqualTo(node3.GetBoundingBox().Height));
                 }
             }
         }

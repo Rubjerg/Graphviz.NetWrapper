@@ -1,15 +1,8 @@
 #include <iostream>
 #include <conio.h>
+#include "GraphvizWrapper.h"
 
 using namespace std;
-
-extern "C" {
-    __declspec(dllimport) int stackoverflow_repro();
-    __declspec(dllimport) int missing_label_repro();
-    __declspec(dllimport) int test_agread();
-    __declspec(dllimport) int test_agmemread();
-    __declspec(dllimport) int test_rj_agmemread();
-}
 
 int main()
 {

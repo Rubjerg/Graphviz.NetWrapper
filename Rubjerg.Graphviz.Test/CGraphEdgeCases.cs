@@ -7,8 +7,80 @@ namespace Rubjerg.Graphviz.Test
     public class CGraphEdgeCases
     {
         [Test()]
-        public void TestAttributeIntroduction()
+        public void TestUniqueGraphs()
         {
+            var g1 = RootGraph.CreateNew(GraphType.Directed, "test");
+            var g2 = RootGraph.CreateNew(GraphType.Directed, "test");
+            Assert.AreNotEqual(g1, g2);
+        }
+
+        [Test()]
+        public void TestReadDotFile()
+        {
+            RootGraph root = RootGraph.FromDotString(@"
+digraph test {
+    """";
+    A;
+    B;
+    A -> B[key = edgename];
+    A -> B[key = edgename];
+    A -> B;
+    A -> B;
+}
+");
+            var nodes = root.Nodes().ToList();
+            var edges = root.Edges().ToList();
+            var names = edges.Select(e => e.GetName());
+            // The attribute 'key' maps to the edgename
+            // Note that omitted key values will result in unique edges
+            Assert.AreEqual(1, names.Count(n => n == "edgename"));
+            Assert.AreEqual(2, names.Count(n => n == null));
+            Assert.AreEqual(3, nodes.Count);
+        }
+
+        [Test()]
+        public void TestWriteDotFile()
+        {
+            var root = RootGraph.CreateNew(GraphType.Directed);
+
+            // Vice versa, empty edge names and node names will result in unique objects as well
+            var E = root.GetOrAddNode("");
+            var E2 = root.GetOrAddNode("");
+            var N = root.GetOrAddNode(null);
+            var N2 = root.GetOrAddNode(null);
+            var A = root.GetOrAddNode("A");
+            var B = root.GetOrAddNode("B");
+            _ = root.GetOrAddEdge(A, B, null);
+            _ = root.GetOrAddEdge(A, B, null);
+            _ = root.GetOrAddEdge(A, B, "");
+            _ = root.GetOrAddEdge(A, B, "");
+            _ = root.GetOrAddEdge(A, B, "edge2");
+            _ = root.GetOrAddEdge(A, B, "edge2");
+            var dot = root.ToDotString();
+
+            // Passing null to GetEdge will return any edge between the given endpoints.
+            var edge = root.GetEdge(A, B, null);
+            Assert.Contains(edge.GetName(), new[] { null, "edge2" });
+
+            Utils.AssertPattern(@"digraph {
+	node \[label=""\\N""\];
+	""%\d+"";
+	""%\d+"";
+	""%\d+"";
+	""%\d+"";
+	A -> B;
+	A -> B;
+	A -> B;
+	A -> B;
+	A -> B	\[key=edge2\];
+}
+".Replace("\r", ""), dot);
+        }
+
+        [Test()]
+        public void TestAttributeReintroduction()
+        {
+            // Reintroducing graph attributes resets all values.
             RootGraph root = Utils.CreateUniqueTestGraph();
             Graph.IntroduceAttribute(root, "test", "default");
             root.SetAttribute("test", "1");
@@ -54,6 +126,19 @@ namespace Rubjerg.Graphviz.Test
                 Assert.AreEqual("\\N", nodeB.GetAttribute("label"));
                 root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/out.svg");
             }
+        }
+
+        [Test()]
+        public void TestGetUnintroducedAttributes()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+            Assert.AreEqual(null, root.GetAttribute("test"));
+            Graph.IntroduceAttribute(root, "test", "foo");
+            Assert.AreEqual("foo", root.GetAttribute("test"));
+
+            // If we call set attribute first, the attribute is automatically introduced
+            root.SetAttribute("test2", "foo");
+            Assert.AreEqual("foo", root.GetAttribute("test2"));
         }
 
         [Test()]
@@ -132,22 +217,6 @@ namespace Rubjerg.Graphviz.Test
             Assert.AreEqual(2, node.EdgesIn().Count());
             Assert.AreEqual(2, node.EdgesOut().Count());
             Assert.AreEqual(3, node.Edges().Count());
-        }
-
-        [Test()]
-        public void TestMarshaling()
-        {
-            Assert.True(ForeignFunctionInterface.echobool(true));
-            Assert.False(ForeignFunctionInterface.echobool(false));
-            Assert.True(ForeignFunctionInterface.return_true());
-            Assert.False(ForeignFunctionInterface.return_false());
-
-            Assert.AreEqual(0, ForeignFunctionInterface.echoint(0));
-            Assert.AreEqual(1, ForeignFunctionInterface.echoint(1));
-            Assert.AreEqual(-1, ForeignFunctionInterface.echoint(-1));
-            Assert.AreEqual(1, ForeignFunctionInterface.return1());
-            Assert.AreEqual(-1, ForeignFunctionInterface.return_1());
-            // TODO: test string marshaling
         }
 
         [Test()]
@@ -296,5 +365,21 @@ namespace Rubjerg.Graphviz.Test
             Assert.AreEqual(null, graph.GetDescendantByName("subsubgraph"));
         }
 
+
+        [Test()]
+        public void DotOutputConsistency()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+            Node nodeA = root.GetOrAddNode("A");
+
+            nodeA.SafeSetAttribute("shape", "record", "");
+            nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+
+            root.ComputeLayout();
+            var dotstr = root.ToDotString();
+            var root2 = RootGraph.FromDotString(dotstr);
+            var dotstr2 = root2.ToDotString();
+            Assert.AreEqual(dotstr, dotstr2);
+        }
     }
 }

@@ -5,6 +5,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NoWarn>1701;1702;NU5100</NoWarn>
     <Version>1.1.0</Version>
@@ -19,6 +21,10 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\GraphvizWrapper\GraphvizWrapper.vcxproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
@@ -26,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="*.dll;*.lib;*.pdb;*.exp;config6">
+    <None Update="*.dll;*.lib;*.pdb;*.exp;*.exe;config6">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>

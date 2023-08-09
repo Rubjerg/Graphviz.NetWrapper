@@ -10,8 +10,5 @@
         public const string Circo = "circo";
         public const string Patchwork = "patchwork";
         public const string Osage = "osage";
-        public const string Nop = "nop";
-        public const string Nop1 = "nop1";
-        public const string Nop2 = "nop2";
     }
 }

@@ -16,6 +16,7 @@ namespace Rubjerg.Graphviz
 
         internal static Node Get(Graph graph, string name)
         {
+            name = NameString(name);
             IntPtr ptr = Agnode(graph._ptr, name, 0);
             if (ptr != IntPtr.Zero)
                 return new Node(ptr, graph.MyRootGraph);
@@ -24,6 +25,7 @@ namespace Rubjerg.Graphviz
 
         internal static Node GetOrCreate(Graph graph, string name)
         {
+            name = NameString(name);
             IntPtr ptr = Agnode(graph._ptr, name, 1);
             return new Node(ptr, graph.MyRootGraph);
         }
@@ -156,34 +158,6 @@ namespace Rubjerg.Graphviz
             return EdgesOut().Any(e => e.Head().Equals(node)) || EdgesIn().Any(e => e.Tail().Equals(node));
         }
 
-        public RectangleF BoundingBox()
-        {
-            // x and y are the center of the node
-            // Coords are in points, sizes in inches. 72 points = 1 inch
-            float x = Convert.ToSingle(NodeX(_ptr));
-            float y = Convert.ToSingle(NodeY(_ptr));
-            float w = Convert.ToSingle(NodeWidth(_ptr) * 72);
-            float h = Convert.ToSingle(NodeHeight(_ptr) * 72);
-            return new RectangleF(x - w / 2, y - h / 2, w, h);
-        }
-
-        /// <summary>
-        /// Return null if label not set.
-        /// </summary>
-        /// <returns></returns>
-        public GraphvizLabel GetLabel()
-        {
-            IntPtr labelptr = NodeLabel(_ptr);
-            if (labelptr == IntPtr.Zero)
-                return null;
-            return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered, new PointF(0, 0));
-        }
-
-        public PointF Position()
-        {
-            return new PointF(Convert.ToSingle(NodeX(_ptr)), Convert.ToSingle(NodeY(_ptr)));
-        }
-
         public void MakeInvisibleAndSmall()
         {
             SafeSetAttribute("style", "invis", "");
@@ -191,6 +165,59 @@ namespace Rubjerg.Graphviz
             SafeSetAttribute("width", "0", "");
             SafeSetAttribute("height", "0", "");
             SafeSetAttribute("shape", "point", "");
+        }
+
+        #region layout attributes
+
+        /// <summary>
+        /// The position of the center of the node.
+        /// </summary>
+        public PointF GetPosition()
+        {
+            // The "pos" attribute is available as part of xdot output
+            if (HasAttribute("pos"))
+            {
+                var posString = GetAttribute("pos");
+                var coords = posString.Split(',');
+                float x = float.Parse(coords[0], NumberStyles.Any, CultureInfo.InvariantCulture);
+                float y = float.Parse(coords[1], NumberStyles.Any, CultureInfo.InvariantCulture);
+                return new PointF(x, y);
+            }
+            // If the "pos" attribute is not available, try the following FFI functions,
+            // which are available after a ComputeLayout
+            return new PointF(Convert.ToSingle(NodeX(_ptr)), Convert.ToSingle(NodeY(_ptr)));
+        }
+
+        /// <summary>
+        /// The size of bounding box of the node.
+        /// </summary>
+        public SizeF GetSize()
+        {
+            // The "width" and "height" attributes are available as part of xdot output
+            float w, h;
+            if (HasAttribute("width") && HasAttribute("height"))
+            {
+                w = float.Parse(GetAttribute("width"), NumberStyles.Any, CultureInfo.InvariantCulture);
+                h = float.Parse(GetAttribute("height"), NumberStyles.Any, CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                // If they are not available, try the following FFI functions,
+                // which are available after a ComputeLayout
+                w = Convert.ToSingle(NodeWidth(_ptr));
+                h = Convert.ToSingle(NodeHeight(_ptr));
+            }
+            // Coords are in points, sizes in inches. 72 points = 1 inch
+            // We return everything in terms of points.
+            return new SizeF(w * 72, h * 72);
+        }
+
+        public RectangleF GetBoundingBox()
+        {
+            var size = GetSize();
+            var center = GetPosition();
+            var bottomleft = new PointF(center.X - size.Width / 2, center.Y - size.Height / 2);
+            return new RectangleF(bottomleft, size);
         }
 
         /// <summary>
@@ -202,8 +229,36 @@ namespace Rubjerg.Graphviz
             if (!HasAttribute("rects"))
                 yield break;
 
-            foreach (string rect in GetAttribute("rects").Split(' '))
-                yield return ParseRect(rect);
+            // There is a lingering issue in Graphviz where the x coordinates of the record rectangles may be off.
+            // As a workaround we consult the x coordinates, and attempt to snap onto those.
+            // https://github.com/Rubjerg/Graphviz.NetWrapper/issues/30
+            var validXCoords = GetDrawing().OfType<XDotOp.PolyLine>()
+                .SelectMany(p => p.Value.Points).Select(p => p.X).ToList();
+
+            foreach (string rectStr in GetAttribute("rects").Split(' '))
+            {
+                var rect = ParseRect(rectStr);
+
+                var x1 = rect.X;
+                var x2 = rect.X + rect.Width;
+                var fixedX1 = (float)FindClosest(validXCoords, x1);
+                var fixedX2 = (float)FindClosest(validXCoords, x2);
+                var fixedRect = new RectangleF(
+                    new PointF(fixedX1, rect.Y),
+                    new SizeF(fixedX2 - rect.X, rect.Height));
+                yield return fixedRect;
+            }
+        }
+
+        /// <summary>
+        /// Return the value that is closest to the given target value.
+        /// Return target if the sequence if empty.
+        /// </summary>
+        private static double FindClosest(IEnumerable<double> self, double target)
+        {
+            if (self.Any())
+                return self.OrderBy(x => Math.Abs(x - target)).First();
+            return target;
         }
 
         private RectangleF ParseRect(string rect)
@@ -214,6 +269,20 @@ namespace Rubjerg.Graphviz
             float rightX = float.Parse(points[2], NumberStyles.Any, CultureInfo.InvariantCulture);
             float lowerY = float.Parse(points[3], NumberStyles.Any, CultureInfo.InvariantCulture);
             return new RectangleF(leftX, upperY, rightX - leftX, lowerY - upperY);
+        }
+
+        public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
+        public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
+
+        #endregion
+
+        [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
+        public GraphvizLabel GetLabel()
+        {
+            IntPtr labelptr = NodeLabel(_ptr);
+            if (labelptr == IntPtr.Zero)
+                return null;
+            return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered, new PointF(0, 0));
         }
     }
 }

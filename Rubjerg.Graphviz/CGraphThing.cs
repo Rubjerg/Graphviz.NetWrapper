@@ -28,13 +28,30 @@ namespace Rubjerg.Graphviz
                 MyRootGraph = root;
         }
 
+        protected static string NameString(string name)
+        {
+            // Because graphviz does not properly export empty strings to dot, this opens a can of worms.
+            // So we disallow it, and map it onto null.
+            // Related issue: https://gitlab.com/graphviz/graphviz/-/issues/1887
+            return name == string.Empty ? null : name;
+        }
+
+        /// <summary>
+        /// Identifier for this object. Used to distinghuish multi edges.
+        /// Edges can be nameless, and in that case this method returns null.
+        /// </summary>
+        public string GetName()
+        {
+            return NameString(Rjagnameof(_ptr));
+        }
+
         public bool HasAttribute(string name)
         {
             return !new[] { null, "" }.Contains(GetAttribute(name));
         }
 
         /// <summary>
-        /// Also works if the attribute has not been introduced for this kind.
+        /// Set attribute, and introduce it with the given default if it is not introduced yet.
         /// </summary>
         public void SafeSetAttribute(string name, string value, string deflt)
         {
@@ -43,23 +60,24 @@ namespace Rubjerg.Graphviz
         }
 
         /// <summary>
-        /// Precondition: the attribute has been introduced for this kind.
+        /// Set attribute, and introduce it with the empty string if it does not exist yet.
         /// </summary>
         public void SetAttribute(string name, string value)
         {
-            Agset(_ptr, name, value);
+            Agsafeset(_ptr, name, value, "");
         }
 
         /// <summary>
-        /// Precondition: the attribute has been introduced for this kind.
+        /// Get the attribute value for this object, or the default value of the attribute if no explicit value was set.
+        /// If the attribute was not introduced, return null.
         /// </summary>
         public string GetAttribute(string name)
         {
-            return Rjagget(_ptr, name);
+            return Agget(_ptr, name);
         }
 
         /// <summary>
-        /// Get the attribute if it was introduced, otherwise return deflt.
+        /// Get the attribute if it was introduced and contains a non-empty value, otherwise return deflt.
         /// </summary>
         public string SafeGetAttribute(string name, string deflt)
         {
@@ -98,11 +116,6 @@ namespace Rubjerg.Graphviz
                 }
             }
             return attributes;
-        }
-
-        public string GetName()
-        {
-            return Rjagnameof(_ptr);
         }
 
         public override string ToString()
@@ -154,6 +167,29 @@ namespace Rubjerg.Graphviz
             return 0;
         }
 
+        /// <summary>
+        /// Some characters and character sequences have a special meaning.
+        /// If you intend to display a literal string, use this function to properly escape the string.
+        /// See also
+        /// https://www.graphviz.org/doc/info/shapes.html#record
+        /// https://www.graphviz.org/doc/info/attrs.html#k:escString
+        /// </summary>
+        public static string EscapeLabel(string label)
+        {
+            // From the graphviz docs:
+            // Braces, vertical bars and angle brackets must be escaped with a backslash character if
+            // you wish them to appear as a literal character. Spaces are interpreted as separators
+            // between tokens, so they must be escaped if you want spaces in the text.
+            string result = label;
+            foreach (char c in new[] { '\\', '<', '>', '{', '}', ' ', '|' })
+            {
+                result = result.Replace(c.ToString(), "\\" + c);
+            }
+            return result;
+        }
+
+        #region layout functions
+
         public Color GetColor()
         {
             string colorstring = SafeGetAttribute("color", "Black");
@@ -175,25 +211,15 @@ namespace Rubjerg.Graphviz
             return SafeGetAttribute("style", "") == "invis";
         }
 
-        /// <summary>
-        /// Some characters and character sequences have a special meaning.
-        /// If you intend to display a literal string, use this function to properly escape the string.
-        /// See also
-        /// https://www.graphviz.org/doc/info/shapes.html#record
-        /// https://www.graphviz.org/doc/info/attrs.html#k:escString
-        /// </summary>
-        public static string EscapeLabel(string label)
+        protected static List<XDotOp> GetXDotValue(CGraphThing obj, string attrName)
         {
-            // From the graphviz docs:
-            // Braces, vertical bars and angle brackets must be escaped with a backslash character if
-            // you wish them to appear as a literal character. Spaces are interpreted as separators
-            // between tokens, so they must be escaped if you want spaces in the text.
-            string result = label;
-            foreach (char c in new[] { '\\', '<', '>', '{', '}', ' ', '|' })
-            {
-                result = result.Replace(c.ToString(), "\\" + c);
-            }
-            return result;
+            var xdotString = obj.SafeGetAttribute(attrName, null);
+            if (xdotString is null)
+                return new List<XDotOp>();
+
+            return XDotParser.ParseXDot(xdotString);
         }
+
+        #endregion
     }
 }

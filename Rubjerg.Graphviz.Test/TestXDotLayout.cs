@@ -1,0 +1,113 @@
+using System;
+using System.Linq;
+using NUnit.Framework;
+
+namespace Rubjerg.Graphviz.Test
+{
+    [TestFixture()]
+    public class TestXDotLayout
+    {
+        [Test()]
+        public void TestXDotTranslateFromString()
+        {
+            // Test case containing all possible operations
+            var testcase = @"
+E 10 10 5 3
+e 20 10 5 3
+P 4 30 10 30 15 35 15 35 10
+p 4 40 10 40 15 45 15 45 10
+L 4 50 10 50 15 55 15 55 10
+B 4 60 10 60 15 65 15 65 10
+b 4 70 10 70 15 75 15 75 10
+T 80 10 0 5 12 -Hello world
+t 31
+C 7 -#ff0000
+c 7 -#00ff00
+F 12 5 -Arial
+S 6 -dashed
+I 90 10 5 5 8 -image.png
+";
+            var result = XDotParser.ParseXDot(testcase);
+            Assert.AreEqual(14, result.Count);
+
+        }
+
+        [Test()]
+        public void TestXDotRecordNode()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+            Node nodeA = root.GetOrAddNode("A");
+
+            nodeA.SafeSetAttribute("shape", "record", "");
+            // FIXNOW: document that newlines are not supported in record labels
+            nodeA.SafeSetAttribute("label", "1|{2\n3}", "\\N");
+
+            var xdotGraph = root.CreateLayout();
+            var xNodeA = xdotGraph.GetNode("A");
+            var ldraw = xNodeA.GetLabelDrawing();
+            Assert.IsTrue(ldraw.OfType<XDotOp.Text>().Any(t => t.Value.Text == "23"));
+            // Even though the attribute still contains the newline
+            Assert.IsTrue(xNodeA.GetAttribute("label") == "1|{2\n3}");
+            Assert.AreEqual(6, ldraw.Count);
+        }
+
+        [Test()]
+        public void TestXDotNewLines()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+            SubGraph cluster = root.GetOrAddSubgraph("cluster_1");
+            cluster.SafeSetAttribute("label", "1\n2", "");
+            Node nodeA = cluster.GetOrAddNode("A");
+            nodeA.SafeSetAttribute("label", "a\nb", "");
+
+            var xdotGraph = root.CreateLayout();
+
+            // New lines result in separate text operations
+            var xCluster = xdotGraph.GetSubgraph("cluster_1");
+            var ldraw = xCluster.GetLabelDrawing();
+            Assert.AreEqual(6, ldraw.Count);
+
+            var xNodeA = xdotGraph.GetNode("A");
+            ldraw = xNodeA.GetLabelDrawing();
+            Assert.AreEqual(6, ldraw.Count);
+        }
+
+        [Test()]
+        public void TestRecordShapeOrder()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+            Node nodeA = root.GetOrAddNode("A");
+
+            nodeA.SafeSetAttribute("shape", "record", "");
+            nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+
+
+            var xdotGraph = root.CreateLayout();
+
+            var xNodeA = xdotGraph.GetNode("A");
+            var rects = xNodeA.GetRecordRectangles().ToList();
+
+            // Because Graphviz uses a lower-left originated coordinate system, we need to flip the y coordinates
+            Utils.AssertOrder(rects, r => (r.Left, -r.Top));
+            Assert.That(rects.Count, Is.EqualTo(9));
+
+            // Test xdot translation
+            var xdotDraw = xdotGraph.GetDrawing();
+        }
+
+        [Test()]
+        public void TestEmptyRecordShapes()
+        {
+            RootGraph root = Utils.CreateUniqueTestGraph();
+            Node nodeA = root.GetOrAddNode("A");
+            nodeA.SafeSetAttribute("shape", "record", "");
+            nodeA.SafeSetAttribute("label", "||||", "");
+
+            var xdotGraph = root.CreateLayout();
+
+            var xNodeA = xdotGraph.GetNode("A");
+            var rects = xNodeA.GetRecordRectangles().ToList();
+            Assert.That(rects.Count, Is.EqualTo(5));
+        }
+    }
+}

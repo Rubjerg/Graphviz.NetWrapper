@@ -20,7 +20,7 @@ namespace Rubjerg.Graphviz
     public class RootGraph : Graph
     {
         private long _added_pressure = 0;
-        private RootGraph(IntPtr ptr) : base(ptr, null) { }
+        protected RootGraph(IntPtr ptr) : base(ptr, null) { }
         ~RootGraph()
         {
             if (_added_pressure > 0)
@@ -40,6 +40,7 @@ namespace Rubjerg.Graphviz
             if (_added_pressure > 0)
                 GC.RemoveMemoryPressure(_added_pressure);
 
+            // Up memory pressure proportional to the amount of unmanaged memory in use.
             long unmanaged_bytes_estimate = Nodes().Count() * 104 + Edges().Count() * 64;
             if (unmanaged_bytes_estimate > 0)
                 GC.AddMemoryPressure(unmanaged_bytes_estimate);
@@ -49,9 +50,13 @@ namespace Rubjerg.Graphviz
         /// <summary>
         /// Create a new graph.
         /// </summary>
-        /// <param name="name">Unique identifier</param>
-        public static RootGraph CreateNew(string name, GraphType graphtype)
+        /// <param name="name">
+        /// The name is not interpreted by Graphviz,
+        /// except it is recorded and preserved when the graph is written as a file
+        /// </param>
+        public static RootGraph CreateNew(GraphType graphtype, string name = null)
         {
+            name = NameString(name);
             var ptr = Rjagopen(name, (int)graphtype);
             return new RootGraph(ptr);
         }
@@ -65,16 +70,25 @@ namespace Rubjerg.Graphviz
             return FromDotString(input);
         }
 
-        public static RootGraph FromDotString(string graph)
+        protected static T FromDotString<T>(string graph, Func<IntPtr, T> constructor)
+            where T : RootGraph
         {
-            IntPtr ptr = Rjagmemread(graph);
+            // Just to be safe, make sure the input has unix line endings. Graphviz does not properly support
+            // windows line endings passed to stdin when it comes to attribute line continuations.
+            var normalizedDotString = graph.Replace("\r\n", "\n");
+            IntPtr ptr = Rjagmemread(normalizedDotString);
             if (ptr == IntPtr.Zero)
             {
                 throw new InvalidOperationException("Could not create graph");
             }
-            var result = new RootGraph(ptr);
+            var result = constructor(ptr);
             result.UpdateMemoryPressure();
             return result;
+        }
+
+        public static RootGraph FromDotString(string graph)
+        {
+            return FromDotString(graph, ptr => new RootGraph(ptr));
         }
 
         public void ConvertToUndirectedGraph()
