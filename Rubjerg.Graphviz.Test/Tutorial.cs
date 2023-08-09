@@ -184,6 +184,7 @@ public class Tutorial
         RootGraph root = RootGraph.CreateNew(GraphType.Directed, "Graph with records");
         Node nodeA = root.GetOrAddNode("A");
         nodeA.SetAttribute("shape", "record");
+        // New line characters are not supported by record labels, and will be ignored by Graphviz
         nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
         var layout = root.CreateLayout();

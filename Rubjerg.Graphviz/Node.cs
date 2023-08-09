@@ -226,9 +226,9 @@ public class Node : CGraphThing
     /// If the shape of this node was set to 'record', this method allows you to retrieve the
     /// resulting rectangles.
     /// </summary>
-    public IEnumerable<RectangleF> GetRecordRectangles()
+    public IEnumerable<RectangleD> GetRecordRectangles()
     {
-        // FIXNOW
+        // FIXNOW remove almost all floats from the code base
         if (!HasAttribute("rects"))
             yield break;
 
@@ -236,7 +236,7 @@ public class Node : CGraphThing
         // As a workaround we consult the x coordinates, and attempt to snap onto those.
         // https://github.com/Rubjerg/Graphviz.NetWrapper/issues/30
         var validXCoords = GetDrawing().OfType<XDotOp.PolyLine>()
-            .SelectMany(p => p.Value.Points).Select(p => p.X).ToList();
+            .SelectMany(p => p.Points).Select(p => p.X).ToList();
 
         foreach (string rectStr in GetAttribute("rects").Split(' '))
         {
@@ -244,11 +244,11 @@ public class Node : CGraphThing
 
             var x1 = rect.X;
             var x2 = rect.X + rect.Width;
-            var fixedX1 = (float)FindClosest(validXCoords, x1);
-            var fixedX2 = (float)FindClosest(validXCoords, x2);
-            var fixedRect = new RectangleF(
-                new PointF(fixedX1, rect.Y),
-                new SizeF(fixedX2 - rect.X, rect.Height));
+            var fixedX1 = FindClosest(validXCoords, x1);
+            var fixedX2 = FindClosest(validXCoords, x2);
+            var fixedRect = new RectangleD(
+                new PointD(fixedX1, rect.Y),
+                new SizeD(fixedX2 - rect.X, rect.Height));
             yield return fixedRect;
         }
     }

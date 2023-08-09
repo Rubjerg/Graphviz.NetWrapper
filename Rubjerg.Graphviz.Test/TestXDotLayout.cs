@@ -39,7 +39,7 @@ I 90 10 5 5 8 -image.png
         Node nodeA = root.GetOrAddNode("A");
 
         nodeA.SetAttribute("shape", "record");
-        // FIXNOW: document that newlines are not supported in record labels
+        // New lines in record labels are ignored by Graphviz
         nodeA.SetAttribute("label", "1|{2\n3}");
 
         var xdotGraph = root.CreateLayout();

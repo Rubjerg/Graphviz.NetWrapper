@@ -17,27 +17,6 @@ public enum GraphType
 }
 
 /// <summary>
-/// In Graphviz, the default coordinate system has the origin on the bottom left.
-/// Many rendering applications use a coordinate system with the origin at the top left.
-/// </summary>
-public enum CoordinateSystem
-{
-    BottomLeft = 0,
-    TopLeft = 1,
-}
-
-public record SizeD(double Width, double Height);
-public record PointD(double X, double Y)
-{
-    public PointD ForCoordSystem(CoordinateSystem coordSystem, double maxY)
-    {
-        if (coordSystem == CoordinateSystem.BottomLeft)
-            return this;
-        return new PointD(X, maxY - Y);
-    }
-}
-
-/// <summary>
 /// Wraps a cgraph root graph.
 /// NB: If there is no .net wrapper left that points to any part of a root graph, the root graph is destroyed.
 /// </summary>

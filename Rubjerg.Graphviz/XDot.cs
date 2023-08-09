@@ -5,74 +5,87 @@ namespace Rubjerg.Graphviz;
 
 // See https://graphviz.org/docs/outputs/canon/#xdot
 
-public record struct XDotColorStop
+/// <summary>
+/// In Graphviz, the default coordinate system has the origin on the bottom left.
+/// Many rendering applications use a coordinate system with the origin at the top left.
+/// </summary>
+public enum CoordinateSystem
 {
-    public float Frac { get; init; }
-    public string Color { get; init; }
+    BottomLeft = 0,
+    TopLeft = 1,
 }
 
-public record struct XDotLinearGrad
+public record struct SizeD(double Width, double Height);
+
+public record struct PointD(double X, double Y)
 {
-    public double X0 { get; init; }
-    public double Y0 { get; init; }
-    public double X1 { get; init; }
-    public double Y1 { get; init; }
-    public int NStops { get; init; }
-    public XDotColorStop[] Stops { get; init; }
+    internal PointD ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    {
+        if (coordSystem == CoordinateSystem.BottomLeft)
+            return this;
+        return new PointD(X, maxY - Y);
+    }
 }
 
-public record struct XDotRadialGrad
+/// <param name="Point">The point closest to the origin</param>
+/// <param name="Size"></param>
+public record struct RectangleD(PointD Point, SizeD Size)
 {
-    public double X0 { get; init; }
-    public double Y0 { get; init; }
-    public double R0 { get; init; }
-    public double X1 { get; init; }
-    public double Y1 { get; init; }
-    public double R1 { get; init; }
-    public int NStops { get; init; }
-    public XDotColorStop[] Stops { get; init; }
+    public static RectangleD Create(double x, double y, double width, double height)
+    {
+        return new RectangleD(new PointD(x, y), new SizeD(width, height));
+    }
+
+    internal RectangleD ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    {
+        return this with
+        {
+            Point = Point.ForCoordSystem(coordSystem, maxY),
+        };
+    }
 }
 
-public abstract record class XDotGradColor
+public record struct ColorStop(float Frac, string Color);
+
+public record struct LinearGradient(PointD Point0, PointD Point1, ColorStop[] Stops)
 {
-    private XDotGradColor() { }
-    public sealed record class Uniform : XDotGradColor
+    internal LinearGradient ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    {
+        return this with
+        {
+            Point0 = Point0.ForCoordSystem(coordSystem, maxY),
+            Point1 = Point1.ForCoordSystem(coordSystem, maxY),
+        };
+    }
+}
+
+public record struct RadialGradient(PointD Point0, double Radius0, PointD Point1, double Radius1, ColorStop[] Stops)
+{
+    internal RadialGradient ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    {
+        return this with
+        {
+            Point0 = Point0.ForCoordSystem(coordSystem, maxY),
+            Point1 = Point1.ForCoordSystem(coordSystem, maxY),
+        };
+    }
+}
+
+public abstract record class GradientColor
+{
+    private GradientColor() { }
+    public sealed record class Uniform : GradientColor
     {
         public string Color { get; init; }
     }
-    public sealed record class LinearGradient : XDotGradColor
+    public sealed record class Linear : GradientColor
     {
-        public XDotLinearGrad LinearGrad { get; init; }
+        public LinearGradient Gradient { get; init; }
     }
-    public sealed record class RadialGradient : XDotGradColor
+    public sealed record class Radial : GradientColor
     {
-        public XDotRadialGrad RadialGrad { get; init; }
+        public RadialGradient Gradient { get; init; }
     }
-}
-
-public record struct XDotPoint
-{
-    public double X { get; init; }
-    public double Y { get; init; }
-    public double Z { get; init; }
-
-    public PointF ToPointF() => new PointF((float)X, (float)Y);
-}
-
-public record struct XDotRect
-{
-    public double X { get; init; }
-    public double Y { get; init; }
-    public double Width { get; init; }
-    public double Height { get; init; }
-
-    public RectangleF ToRectangleF() => new RectangleF((float)X, (float)Y, (float)Width, (float)Height);
-}
-
-public record struct XDotPolyline
-{
-    public int Count { get; init; }
-    public XDotPoint[] Points { get; init; }
 }
 
 public enum XDotAlign
@@ -86,71 +99,63 @@ public enum XDotAlign
 /// Represents a line of text to be drawn.
 /// Labels with multiple lines will be represented by multiple <see cref="XDotText"/> instances.
 /// </summary>
-public record struct XDotText
+/// <param name="Anchor">
+/// The y-coordinate points to the baseline,
+/// the x-coordinate points to the horizontal position relative to which the text should be
+/// aligned according to the <see cref="Align"/> property.
+/// </param>
+/// <param name="Align">How the text should be aligned horizontally, relative to the given anchor point.</param>
+/// <param name="Width">The estimated width of the text.</param>
+/// <param name="Text"></param>
+/// <param name="Font"></param>
+public record struct XDotText(PointD Anchor, XDotAlign Align, double Width, string Text, XDotFont Font)
 {
-    /// <summary>
-    /// The X coordinate of the anchor point of the text.
-    /// </summary>
-    public double X { get; init; }
-    /// <summary>
-    /// The Y coordinate of the baseline of the text.
-    /// </summary>
-    public double Y { get; init; }
-    /// <summary>
-    /// How the text should be aligned, relative to the given anchor point.
-    /// </summary>
-    public XDotAlign Align { get; init; }
-    public double Width { get; init; }
-    public string Text { get; init; }
-
     /// <summary>
     /// Compute the bounding box of this text element given the necessary font information.
     /// </summary>
     /// <param name="font">Font used to draw the text</param>
     /// <param name="distanceBetweenBaselineAndDescender">Optional property of the font, to more accurately predict the bounding box.</param>
-    public RectangleF TextBoundingBox(XDotFont font, float? distanceBetweenBaselineAndDescender = null)
+    public RectangleD TextBoundingBox(double? distanceBetweenBaselineAndDescender = null)
     {
-        var size = Size(font);
-        var descenderY = Y - (distanceBetweenBaselineAndDescender ?? font.Size / 5);
+        var size = TextSize();
+        var descenderY = Anchor.Y - (distanceBetweenBaselineAndDescender ?? Font.Size / 5);
         var leftX = Align switch
         {
-            XDotAlign.Left => X,
-            XDotAlign.Center => X + size.Width / 2,
-            XDotAlign.Right => X + size.Width,
+            XDotAlign.Left => Anchor.X,
+            XDotAlign.Center => Anchor.X + size.Width / 2,
+            XDotAlign.Right => Anchor.X + size.Width,
             _ => throw new InvalidOperationException()
         };
-        var bottomLeft = new PointF((float)leftX, (float)descenderY);
-        return new RectangleF(bottomLeft, size);
+        var bottomLeft = new PointD(leftX, descenderY);
+        return new RectangleD(bottomLeft, size);
     }
-
-    /// <summary>
-    /// The anchor point of the text.
-    /// The Y coordinate points to the baseline of the text.
-    /// The X coordinate points to the horizontal anchor of the text.
-    /// </summary>
-    public PointF Anchor() => new PointF((float)X, (float)Y);
 
     /// <summary>
     /// The width represents the estimated width of the text by GraphViz.
     /// The height represents the font size, which is usually the distance between the ascender and the descender
     /// of the font.
     /// </summary>
-    public SizeF Size(XDotFont font) => new SizeF((float)Width, (float)font.Size);
+    public SizeD TextSize() => new SizeD(Width, Font.Size);
+
+    internal XDotText ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    {
+        // FIXNOW
+        // While things like rectangles are anchored by the point closest to the origin,
+        // the y-coordinate of a text object anchor always points to the baseline of the text.
+        // This means we have to take extra care when transforming to the top-left coordinate system.
+        return this with
+        {
+            Anchor = Anchor.ForCoordSystem(coordSystem, maxY),
+        };
+    }
 }
 
-public record struct XDotImage
-{
-    public XDotRect Pos { get; init; }
-    public string Name { get; init; }
-}
+public record struct XDotImage(RectangleD Position, string Name) { }
 
-public record struct XDotFont
+/// <param name="Size">Font size in points</param>
+/// <param name="Name">Font name</param>
+public record struct XDotFont(double Size, string Name)
 {
-    /// <summary>
-    /// Size in points
-    /// </summary>
-    public double Size { get; init; }
-    public string Name { get; init; }
     public static XDotFont Default => new() { Size = 14, Name = "Times-Roman" };
 }
 
@@ -168,74 +173,39 @@ public enum XDotFontChar
 }
 
 /// <summary>
-/// See https://graphviz.org/docs/outputs/canon/#xdot for semantics
+/// See https://graphviz.org/docs/outputs/canon/#xdot for semantics.
+/// 
+/// Within the context of a single drawing attribute, e.g., draw, there is an implicit state for the
+/// graphical attributes. That is, once a color, style, or font characteristic is set, it
+/// remains valid for all relevant drawing operations until the value is reset by another xdot cmd.
+/// 
+/// Note that the filled figures (ellipses, polygons and B-Splines) imply two operations: first,
+/// drawing the filled figure with the current fill color; second, drawing an unfilled figure with
+/// the current pen color, pen width and pen style.
+/// 
+/// The text operation is only used in the label attributes. Normally, the non-text operations are
+/// only used in the non-label attributes. If, however, the decorate attribute is set on an edge,
+/// its label attribute will also contain a polyline operation. In addition, if a label is a
+/// complex, HTML-like label, it will also contain non-text operations.
 /// </summary>
 public abstract record class XDotOp
 {
     private XDotOp() { }
 
-    public sealed record class FilledEllipse : XDotOp
-    {
-        public XDotRect Value { get; init; }
-    }
-    public sealed record class UnfilledEllipse : XDotOp
-    {
-        public XDotRect Value { get; init; }
-    }
-    public sealed record class FilledPolygon : XDotOp
-    {
-        public XDotPolyline Value { get; init; }
-    }
-    public sealed record class UnfilledPolygon : XDotOp
-    {
-        public XDotPolyline Value { get; init; }
-    }
-    public sealed record class PolyLine : XDotOp
-    {
-        public XDotPolyline Value { get; init; }
-    }
-    public sealed record class FilledBezier : XDotOp
-    {
-        public XDotPolyline Value { get; init; }
-    }
-    public sealed record class UnfilledBezier : XDotOp
-    {
-        public XDotPolyline Value { get; init; }
-    }
-    public sealed record class Text : XDotOp
-    {
-        public XDotText Value { get; init; }
-    }
-    public sealed record class Image : XDotOp
-    {
-        public XDotImage Value { get; init; }
-    }
-    public sealed record class FillColor : XDotOp
-    {
-        public string Value { get; init; }
-    }
-    public sealed record class PenColor : XDotOp
-    {
-        public string Value { get; init; }
-    }
-    public sealed record class GradFillColor : XDotOp
-    {
-        public XDotGradColor Value { get; init; }
-    }
-    public sealed record class GradPenColor : XDotOp
-    {
-        public XDotGradColor Value { get; init; }
-    }
-    public sealed record class Font : XDotOp
-    {
-        public XDotFont Value { get; init; }
-    }
-    public sealed record class Style : XDotOp
-    {
-        public string Value { get; init; }
-    }
-    public sealed record class FontChar : XDotOp
-    {
-        public XDotFontChar Value { get; init; }
-    }
+    // FIXNOW: can we trim down the cases? Some things are only relevant for a single thing, such as FontChar
+    public sealed record class FilledEllipse(RectangleD Value) : XDotOp { }
+    public sealed record class UnfilledEllipse(RectangleD Value) : XDotOp { }
+    public sealed record class FilledPolygon(PointD[] Points) : XDotOp { }
+    public sealed record class UnfilledPolygon(PointD[] Points) : XDotOp { }
+    public sealed record class PolyLine(PointD[] Points) : XDotOp { }
+    public sealed record class FilledBezier(PointD[] Points) : XDotOp { }
+    public sealed record class UnfilledBezier(PointD[] Points) : XDotOp { }
+    public sealed record class Text(XDotText Value) : XDotOp { }
+    public sealed record class Image(XDotImage Value) : XDotOp { }
+    public sealed record class FillColor(string Value) : XDotOp { }
+    public sealed record class PenColor(string Value) : XDotOp { }
+    public sealed record class GradientFillColor(GradientColor Value) : XDotOp { }
+    public sealed record class GradientPenColor(GradientColor Value) : XDotOp { }
+    public sealed record class Style(string Value) : XDotOp { }
+    public sealed record class FontChar(XDotFontChar Value) : XDotOp { }
 }

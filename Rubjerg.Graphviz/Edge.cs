@@ -152,7 +152,7 @@ public class Edge : CGraphThing
     /// This method only returns the first spline that is defined.
     /// Returns null if no splines exist.
     /// </summary>
-    public PointF[] GetFirstSpline()
+    public PointD[] GetFirstSpline()
     {
         return GetSplines().FirstOrDefault();
     }
@@ -163,11 +163,9 @@ public class Edge : CGraphThing
     /// https://github.com/ellson/graphviz/issues/1277
     /// Edge arrows are ignored.
     /// </summary>
-    public IEnumerable<PointF[]> GetSplines()
+    public IEnumerable<PointD[]> GetSplines()
     {
-        // FIXNOW
-        return GetDrawing().OfType<XDotOp.UnfilledBezier>()
-            .Select(x => x.Value.Points.Select(p => new PointF((float)p.X, (float)p.Y)).ToArray());
+        return GetDrawing().OfType<XDotOp.UnfilledBezier>().Select(x => x.Points);
     }
 
     public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
