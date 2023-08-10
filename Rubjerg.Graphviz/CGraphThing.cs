@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
+using System.Globalization;
 
 namespace Rubjerg.Graphviz;
 
@@ -190,12 +190,6 @@ public abstract class CGraphThing : GraphvizThing
 
     #region layout functions
 
-    public Color GetColor()
-    {
-        string colorstring = SafeGetAttribute("color", "Black");
-        return Color.FromName(colorstring);
-    }
-
     public bool HasPosition()
     {
         return HasAttribute("pos");
@@ -211,14 +205,23 @@ public abstract class CGraphThing : GraphvizThing
         return GetAttribute("style") == "invis";
     }
 
-    protected static List<XDotOp> GetXDotValue(CGraphThing obj, string attrName)
+    protected List<XDotOp> GetXDotValue(CGraphThing obj, string attrName)
     {
-        // FIXNOW
         var xdotString = obj.SafeGetAttribute(attrName, null);
         if (xdotString is null)
             return new List<XDotOp>();
 
-        return XDotParser.ParseXDot(xdotString);
+        return XDotParser.ParseXDot(xdotString, MyRootGraph.CoordinateSystem, MyRootGraph.RawMaxY());
+    }
+
+    protected static RectangleD ParseRect(string rect)
+    {
+        string[] points = rect.Split(',');
+        var x = double.Parse(points[0], NumberStyles.Any, CultureInfo.InvariantCulture);
+        var y = double.Parse(points[1], NumberStyles.Any, CultureInfo.InvariantCulture);
+        var w = double.Parse(points[2], NumberStyles.Any, CultureInfo.InvariantCulture) - x;
+        var h = double.Parse(points[3], NumberStyles.Any, CultureInfo.InvariantCulture) - y;
+        return RectangleD.Create(x, y, w, h);
     }
 
     #endregion

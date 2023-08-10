@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
@@ -70,7 +68,6 @@ public class Edge : CGraphThing
     {
         var tail = Tail();
         var head = Head();
-        Debug.Assert(node == tail || node == head);
         return node == tail ? head : tail;
     }
 

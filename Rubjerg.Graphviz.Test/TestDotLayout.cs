@@ -35,7 +35,6 @@ public class TestDotLayout
         CreateSimpleTestGraph(out RootGraph root, out Node nodeA, out Edge edge);
 
         Assert.AreEqual(root.GetBoundingBox(), default(RectangleF));
-        Assert.AreEqual(root.GetColor(), Color.Black);
         Assert.AreEqual(root.GetDrawing().Count, 0);
         Assert.AreEqual(root.GetLabelDrawing().Count, 0);
 
@@ -65,12 +64,10 @@ public class TestDotLayout
 
         root.ComputeLayout();
 
-        Assert.AreEqual(root.GetColor(), Color.Black);
         Assert.AreNotEqual(root.GetBoundingBox(), default(RectangleF));
         Assert.AreNotEqual(root.GetDrawing().Count, 0);
         Assert.AreNotEqual(root.GetLabelDrawing().Count, 0);
 
-        Assert.AreEqual(nodeA.GetColor(), Color.Red);
         Assert.AreEqual(nodeA.GetRecordRectangles().Count(), 2);
         Assert.AreNotEqual(nodeA.GetPosition(), default(PointF));
         Assert.AreNotEqual(nodeA.GetBoundingBox(), default(RectangleF));
@@ -98,12 +95,10 @@ public class TestDotLayout
         var xnodeB = xroot.GetNode("B");
         Edge xedge = xroot.GetEdge(xnodeA, xnodeB, "");
 
-        Assert.AreEqual(xroot.GetColor(), Color.Black);
         Assert.AreNotEqual(xroot.GetBoundingBox(), default(RectangleF));
         Assert.AreNotEqual(xroot.GetDrawing().Count, 0);
         Assert.AreNotEqual(xroot.GetLabelDrawing().Count, 0);
 
-        Assert.AreEqual(xnodeA.GetColor(), Color.Red);
         Assert.AreEqual(xnodeA.GetRecordRectangles().Count(), 2);
         Assert.AreNotEqual(xnodeA.GetPosition(), default(PointF));
         Assert.AreNotEqual(xnodeA.GetBoundingBox(), default(RectangleF));
@@ -186,8 +181,7 @@ public class TestDotLayout
 
         var rects = nodeA.GetRecordRectangles().ToList();
 
-        // Because Graphviz uses a lower-left originated coordinate system, we need to flip the y coordinates
-        Utils.AssertOrder(rects, r => (r.Left, -r.Top));
+        Utils.AssertOrder(rects, r => (r.Point.X, r.Point.Y));
         Assert.That(rects.Count, Is.EqualTo(9));
     }
 

@@ -1,5 +1,5 @@
 using System;
-using System.Drawing;
+using System.Linq;
 
 namespace Rubjerg.Graphviz;
 
@@ -31,6 +31,14 @@ public record struct PointD(double X, double Y)
 /// <param name="Size"></param>
 public record struct RectangleD(PointD Point, SizeD Size)
 {
+    public double X => Point.X; 
+    public double Y => Point.Y;
+    public double Width => Size.Width;
+    public double Height => Size.Height;
+
+    /// <summary>The point farthest from the origin</summary>
+    public PointD FarPoint() => new PointD(Point.X + Size.Width, Point.Y + Size.Height);
+
     public static RectangleD Create(double x, double y, double width, double height)
     {
         return new RectangleD(new PointD(x, y), new SizeD(width, height));
@@ -45,7 +53,7 @@ public record struct RectangleD(PointD Point, SizeD Size)
     }
 }
 
-public record struct ColorStop(float Frac, string Color);
+public record struct ColorStop(float Frac, string HtmlColor);
 
 public record struct LinearGradient(PointD Point0, PointD Point1, ColorStop[] Stops)
 {
@@ -71,21 +79,12 @@ public record struct RadialGradient(PointD Point0, double Radius0, PointD Point1
     }
 }
 
-public abstract record class GradientColor
+public abstract record class Color
 {
-    private GradientColor() { }
-    public sealed record class Uniform : GradientColor
-    {
-        public string Color { get; init; }
-    }
-    public sealed record class Linear : GradientColor
-    {
-        public LinearGradient Gradient { get; init; }
-    }
-    public sealed record class Radial : GradientColor
-    {
-        public RadialGradient Gradient { get; init; }
-    }
+    private Color() { }
+    public sealed record class Uniform(string HtmlColor) : Color { }
+    public sealed record class Linear(LinearGradient Gradient) : Color { }
+    public sealed record class Radial(RadialGradient Gradient) : Color { }
 }
 
 public enum XDotAlign
@@ -108,7 +107,7 @@ public enum XDotAlign
 /// <param name="Width">The estimated width of the text.</param>
 /// <param name="Text"></param>
 /// <param name="Font"></param>
-public record struct XDotText(PointD Anchor, XDotAlign Align, double Width, string Text, XDotFont Font)
+public record struct XDotText(PointD Anchor, XDotAlign Align, double Width, string Text, XDotFont Font, XDotFontChar FontChar)
 {
     /// <summary>
     /// Compute the bounding box of this text element given the necessary font information.
@@ -117,6 +116,7 @@ public record struct XDotText(PointD Anchor, XDotAlign Align, double Width, stri
     /// <param name="distanceBetweenBaselineAndDescender">Optional property of the font, to more accurately predict the bounding box.</param>
     public RectangleD TextBoundingBox(double? distanceBetweenBaselineAndDescender = null)
     {
+        // FIXNOW: better estimate distanceBetweenBaselineAndDescender ?
         var size = TextSize();
         var descenderY = Anchor.Y - (distanceBetweenBaselineAndDescender ?? Font.Size / 5);
         var leftX = Align switch
@@ -150,7 +150,16 @@ public record struct XDotText(PointD Anchor, XDotAlign Align, double Width, stri
     }
 }
 
-public record struct XDotImage(RectangleD Position, string Name) { }
+public record struct XDotImage(RectangleD Position, string Name)
+{
+    internal XDotImage ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    {
+        return this with
+        {
+            Position = Position.ForCoordSystem(coordSystem, maxY),
+        };
+    }
+}
 
 /// <param name="Size">Font size in points</param>
 /// <param name="Name">Font name</param>
@@ -172,12 +181,20 @@ public enum XDotFontChar
     Overline = 64,
 }
 
+internal static class PointDArrayExtension
+{
+    internal static PointD[] ForCoordSystem(this PointD[] self, CoordinateSystem coordSystem, double maxY)
+    {
+        return self.Select(a => a.ForCoordSystem(coordSystem, maxY)).ToArray();
+    }
+}
+
 /// <summary>
 /// See https://graphviz.org/docs/outputs/canon/#xdot for semantics.
 /// 
 /// Within the context of a single drawing attribute, e.g., draw, there is an implicit state for the
-/// graphical attributes. That is, once a color, style, or font characteristic is set, it
-/// remains valid for all relevant drawing operations until the value is reset by another xdot cmd.
+/// graphical attributes. That is, once a color or style is set, it remains valid for all relevant
+/// drawing operations until the value is reset by another xdot cmd.
 /// 
 /// Note that the filled figures (ellipses, polygons and B-Splines) imply two operations: first,
 /// drawing the filled figure with the current fill color; second, drawing an unfilled figure with
@@ -187,12 +204,15 @@ public enum XDotFontChar
 /// only used in the non-label attributes. If, however, the decorate attribute is set on an edge,
 /// its label attribute will also contain a polyline operation. In addition, if a label is a
 /// complex, HTML-like label, it will also contain non-text operations.
+/// 
+/// NOTE: we've slightly trimmed down the number of cases w.r.t. the actual xdot operations.
+/// All font related operations have been condensed into the text operations.
+/// We only have a single Color type, which has three subtypes.
 /// </summary>
 public abstract record class XDotOp
 {
     private XDotOp() { }
 
-    // FIXNOW: can we trim down the cases? Some things are only relevant for a single thing, such as FontChar
     public sealed record class FilledEllipse(RectangleD Value) : XDotOp { }
     public sealed record class UnfilledEllipse(RectangleD Value) : XDotOp { }
     public sealed record class FilledPolygon(PointD[] Points) : XDotOp { }
@@ -202,10 +222,13 @@ public abstract record class XDotOp
     public sealed record class UnfilledBezier(PointD[] Points) : XDotOp { }
     public sealed record class Text(XDotText Value) : XDotOp { }
     public sealed record class Image(XDotImage Value) : XDotOp { }
-    public sealed record class FillColor(string Value) : XDotOp { }
-    public sealed record class PenColor(string Value) : XDotOp { }
-    public sealed record class GradientFillColor(GradientColor Value) : XDotOp { }
-    public sealed record class GradientPenColor(GradientColor Value) : XDotOp { }
+    public sealed record class FillColor(Color Value) : XDotOp { }
+    public sealed record class PenColor(Color Value) : XDotOp { }
+    /// <summary>
+    /// Style values which can be incorporated in the graphics model do not appear in xdot
+    /// output. In particular, the style values filled, rounded, diagonals, and invis will not
+    /// appear. Indeed, if style contains invis, there will not be any xdot output at all.
+    /// For reference see https://graphviz.org/docs/attr-types/style/
+    /// </summary>
     public sealed record class Style(string Value) : XDotOp { }
-    public sealed record class FontChar(XDotFontChar Value) : XDotOp { }
 }

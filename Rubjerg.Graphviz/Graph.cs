@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
@@ -572,20 +570,30 @@ public class Graph : CGraphThing
         return GraphvizCommand.CreateLayout(this, engine: engine);
     }
 
-    public RectangleF GetBoundingBox()
+    /// <summary>
+    /// Untransformed boundingbox. Still needs to be transformed to the desired coordinate system.
+    /// </summary>
+    internal RectangleD RawBoundingBox()
     {
-        // FIXNOW
         string bb_string = Agget(_ptr, "bb");
         if (string.IsNullOrEmpty(bb_string))
             return default;
-        // x and y are the topleft point of the bb
-        char sep = ',';
-        string[] bb = bb_string.Split(sep);
-        float x = float.Parse(bb[0], NumberStyles.Any, CultureInfo.InvariantCulture);
-        float y = float.Parse(bb[1], NumberStyles.Any, CultureInfo.InvariantCulture);
-        float w = float.Parse(bb[2], NumberStyles.Any, CultureInfo.InvariantCulture) - x;
-        float h = float.Parse(bb[3], NumberStyles.Any, CultureInfo.InvariantCulture) - y;
-        return new RectangleF(x, y, w, h);
+        return ParseRect(bb_string);
+    }
+
+    internal double RawMaxY()
+    {
+        // FIXNOW: can we cache this somehow? It's called quite often
+        return RawBoundingBox().FarPoint().Y;
+    }
+
+    /// <summary>
+    /// The bounding box of this (sub)graph.
+    /// </summary>
+    public RectangleD GetBoundingBox()
+    {
+        var untransformed = RawBoundingBox();
+        return untransformed.ForCoordSystem(MyRootGraph.CoordinateSystem, RawMaxY());
     }
 
     public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");

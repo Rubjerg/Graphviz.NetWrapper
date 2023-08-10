@@ -27,7 +27,7 @@ F 12 5 -Arial
 S 6 -dashed
 I 90 10 5 5 8 -image.png
 ";
-        var result = XDotParser.ParseXDot(testcase);
+        var result = XDotParser.ParseXDot(testcase, CoordinateSystem.BottomLeft, 0);
         Assert.AreEqual(14, result.Count);
 
     }
@@ -87,8 +87,7 @@ I 90 10 5 5 8 -image.png
         var xNodeA = xdotGraph.GetNode("A");
         var rects = xNodeA.GetRecordRectangles().ToList();
 
-        // Because Graphviz uses a lower-left originated coordinate system, we need to flip the y coordinates
-        Utils.AssertOrder(rects, r => (r.Left, -r.Top));
+        Utils.AssertOrder(rects, r => (r.Point.X, r.Point.Y));
         Assert.That(rects.Count, Is.EqualTo(9));
 
         // Test xdot translation

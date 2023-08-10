@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
@@ -172,35 +171,38 @@ public class Node : CGraphThing
     /// <summary>
     /// The position of the center of the node.
     /// </summary>
-    public PointF GetPosition()
+    public PointD GetPosition()
     {
-        // FIXNOW
         // The "pos" attribute is available as part of xdot output
+        PointD result;
         if (HasAttribute("pos"))
         {
             var posString = GetAttribute("pos");
             var coords = posString.Split(',');
-            float x = float.Parse(coords[0], NumberStyles.Any, CultureInfo.InvariantCulture);
-            float y = float.Parse(coords[1], NumberStyles.Any, CultureInfo.InvariantCulture);
-            return new PointF(x, y);
+            double x = double.Parse(coords[0], NumberStyles.Any, CultureInfo.InvariantCulture);
+            double y = double.Parse(coords[1], NumberStyles.Any, CultureInfo.InvariantCulture);
+            result = new PointD(x, y);
         }
-        // If the "pos" attribute is not available, try the following FFI functions,
-        // which are available after a ComputeLayout
-        return new PointF(Convert.ToSingle(NodeX(_ptr)), Convert.ToSingle(NodeY(_ptr)));
+        else
+        {
+            // If the "pos" attribute is not available, try the following FFI functions,
+            // which are available after a ComputeLayout
+            result = new PointD(Convert.ToSingle(NodeX(_ptr)), Convert.ToSingle(NodeY(_ptr)));
+        }
+        return result.ForCoordSystem(MyRootGraph.CoordinateSystem, MyRootGraph.RawMaxY());
     }
 
     /// <summary>
     /// The size of bounding box of the node.
     /// </summary>
-    public SizeF GetSize()
+    public SizeD GetSize()
     {
-        // FIXNOW
         // The "width" and "height" attributes are available as part of xdot output
-        float w, h;
+        double w, h;
         if (HasAttribute("width") && HasAttribute("height"))
         {
-            w = float.Parse(GetAttribute("width"), NumberStyles.Any, CultureInfo.InvariantCulture);
-            h = float.Parse(GetAttribute("height"), NumberStyles.Any, CultureInfo.InvariantCulture);
+            w = double.Parse(GetAttribute("width"), NumberStyles.Any, CultureInfo.InvariantCulture);
+            h = double.Parse(GetAttribute("height"), NumberStyles.Any, CultureInfo.InvariantCulture);
         }
         else
         {
@@ -211,15 +213,15 @@ public class Node : CGraphThing
         }
         // Coords are in points, sizes in inches. 72 points = 1 inch
         // We return everything in terms of points.
-        return new SizeF(w * 72, h * 72);
+        return new SizeD(w * 72, h * 72);
     }
 
-    public RectangleF GetBoundingBox()
+    public RectangleD GetBoundingBox()
     {
         var size = GetSize();
         var center = GetPosition();
-        var bottomleft = new PointF(center.X - size.Width / 2, center.Y - size.Height / 2);
-        return new RectangleF(bottomleft, size);
+        var bottomleft = new PointD(center.X - size.Width / 2, center.Y - size.Height / 2);
+        return new RectangleD(bottomleft, size);
     }
 
     /// <summary>
@@ -228,7 +230,6 @@ public class Node : CGraphThing
     /// </summary>
     public IEnumerable<RectangleD> GetRecordRectangles()
     {
-        // FIXNOW remove almost all floats from the code base
         if (!HasAttribute("rects"))
             yield break;
 
@@ -262,16 +263,6 @@ public class Node : CGraphThing
         if (self.Any())
             return self.OrderBy(x => Math.Abs(x - target)).First();
         return target;
-    }
-
-    private RectangleF ParseRect(string rect)
-    {
-        string[] points = rect.Split(',');
-        float leftX = float.Parse(points[0], NumberStyles.Any, CultureInfo.InvariantCulture);
-        float upperY = float.Parse(points[1], NumberStyles.Any, CultureInfo.InvariantCulture);
-        float rightX = float.Parse(points[2], NumberStyles.Any, CultureInfo.InvariantCulture);
-        float lowerY = float.Parse(points[3], NumberStyles.Any, CultureInfo.InvariantCulture);
-        return new RectangleF(leftX, upperY, rightX - leftX, lowerY - upperY);
     }
 
     public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");

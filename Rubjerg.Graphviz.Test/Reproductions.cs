@@ -41,7 +41,7 @@ public class Reproductions
         //TestContext.Write(root.ToDotString());
 
         var rects = nodeA.GetRecordRectangles().ToList();
-        Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
+        Assert.That(rects[0].FarPoint().X, Is.EqualTo(rects[2].FarPoint().X));
     }
 
     // This test only failed when running in isolation
