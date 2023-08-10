@@ -583,7 +583,6 @@ public class Graph : CGraphThing
 
     internal double RawMaxY()
     {
-        // FIXNOW: can we cache this somehow? It's called quite often
         return RawBoundingBox().FarPoint().Y;
     }
 

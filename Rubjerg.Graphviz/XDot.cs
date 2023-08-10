@@ -42,16 +42,15 @@ public record struct RectangleD(PointD Origin, SizeD Size)
     public double MidY() => Y + Height / 2;
     public PointD Center() => new PointD(MidX(), MidY());
 
-    public static RectangleD Create(double x, double y, double width, double height)
-    {
-        return new RectangleD(new PointD(x, y), new SizeD(width, height));
-    }
+    public static RectangleD Create(double x, double y, double width, double height) => new RectangleD(new PointD(x, y), new SizeD(width, height));
 
     internal RectangleD ForCoordSystem(CoordinateSystem coordSystem, double maxY)
     {
+        var translated = Origin.ForCoordSystem(coordSystem, maxY);
+        // Origin must be the point closest the the coordinate system origin
         return this with
         {
-            Origin = Origin.ForCoordSystem(coordSystem, maxY),
+            Origin = new PointD(translated.X, translated.Y - Height),
         };
     }
 }
@@ -60,26 +59,20 @@ public record struct ColorStop(float Frac, string HtmlColor);
 
 public record struct LinearGradient(PointD Point0, PointD Point1, ColorStop[] Stops)
 {
-    internal LinearGradient ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    internal LinearGradient ForCoordSystem(CoordinateSystem coordSystem, double maxY) => this with
     {
-        return this with
-        {
-            Point0 = Point0.ForCoordSystem(coordSystem, maxY),
-            Point1 = Point1.ForCoordSystem(coordSystem, maxY),
-        };
-    }
+        Point0 = Point0.ForCoordSystem(coordSystem, maxY),
+        Point1 = Point1.ForCoordSystem(coordSystem, maxY),
+    };
 }
 
 public record struct RadialGradient(PointD Point0, double Radius0, PointD Point1, double Radius1, ColorStop[] Stops)
 {
-    internal RadialGradient ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    internal RadialGradient ForCoordSystem(CoordinateSystem coordSystem, double maxY) => this with
     {
-        return this with
-        {
-            Point0 = Point0.ForCoordSystem(coordSystem, maxY),
-            Point1 = Point1.ForCoordSystem(coordSystem, maxY),
-        };
-    }
+        Point0 = Point0.ForCoordSystem(coordSystem, maxY),
+        Point1 = Point1.ForCoordSystem(coordSystem, maxY),
+    };
 }
 
 public abstract record class Color
@@ -111,7 +104,7 @@ public enum TextAlign
 /// <param name="Text"></param>
 /// <param name="Font"></param>
 /// <param name="CoordSystem">Used for computing the bounding box in the correct orientation.</param>
-public record struct TextInfo(PointD Anchor, TextAlign Align, double WidthEstimate, string Text, 
+public record struct TextInfo(PointD Anchor, TextAlign Align, double WidthEstimate, string Text,
     Font Font, FontChar FontChar, CoordinateSystem CoordSystem)
 {
     public SizeD TextSizeEstimate() => new SizeD(WidthEstimate, Font.Size);
@@ -128,9 +121,8 @@ public record struct TextInfo(PointD Anchor, TextAlign Align, double WidthEstima
     /// </param>
     public RectangleD TextBoundingBoxEstimate(double? distanceBetweenBaselineAndDescender = null)
     {
-        // FIXNOW: better estimate distanceBetweenBaselineAndDescender ?
         var size = TextSizeEstimate();
-        var descenderY = Anchor.Y - (distanceBetweenBaselineAndDescender ?? Font.Size / 5);
+        var descenderY = Anchor.Y - (distanceBetweenBaselineAndDescender ?? Font.Size * 0.23);
         var ascenderY = descenderY + size.Height;
         var leftX = Align switch
         {
@@ -147,29 +139,19 @@ public record struct TextInfo(PointD Anchor, TextAlign Align, double WidthEstima
         return new RectangleD(origin, size);
     }
 
-    internal TextInfo ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    internal TextInfo ForCoordSystem(CoordinateSystem coordSystem, double maxY) => this with
     {
-        // FIXNOW
-        // While things like rectangles are anchored by the point closest to the origin,
-        // the y-coordinate of a text object anchor always points to the baseline of the text.
-        // This means we have to take extra care when transforming to the top-left coordinate system.
-        return this with
-        {
-            Anchor = Anchor.ForCoordSystem(coordSystem, maxY),
-            CoordSystem = coordSystem,
-        };
-    }
+        Anchor = Anchor.ForCoordSystem(coordSystem, maxY),
+        CoordSystem = coordSystem,
+    };
 }
 
 public record struct ImageInfo(RectangleD Position, string Name)
 {
-    internal ImageInfo ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    internal ImageInfo ForCoordSystem(CoordinateSystem coordSystem, double maxY) => this with
     {
-        return this with
-        {
-            Position = Position.ForCoordSystem(coordSystem, maxY),
-        };
-    }
+        Position = Position.ForCoordSystem(coordSystem, maxY),
+    };
 }
 
 /// <param name="Size">
@@ -197,9 +179,7 @@ public enum FontChar
 internal static class PointDArrayExtension
 {
     internal static PointD[] ForCoordSystem(this PointD[] self, CoordinateSystem coordSystem, double maxY)
-    {
-        return self.Select(a => a.ForCoordSystem(coordSystem, maxY)).ToArray();
-    }
+        => self.Select(a => a.ForCoordSystem(coordSystem, maxY)).ToArray();
 }
 
 /// <summary>

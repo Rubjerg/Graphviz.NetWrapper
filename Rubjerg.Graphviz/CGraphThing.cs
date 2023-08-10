@@ -225,6 +225,8 @@ public abstract class CGraphThing : GraphvizThing
 
     protected static RectangleD ParseRect(string rect)
     {
+        // Rectangles are anchored by their lower left and upper right points 
+        // https://www.graphviz.org/docs/attr-types/rect/
         string[] points = rect.Split(',');
         var x = double.Parse(points[0], NumberStyles.Any, CultureInfo.InvariantCulture);
         var y = double.Parse(points[1], NumberStyles.Any, CultureInfo.InvariantCulture);
