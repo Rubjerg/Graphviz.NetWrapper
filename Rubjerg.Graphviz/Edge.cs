@@ -165,9 +165,21 @@ public class Edge : CGraphThing
         return GetDrawing().OfType<XDotOp.UnfilledBezier>().Select(x => x.Points);
     }
 
+    /// <summary>
+    /// See documentation on <see cref="XDotOp"/>
+    /// </summary>
     public IReadOnlyList<XDotOp> GetHeadArrowDrawing() => GetXDotValue(this, "_hdraw_");
+    /// <summary>
+    /// See documentation on <see cref="XDotOp"/>
+    /// </summary>
     public IReadOnlyList<XDotOp> GetTailArrowDrawing() => GetXDotValue(this, "_tdraw_");
+    /// <summary>
+    /// See documentation on <see cref="XDotOp"/>
+    /// </summary>
     public IReadOnlyList<XDotOp> GetHeadLabelDrawing() => GetXDotValue(this, "_hldraw_");
+    /// <summary>
+    /// See documentation on <see cref="XDotOp"/>
+    /// </summary>
     public IReadOnlyList<XDotOp> GetTailLabelDrawing() => GetXDotValue(this, "_tldraw_");
 
     #endregion

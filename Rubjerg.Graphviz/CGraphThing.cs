@@ -205,7 +205,13 @@ public abstract class CGraphThing : GraphvizThing
         return GetAttribute("style") == "invis";
     }
 
+    /// <summary>
+    /// See documentation on <see cref="XDotOp"/>
+    /// </summary>
     public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
+    /// <summary>
+    /// See documentation on <see cref="XDotOp"/>
+    /// </summary>
     public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
 
     protected List<XDotOp> GetXDotValue(CGraphThing obj, string attrName)

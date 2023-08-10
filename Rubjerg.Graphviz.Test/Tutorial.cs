@@ -100,12 +100,12 @@ public class Tutorial
 
         // If we require detailed drawing information for any object, we can retrieve the so called "xdot"
         // operations. See https://graphviz.org/docs/outputs/canon/#xdot for a specification.
-        var activeColor = System.Drawing.Color.Black;
+        var activeFillColor = System.Drawing.Color.Black;
         foreach (var op in nodeA.GetDrawing())
         {
             if (op is XDotOp.FillColor { Value: Color.Uniform { HtmlColor: var htmlColor } })
             {
-                activeColor = System.Drawing.ColorTranslator.FromHtml(htmlColor);
+                activeFillColor = System.Drawing.ColorTranslator.FromHtml(htmlColor);
             }
             else if (op is XDotOp.FilledEllipse { Value: var boundingBox })
             {
