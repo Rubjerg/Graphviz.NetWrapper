@@ -119,7 +119,7 @@ public class Tutorial
             if (op is XDotOp.Text { Value: var text })
             {
                 Utils.AssertPattern(PointPattern, text.Anchor.ToString());
-                var boundingBox = text.TextBoundingBox();
+                var boundingBox = text.TextBoundingBoxEstimate();
                 Utils.AssertPattern(RectPattern, boundingBox.ToString());
                 Assert.AreEqual(text.Text, "A");
                 Assert.AreEqual(text.Font.Name, "Times-Roman");

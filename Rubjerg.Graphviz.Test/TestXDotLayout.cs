@@ -87,7 +87,7 @@ I 90 10 5 5 8 -image.png
         var xNodeA = xdotGraph.GetNode("A");
         var rects = xNodeA.GetRecordRectangles().ToList();
 
-        Utils.AssertOrder(rects, r => (r.Point.X, r.Point.Y));
+        Utils.AssertOrder(rects, r => (r.Origin.X, r.Origin.Y));
         Assert.That(rects.Count, Is.EqualTo(9));
 
         // Test xdot translation

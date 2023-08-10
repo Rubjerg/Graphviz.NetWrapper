@@ -565,9 +565,9 @@ public class Graph : CGraphThing
     /// Compute the layout in a separate process by calling dot.exe, and return a new graph, which is a copy of the old
     /// graph with the xdot information added to it.
     /// </summary>
-    public RootGraph CreateLayout(string engine = LayoutEngines.Dot)
+    public RootGraph CreateLayout(string engine = LayoutEngines.Dot, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
-        return GraphvizCommand.CreateLayout(this, engine: engine);
+        return GraphvizCommand.CreateLayout(this, engine, coordinateSystem);
     }
 
     /// <summary>

@@ -29,15 +29,15 @@ public record struct PointD(double X, double Y)
 
 /// <param name="Point">The point closest to the origin</param>
 /// <param name="Size"></param>
-public record struct RectangleD(PointD Point, SizeD Size)
+public record struct RectangleD(PointD Origin, SizeD Size)
 {
-    public double X => Point.X; 
-    public double Y => Point.Y;
+    public double X => Origin.X;
+    public double Y => Origin.Y;
     public double Width => Size.Width;
     public double Height => Size.Height;
 
     /// <summary>The point farthest from the origin</summary>
-    public PointD FarPoint() => new PointD(Point.X + Size.Width, Point.Y + Size.Height);
+    public PointD FarPoint() => new PointD(Origin.X + Size.Width, Origin.Y + Size.Height);
     public double MidX() => X + Width / 2;
     public double MidY() => Y + Height / 2;
     public PointD Center() => new PointD(MidX(), MidY());
@@ -51,7 +51,7 @@ public record struct RectangleD(PointD Point, SizeD Size)
     {
         return this with
         {
-            Point = Point.ForCoordSystem(coordSystem, maxY),
+            Origin = Origin.ForCoordSystem(coordSystem, maxY),
         };
     }
 }
@@ -107,38 +107,45 @@ public enum TextAlign
 /// aligned according to the <see cref="Align"/> property.
 /// </param>
 /// <param name="Align">How the text should be aligned horizontally, relative to the given anchor point.</param>
-/// <param name="Width">The estimated width of the text.</param>
+/// <param name="WidthEstimate">The estimated width of the text.</param>
 /// <param name="Text"></param>
 /// <param name="Font"></param>
-public record struct TextInfo(PointD Anchor, TextAlign Align, double Width, string Text, Font Font, FontChar FontChar)
+/// <param name="CoordSystem">Used for computing the bounding box in the correct orientation.</param>
+public record struct TextInfo(PointD Anchor, TextAlign Align, double WidthEstimate, string Text, 
+    Font Font, FontChar FontChar, CoordinateSystem CoordSystem)
 {
+    public SizeD TextSizeEstimate() => new SizeD(WidthEstimate, Font.Size);
+
     /// <summary>
-    /// Compute the bounding box of this text element given the necessary font information.
+    /// Estimate the bounding box of this text element.
     /// </summary>
-    /// <param name="font">Font used to draw the text</param>
-    /// <param name="distanceBetweenBaselineAndDescender">Optional property of the font, to more accurately predict the bounding box.</param>
-    public RectangleD TextBoundingBox(double? distanceBetweenBaselineAndDescender = null)
+    /// <param name="coordSystem">
+    /// Coordinate system in which to express the bounding box. The text baseline is always oriented
+    /// below the text, while the bounding box origin is oriented to the coordinate system origin.
+    /// </param>
+    /// <param name="distanceBetweenBaselineAndDescender">
+    /// Optional property of the font, to more accurately predict the bounding box.
+    /// </param>
+    public RectangleD TextBoundingBoxEstimate(double? distanceBetweenBaselineAndDescender = null)
     {
         // FIXNOW: better estimate distanceBetweenBaselineAndDescender ?
-        var size = TextSize();
+        var size = TextSizeEstimate();
         var descenderY = Anchor.Y - (distanceBetweenBaselineAndDescender ?? Font.Size / 5);
+        var ascenderY = descenderY + size.Height;
         var leftX = Align switch
         {
             TextAlign.Left => Anchor.X,
-            TextAlign.Center => Anchor.X + size.Width / 2,
-            TextAlign.Right => Anchor.X + size.Width,
+            TextAlign.Center => Anchor.X - size.Width / 2,
+            TextAlign.Right => Anchor.X - size.Width,
             _ => throw new InvalidOperationException()
         };
-        var bottomLeft = new PointD(leftX, descenderY);
-        return new RectangleD(bottomLeft, size);
+        var origin = new PointD(leftX, descenderY);
+        if (CoordSystem == CoordinateSystem.TopLeft)
+        {
+            origin = new PointD(leftX, ascenderY);
+        }
+        return new RectangleD(origin, size);
     }
-
-    /// <summary>
-    /// The width represents the estimated width of the text by GraphViz.
-    /// The height represents the font size, which is usually the distance between the ascender and the descender
-    /// of the font.
-    /// </summary>
-    public SizeD TextSize() => new SizeD(Width, Font.Size);
 
     internal TextInfo ForCoordSystem(CoordinateSystem coordSystem, double maxY)
     {
@@ -149,6 +156,7 @@ public record struct TextInfo(PointD Anchor, TextAlign Align, double Width, stri
         return this with
         {
             Anchor = Anchor.ForCoordSystem(coordSystem, maxY),
+            CoordSystem = coordSystem,
         };
     }
 }
@@ -164,7 +172,9 @@ public record struct ImageInfo(RectangleD Position, string Name)
     }
 }
 
-/// <param name="Size">Font size in points</param>
+/// <param name="Size">
+/// Font size in points. This is usually the distance between the ascender and the descender of the font.
+/// </param>
 /// <param name="Name">Font name</param>
 public record struct Font(double Size, string Name)
 {

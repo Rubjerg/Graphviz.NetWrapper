@@ -298,7 +298,8 @@ internal static class XDotParser
             XDotFFI.get_width(txtPtr),
             XDotFFI.GetTextStr(txtPtr),
             activeFont,
-            activeFontChar
+            activeFontChar,
+            CoordinateSystem.BottomLeft
         );
 
         return text;

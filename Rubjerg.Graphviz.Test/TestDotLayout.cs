@@ -181,7 +181,7 @@ public class TestDotLayout
 
         var rects = nodeA.GetRecordRectangles().ToList();
 
-        Utils.AssertOrder(rects, r => (r.Point.X, r.Point.Y));
+        Utils.AssertOrder(rects, r => (r.Origin.X, r.Origin.Y));
         Assert.That(rects.Count, Is.EqualTo(9));
     }
 
