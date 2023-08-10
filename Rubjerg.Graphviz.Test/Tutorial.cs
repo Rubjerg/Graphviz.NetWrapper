@@ -122,6 +122,7 @@ public class Tutorial
                 var boundingBox = text.TextBoundingBox();
                 Utils.AssertPattern(RectPattern, boundingBox.ToString());
                 Assert.AreEqual(text.Text, "A");
+                Assert.AreEqual(text.Font.Name, "Times-Roman");
             }
             // Handle any xdot operation you require
         }
@@ -182,7 +183,9 @@ public class Tutorial
 
         // The order of the list matches the order in which the labels occur in the label string above.
         var rects = layout.GetNode("A").GetRecordRectangles().ToList();
+        var rectLabels = layout.GetNode("A").GetRecordRectangleLabels().Select(l => l.Text).ToList();
         Assert.AreEqual(9, rects.Count);
+        Assert.AreEqual(new[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, rectLabels);
     }
 
     [Test, Order(5)]

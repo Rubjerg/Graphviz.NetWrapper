@@ -65,8 +65,8 @@ internal static class XDotParser
         xdot.Ops = new XDotOp[count];
         var opsPtr = XDotFFI.get_ops(xdotPtr);
 
-        var activeFont = XDotFont.Default;
-        var activeFontChar = XDotFontChar.None;
+        var activeFont = Font.Default;
+        var activeFontChar = FontChar.None;
         for (int i = 0; i < count; ++i)
         {
             IntPtr xdotOpPtr = XDotFFI.get_op_at_index(opsPtr, i);
@@ -138,14 +138,14 @@ internal static class XDotParser
         return xdot.Ops.ToList();
     }
 
-    private static XDotFontChar TranslateFontChar(uint value)
+    private static FontChar TranslateFontChar(uint value)
     {
-        return (XDotFontChar)(int)value;
+        return (FontChar)(int)value;
     }
 
-    private static XDotImage TranslateImage(IntPtr imagePtr)
+    private static ImageInfo TranslateImage(IntPtr imagePtr)
     {
-        XDotImage image = new XDotImage
+        ImageInfo image = new ImageInfo
         (
             Position: TranslateRect(XDotFFI.get_pos(imagePtr)),
             Name: XDotFFI.GetNameImage(imagePtr)
@@ -154,9 +154,9 @@ internal static class XDotParser
         return image;
     }
 
-    private static XDotFont TranslateFont(IntPtr fontPtr)
+    private static Font TranslateFont(IntPtr fontPtr)
     {
-        XDotFont font = new XDotFont
+        Font font = new Font
         (
             Size: XDotFFI.get_size(fontPtr),
             Name: XDotFFI.GetNameFont(fontPtr)
@@ -289,9 +289,9 @@ internal static class XDotParser
         return rect;
     }
 
-    private static XDotText TranslateText(IntPtr txtPtr, XDotFont activeFont, XDotFontChar activeFontChar)
+    private static TextInfo TranslateText(IntPtr txtPtr, Font activeFont, FontChar activeFontChar)
     {
-        XDotText text = new XDotText
+        TextInfo text = new TextInfo
         (
             new PointD(XDotFFI.get_x_text(txtPtr), XDotFFI.get_y_text(txtPtr)),
             XDotFFI.get_align(txtPtr),

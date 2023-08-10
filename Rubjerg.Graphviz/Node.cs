@@ -227,6 +227,7 @@ public class Node : CGraphThing
     /// <summary>
     /// If the shape of this node was set to 'record', this method allows you to retrieve the
     /// resulting rectangles.
+    /// The order of the list matches the order in which the labels occur in the label string.
     /// </summary>
     public IEnumerable<RectangleD> GetRecordRectangles()
     {
@@ -255,6 +256,16 @@ public class Node : CGraphThing
     }
 
     /// <summary>
+    /// If the shape of this node was set to 'record', this method allows you to retrieve the
+    /// text objects of the resulting rectangles.
+    /// The order of the list matches the order in which the labels occur in the label string.
+    /// </summary>
+    public IEnumerable<TextInfo> GetRecordRectangleLabels()
+    {
+        return GetLabelDrawing().OfType<XDotOp.Text>().Select(x => x.Value);
+    }
+
+    /// <summary>
     /// Return the value that is closest to the given target value.
     /// Return target if the sequence if empty.
     /// </summary>
@@ -264,9 +275,6 @@ public class Node : CGraphThing
             return self.OrderBy(x => Math.Abs(x - target)).First();
         return target;
     }
-
-    public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
-    public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
 
     #endregion
 }

@@ -596,9 +596,6 @@ public class Graph : CGraphThing
         return untransformed.ForCoordSystem(MyRootGraph.CoordinateSystem, RawMaxY());
     }
 
-    public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
-    public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
-
     private void ToFile(string filepath, string format, string engine)
     {
         _ = GraphvizCommand.Exec(this, format: format, filepath, engine: engine);

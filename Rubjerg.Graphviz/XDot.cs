@@ -38,6 +38,9 @@ public record struct RectangleD(PointD Point, SizeD Size)
 
     /// <summary>The point farthest from the origin</summary>
     public PointD FarPoint() => new PointD(Point.X + Size.Width, Point.Y + Size.Height);
+    public double MidX() => X + Width / 2;
+    public double MidY() => Y + Height / 2;
+    public PointD Center() => new PointD(MidX(), MidY());
 
     public static RectangleD Create(double x, double y, double width, double height)
     {
@@ -87,7 +90,7 @@ public abstract record class Color
     public sealed record class Radial(RadialGradient Gradient) : Color { }
 }
 
-public enum XDotAlign
+public enum TextAlign
 {
     Left,
     Center,
@@ -96,7 +99,7 @@ public enum XDotAlign
 
 /// <summary>
 /// Represents a line of text to be drawn.
-/// Labels with multiple lines will be represented by multiple <see cref="XDotText"/> instances.
+/// Labels with multiple lines will be represented by multiple <see cref="TextInfo"/> instances.
 /// </summary>
 /// <param name="Anchor">
 /// The y-coordinate points to the baseline,
@@ -107,7 +110,7 @@ public enum XDotAlign
 /// <param name="Width">The estimated width of the text.</param>
 /// <param name="Text"></param>
 /// <param name="Font"></param>
-public record struct XDotText(PointD Anchor, XDotAlign Align, double Width, string Text, XDotFont Font, XDotFontChar FontChar)
+public record struct TextInfo(PointD Anchor, TextAlign Align, double Width, string Text, Font Font, FontChar FontChar)
 {
     /// <summary>
     /// Compute the bounding box of this text element given the necessary font information.
@@ -121,9 +124,9 @@ public record struct XDotText(PointD Anchor, XDotAlign Align, double Width, stri
         var descenderY = Anchor.Y - (distanceBetweenBaselineAndDescender ?? Font.Size / 5);
         var leftX = Align switch
         {
-            XDotAlign.Left => Anchor.X,
-            XDotAlign.Center => Anchor.X + size.Width / 2,
-            XDotAlign.Right => Anchor.X + size.Width,
+            TextAlign.Left => Anchor.X,
+            TextAlign.Center => Anchor.X + size.Width / 2,
+            TextAlign.Right => Anchor.X + size.Width,
             _ => throw new InvalidOperationException()
         };
         var bottomLeft = new PointD(leftX, descenderY);
@@ -137,7 +140,7 @@ public record struct XDotText(PointD Anchor, XDotAlign Align, double Width, stri
     /// </summary>
     public SizeD TextSize() => new SizeD(Width, Font.Size);
 
-    internal XDotText ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    internal TextInfo ForCoordSystem(CoordinateSystem coordSystem, double maxY)
     {
         // FIXNOW
         // While things like rectangles are anchored by the point closest to the origin,
@@ -150,9 +153,9 @@ public record struct XDotText(PointD Anchor, XDotAlign Align, double Width, stri
     }
 }
 
-public record struct XDotImage(RectangleD Position, string Name)
+public record struct ImageInfo(RectangleD Position, string Name)
 {
-    internal XDotImage ForCoordSystem(CoordinateSystem coordSystem, double maxY)
+    internal ImageInfo ForCoordSystem(CoordinateSystem coordSystem, double maxY)
     {
         return this with
         {
@@ -163,13 +166,13 @@ public record struct XDotImage(RectangleD Position, string Name)
 
 /// <param name="Size">Font size in points</param>
 /// <param name="Name">Font name</param>
-public record struct XDotFont(double Size, string Name)
+public record struct Font(double Size, string Name)
 {
-    public static XDotFont Default => new() { Size = 14, Name = "Times-Roman" };
+    public static Font Default => new() { Size = 14, Name = "Times-Roman" };
 }
 
 [Flags]
-public enum XDotFontChar
+public enum FontChar
 {
     None = 0,
     Bold = 1,
@@ -220,8 +223,8 @@ public abstract record class XDotOp
     public sealed record class PolyLine(PointD[] Points) : XDotOp { }
     public sealed record class FilledBezier(PointD[] Points) : XDotOp { }
     public sealed record class UnfilledBezier(PointD[] Points) : XDotOp { }
-    public sealed record class Text(XDotText Value) : XDotOp { }
-    public sealed record class Image(XDotImage Value) : XDotOp { }
+    public sealed record class Text(TextInfo Value) : XDotOp { }
+    public sealed record class Image(ImageInfo Value) : XDotOp { }
     public sealed record class FillColor(Color Value) : XDotOp { }
     public sealed record class PenColor(Color Value) : XDotOp { }
     /// <summary>
