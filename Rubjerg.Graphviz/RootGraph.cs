@@ -25,6 +25,10 @@ public class RootGraph : Graph
     private long _added_pressure = 0;
 
     public CoordinateSystem CoordinateSystem { get; }
+    /// <summary>
+    /// Contains any warnings that Graphviz generated during computation of the layout.
+    /// </summary>
+    public string Warnings { get; internal set; }
 
     protected RootGraph(IntPtr ptr, CoordinateSystem coordinateSystem) : base(ptr, null)
     {

@@ -12,13 +12,18 @@ public class GraphvizCommand
 {
     public static RootGraph CreateLayout(Graph input, string engine = LayoutEngines.Dot, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
-        var output = Exec(input, engine: engine);
-        var resultGraph = RootGraph.FromDotString(output, coordinateSystem);
+        var (stdout, stderr) = Exec(input, engine: engine);
+        var resultGraph = RootGraph.FromDotString(stdout, coordinateSystem);
+        resultGraph.Warnings = stderr;
         return resultGraph;
     }
 
-    // FIXNOW: expose stderr and return code too
-    public static string Exec(Graph input, string format = "xdot", string outputPath = null, string engine = LayoutEngines.Dot)
+    /// <summary>
+    /// Start dot.exe to compute a layout.
+    /// </summary>
+    /// <exception cref="ApplicationException">When the Graphviz process did not return successfully</exception>
+    /// <returns>stderr may contain warnings</returns>
+    public static (string stdout, string stderr) Exec(Graph input, string format = "xdot", string outputPath = null, string engine = LayoutEngines.Dot)
     {
         string exeName = "dot.exe";
         string arguments = $"-T{format} -K{engine}";
@@ -54,15 +59,15 @@ public class GraphvizCommand
             sw.WriteLine(inputToStdin);
 
         // Read from stdout
-        string output;
+        string stdout;
         using (StreamReader sr = process.StandardOutput)
-            output = sr.ReadToEnd()
+            stdout = sr.ReadToEnd()
                 .Replace("\r\n", "\n"); // File operations do this automatically, but stream operations do not
 
         // Read from stderr
-        string error;
+        string stderr;
         using (StreamReader sr = process.StandardError)
-            error = sr.ReadToEnd()
+            stderr = sr.ReadToEnd()
                 .Replace("\r\n", "\n"); // File operations do this automatically, but stream operations do not
 
         process.WaitForExit();
@@ -70,12 +75,12 @@ public class GraphvizCommand
         if (process.ExitCode != 0)
         {
             // Something went wrong.
-            throw new ApplicationException($"Process exited with code {process.ExitCode}. Error details: {error}");
+            throw new ApplicationException($"Process exited with code {process.ExitCode}. Error details: {stderr}");
         }
         else
         {
             // Process completed successfully.
-            return output;
+            return (stdout, stderr);
         }
     }
 }
