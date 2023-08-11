@@ -82,7 +82,7 @@ I 90 10 5 5 8 -image.png
         nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
 
-        var xdotGraph = root.CreateLayout();
+        var xdotGraph = root.CreateLayout(coordinateSystem: CoordinateSystem.TopLeft);
 
         var xNodeA = xdotGraph.GetNode("A");
         var rects = xNodeA.GetRecordRectangles().ToList();
@@ -107,5 +107,16 @@ I 90 10 5 5 8 -image.png
         var xNodeA = xdotGraph.GetNode("A");
         var rects = xNodeA.GetRecordRectangles().ToList();
         Assert.That(rects.Count, Is.EqualTo(5));
+    }
+
+    [Test()]
+    public void TestCoordinateTransformation()
+    {
+        RootGraph root = Utils.CreateUniqueTestGraph();
+        Node nodeA = root.GetOrAddNode("A");
+        var xdotGraph = root.CreateLayout(coordinateSystem: CoordinateSystem.TopLeft);
+        // Check that translating back gets us the old bounding box
+        var translatedBack = xdotGraph.GetBoundingBox().ForCoordSystem(CoordinateSystem.BottomLeft, xdotGraph.RawMaxY());
+        Assert.AreEqual(translatedBack, xdotGraph.RawBoundingBox());
     }
 }

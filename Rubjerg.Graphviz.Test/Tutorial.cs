@@ -7,7 +7,7 @@ namespace Rubjerg.Graphviz.Test;
 public class Tutorial
 {
     public const string PointPattern = @"{X=[\d.]+, Y=[\d.]+}";
-    public const string RectPattern = @"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}";
+    public const string RectPattern = @"{X=[\d.]+, Y=[\d.]+, Width=[\d.]+, Height=[\d.]+}";
     public const string SplinePattern =
         @"{X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}";
 
@@ -79,8 +79,10 @@ public class Tutorial
 
         // Or we can ask Graphviz to compute the layout and programatically read out the layout attributes
         // This will create a copy of our original graph with layout information attached to it in the form
-        // of attributes.
-        RootGraph layout = root.CreateLayout();
+        // of attributes. Graphviz outputs coordinates in a bottom-left originated coordinate system.
+        // But since many applications require rendering in a top-left originated coordinate system,
+        // we provide a way to translate the coordinates.
+        RootGraph layout = root.CreateLayout(coordinateSystem: CoordinateSystem.TopLeft);
 
         // There are convenience methods available that parse these attributes for us and give
         // back the layout information in an accessible form.

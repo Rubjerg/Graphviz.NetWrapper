@@ -72,6 +72,8 @@ public record struct PointD(double X, double Y)
             return this;
         return new PointD(X, maxY - Y);
     }
+
+    public override string ToString() => $"{{X={X}, Y={Y}}}";
 }
 
 /// <param name="Origin">The origin of the rectangle, which is the point closest to the origin of the coordinate system.</param>
@@ -104,6 +106,8 @@ public record struct RectangleD(PointD Origin, SizeD Size)
             Origin = new PointD(translated.X, translated.Y - Height),
         };
     }
+
+    public override string ToString() => $"{{X={X}, Y={Y}, Width={Width}, Height={Height}}}";
 }
 
 public record struct ColorStop(float Frac, string HtmlColor);

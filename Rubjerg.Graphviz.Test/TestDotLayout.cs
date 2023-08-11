@@ -34,13 +34,13 @@ public class TestDotLayout
     {
         CreateSimpleTestGraph(out RootGraph root, out Node nodeA, out Edge edge);
 
-        Assert.AreEqual(root.GetBoundingBox(), default(RectangleF));
+        Assert.AreEqual(root.GetBoundingBox(), default(RectangleD));
         Assert.AreEqual(root.GetDrawing().Count, 0);
         Assert.AreEqual(root.GetLabelDrawing().Count, 0);
 
-        Assert.AreEqual(nodeA.GetPosition(), default(PointF));
-        Assert.AreEqual(nodeA.GetBoundingBox(), default(RectangleF));
-        Assert.AreEqual(nodeA.GetSize(), default(SizeF));
+        Assert.AreEqual(nodeA.GetPosition(), default(PointD));
+        Assert.AreEqual(nodeA.GetBoundingBox(), default(RectangleD));
+        Assert.AreEqual(nodeA.GetSize(), default(SizeD));
         Assert.AreEqual(nodeA.GetRecordRectangles().Count(), 0);
         Assert.AreEqual(nodeA.GetDrawing().Count, 0);
         Assert.AreEqual(nodeA.GetLabelDrawing().Count, 0);
@@ -181,7 +181,7 @@ public class TestDotLayout
 
         var rects = nodeA.GetRecordRectangles().ToList();
 
-        Utils.AssertOrder(rects, r => (r.Origin.X, r.Origin.Y));
+        Utils.AssertOrder(rects, r => (r.Origin.X, -r.Origin.Y));
         Assert.That(rects.Count, Is.EqualTo(9));
     }
 

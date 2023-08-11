@@ -73,7 +73,7 @@ public class OldTutorial
 
         // Like a bounding box of an object
         RectangleD nodeboundingbox = nodeA.GetBoundingBox();
-        Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", nodeboundingbox.ToString());
+        Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+, Width=[\d.]+, Height=[\d.]+}", nodeboundingbox.ToString());
 
         // Or splines between nodes
         Node nodeB = root.GetNode("B");
@@ -133,8 +133,8 @@ public class OldTutorial
         SubGraph cluster = root.GetSubgraph("cluster_1");
         RectangleD clusterbox = cluster.GetBoundingBox();
         RectangleD rootgraphbox = root.GetBoundingBox();
-        Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", clusterbox.ToString());
-        Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", rootgraphbox.ToString());
+        Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+, Width=[\d.]+, Height=[\d.]+}", clusterbox.ToString());
+        Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+, Width=[\d.]+, Height=[\d.]+}", rootgraphbox.ToString());
     }
 
     [Test, Order(4)]

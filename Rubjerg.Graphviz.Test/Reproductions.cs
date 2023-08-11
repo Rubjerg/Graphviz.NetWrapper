@@ -40,7 +40,8 @@ public class Reproductions
         root.ComputeLayout();
         //TestContext.Write(root.ToDotString());
 
-        var rects = nodeA.GetRecordRectangles().ToList();
+        // This test is fixed by passing snapOntoDrawingCoordinates: true
+        var rects = nodeA.GetRecordRectangles(snapOntoDrawingCoordinates: true).ToList();
         Assert.That(rects[0].FarPoint().X, Is.EqualTo(rects[2].FarPoint().X));
     }
 
