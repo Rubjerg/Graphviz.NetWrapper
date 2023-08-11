@@ -1,6 +1,4 @@
-using System;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -297,6 +295,51 @@ public class TestDotLayout
                 Assert.That(rects.Count, Is.EqualTo(2));
                 Assert.That(node2.GetBoundingBox().Height, Is.Not.EqualTo(node3.GetBoundingBox().Height));
             }
+        }
+    }
+
+    [Test()]
+    public void TestOutputFormatsConsistency()
+    {
+        RootGraph root = CreateUniqueTestGraph();
+        Node node1 = root.GetOrAddNode("1");
+        _ = root.GetOrAddEdge(node1, node1);
+
+        var testFile = GetTestFilePath("out.txt");
+
+        {
+            root.ToXDotFile(testFile);
+            var fileContent = File.ReadAllText(testFile).Replace("\r\n", "\n");;
+            var stringContent = root.CreateLayout().ToDotString();
+            Assert.AreEqual(fileContent, stringContent);
+        }
+
+        {
+            root.ToSvgFile(testFile);
+            var fileContent = File.ReadAllText(testFile).Replace("\r\n", "\n");;
+            var stringContent = root.ToSvgString();
+            Assert.AreEqual(fileContent, stringContent);
+        }
+
+        {
+            root.ToPngFile(testFile);
+            var fileContent = File.ReadAllBytes(testFile);
+            var stringContent = root.ToPngBytes();
+            Assert.AreEqual(fileContent, stringContent);
+        }
+
+        {
+            root.ToPdfFile(testFile);
+            var fileContent = File.ReadAllBytes(testFile);
+            var stringContent = root.ToPdfBytes();
+            Assert.AreEqual(fileContent, stringContent);
+        }
+
+        {
+            root.ToPsFile(testFile);
+            var fileContent = File.ReadAllBytes(testFile);
+            var stringContent = root.ToPsBytes();
+            Assert.AreEqual(fileContent, stringContent);
         }
     }
 }
