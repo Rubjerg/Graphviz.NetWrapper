@@ -12,7 +12,7 @@ public class GraphvizCommand
     public static RootGraph CreateLayout(Graph input, string engine = LayoutEngines.Dot, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
         var output = Exec(input, engine: engine);
-        var resultGraph = RootGraph.FromDotString(output);
+        var resultGraph = RootGraph.FromDotString(output, coordinateSystem);
         return resultGraph;
     }
 

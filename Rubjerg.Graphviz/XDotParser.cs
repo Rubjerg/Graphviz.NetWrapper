@@ -30,8 +30,6 @@ internal struct XDot
     public XDotOp[] Ops { get; set; }  // xdot operations
 }
 
-/// <summary>
-/// </summary>
 internal static class XDotParser
 {
     public static List<XDotOp> ParseXDot(string xdotString, CoordinateSystem coordinateSystem, double maxY)

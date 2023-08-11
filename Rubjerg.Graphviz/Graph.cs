@@ -592,7 +592,7 @@ public class Graph : CGraphThing
     public RectangleD GetBoundingBox()
     {
         var untransformed = RawBoundingBox();
-        return untransformed.ForCoordSystem(MyRootGraph.CoordinateSystem, RawMaxY());
+        return untransformed.ForCoordSystem(MyRootGraph.CoordinateSystem, MyRootGraph.RawMaxY());
     }
 
     private void ToFile(string filepath, string format, string engine)

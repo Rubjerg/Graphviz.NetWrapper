@@ -220,8 +220,8 @@ public class Node : CGraphThing
     {
         var size = GetSize();
         var center = GetPosition();
-        var bottomleft = new PointD(center.X - size.Width / 2, center.Y - size.Height / 2);
-        return new RectangleD(bottomleft, size);
+        var rectangleOrigin = new PointD(center.X - size.Width / 2, center.Y - size.Height / 2);
+        return new RectangleD(rectangleOrigin, size);
     }
 
     /// <summary>
@@ -229,29 +229,43 @@ public class Node : CGraphThing
     /// resulting rectangles.
     /// The order of the list matches the order in which the labels occur in the label string.
     /// </summary>
-    public IEnumerable<RectangleD> GetRecordRectangles()
+    /// <param name="snapOntoDrawingCoordinates">
+    /// There is a lingering issue in Graphviz where the coordinates of the record rectangles may be off.
+    /// As a workaround we snap onto the coordinates from the drawing info, which seem to be more reliable.
+    /// https://github.com/Rubjerg/Graphviz.NetWrapper/issues/30
+    /// </param>
+    public IEnumerable<RectangleD> GetRecordRectangles(bool snapOntoDrawingCoordinates = false)
     {
         if (!HasAttribute("rects"))
             yield break;
 
-        // There is a lingering issue in Graphviz where the x coordinates of the record rectangles may be off.
-        // As a workaround we consult the x coordinates, and attempt to snap onto those.
-        // https://github.com/Rubjerg/Graphviz.NetWrapper/issues/30
-        var validXCoords = GetDrawing().OfType<XDotOp.PolyLine>()
-            .SelectMany(p => p.Points).Select(p => p.X).ToList();
+        var polylinePoints = GetDrawing().OfType<IHasPoints>().SelectMany(p => p.Points).ToList();
+        var validXCoords = polylinePoints.Select(p => p.X).OrderBy(x => x).Distinct().ToList();
+        var validYCoords = polylinePoints.Select(p => p.Y).OrderBy(x => x).Distinct().ToList();
 
+        var maxY = MyRootGraph.RawMaxY();
         foreach (string rectStr in GetAttribute("rects").Split(' '))
         {
-            var rect = ParseRect(rectStr);
-
-            var x1 = rect.X;
-            var x2 = rect.X + rect.Width;
-            var fixedX1 = FindClosest(validXCoords, x1);
-            var fixedX2 = FindClosest(validXCoords, x2);
-            var fixedRect = new RectangleD(
-                new PointD(fixedX1, rect.Y),
-                new SizeD(fixedX2 - rect.X, rect.Height));
-            yield return fixedRect;
+            var rect = ParseRect(rectStr).ForCoordSystem(MyRootGraph.CoordinateSystem, maxY);
+            if (!snapOntoDrawingCoordinates)
+            {
+                yield return rect;
+            }
+            else
+            {
+                var x1 = rect.X;
+                var x2 = rect.X + rect.Width;
+                var y1 = rect.Y;
+                var y2 = rect.Y + rect.Height;
+                var snappedX1 = FindClosest(validXCoords, x1);
+                var snappedX2 = FindClosest(validXCoords, x2);
+                var snappedY1 = FindClosest(validYCoords, y1);
+                var snappedY2 = FindClosest(validYCoords, y2);
+                var snappedRect = new RectangleD(
+                    new PointD(snappedX1, snappedY1),
+                    new SizeD(snappedX2 - snappedX1, snappedY2 - snappedY1));
+                yield return snappedRect;
+            }
         }
     }
 

@@ -3,7 +3,54 @@ using System.Linq;
 
 namespace Rubjerg.Graphviz;
 
-// See https://graphviz.org/docs/outputs/canon/#xdot
+/// <summary>
+/// See https://graphviz.org/docs/outputs/canon/#xdot for semantics.
+/// 
+/// Within the context of a single drawing attribute, e.g., draw, there is an implicit state for the
+/// graphical attributes. That is, once a color or style is set, it remains valid for all relevant
+/// drawing operations until the value is reset by another xdot cmd.
+/// 
+/// Note that the filled figures (ellipses, polygons and B-Splines) imply two operations: first,
+/// drawing the filled figure with the current fill color; second, drawing an unfilled figure with
+/// the current pen color, pen width and pen style.
+/// 
+/// The text operation is only used in the label attributes. Normally, the non-text operations are
+/// only used in the non-label attributes. If, however, the decorate attribute is set on an edge,
+/// its label attribute will also contain a polyline operation. In addition, if a label is a
+/// complex, HTML-like label, it will also contain non-text operations.
+/// 
+/// NOTE: we've slightly trimmed down the number of cases w.r.t. the actual xdot operations.
+/// All font related operations have been condensed into the text operations.
+/// We only have a single Color type, which has three subtypes.
+/// </summary>
+public abstract record class XDotOp
+{
+    private XDotOp() { }
+
+    public sealed record class FilledEllipse(RectangleD Value) : XDotOp { }
+    public sealed record class UnfilledEllipse(RectangleD Value) : XDotOp { }
+    public sealed record class FilledPolygon(PointD[] Points) : XDotOp, IHasPoints { }
+    public sealed record class UnfilledPolygon(PointD[] Points) : XDotOp, IHasPoints { }
+    public sealed record class PolyLine(PointD[] Points) : XDotOp, IHasPoints { }
+    public sealed record class FilledBezier(PointD[] Points) : XDotOp, IHasPoints { }
+    public sealed record class UnfilledBezier(PointD[] Points) : XDotOp, IHasPoints { }
+    public sealed record class Text(TextInfo Value) : XDotOp { }
+    public sealed record class Image(ImageInfo Value) : XDotOp { }
+    public sealed record class FillColor(Color Value) : XDotOp { }
+    public sealed record class PenColor(Color Value) : XDotOp { }
+    /// <summary>
+    /// Style values which can be incorporated in the graphics model do not appear in xdot
+    /// output. In particular, the style values filled, rounded, diagonals, and invis will not
+    /// appear. Indeed, if style contains invis, there will not be any xdot output at all.
+    /// For reference see https://graphviz.org/docs/attr-types/style/
+    /// </summary>
+    public sealed record class Style(string Value) : XDotOp { }
+}
+
+public interface IHasPoints
+{
+    public PointD[] Points { get; }
+}
 
 /// <summary>
 /// In Graphviz, the default coordinate system has the origin on the bottom left.
@@ -27,7 +74,7 @@ public record struct PointD(double X, double Y)
     }
 }
 
-/// <param name="Point">The point closest to the origin</param>
+/// <param name="Origin">The origin of the rectangle, which is the point closest to the origin of the coordinate system.</param>
 /// <param name="Size"></param>
 public record struct RectangleD(PointD Origin, SizeD Size)
 {
@@ -42,12 +89,16 @@ public record struct RectangleD(PointD Origin, SizeD Size)
     public double MidY() => Y + Height / 2;
     public PointD Center() => new PointD(MidX(), MidY());
 
-    public static RectangleD Create(double x, double y, double width, double height) => new RectangleD(new PointD(x, y), new SizeD(width, height));
+    public static RectangleD Create(double x, double y, double width, double height)
+        => new RectangleD(new PointD(x, y), new SizeD(width, height));
 
     internal RectangleD ForCoordSystem(CoordinateSystem coordSystem, double maxY)
     {
+        if (coordSystem == CoordinateSystem.BottomLeft)
+            return this;
+
         var translated = Origin.ForCoordSystem(coordSystem, maxY);
-        // Origin must be the point closest the the coordinate system origin
+        // Origin must be the point closest the origin of the coordinate system
         return this with
         {
             Origin = new PointD(translated.X, translated.Y - Height),
@@ -108,6 +159,7 @@ public record struct TextInfo(PointD Anchor, TextAlign Align, double WidthEstima
     Font Font, FontChar FontChar, CoordinateSystem CoordSystem)
 {
     public SizeD TextSizeEstimate() => new SizeD(WidthEstimate, Font.Size);
+    public double Baseline => Anchor.Y;
 
     /// <summary>
     /// Estimate the bounding box of this text element.
@@ -122,8 +174,6 @@ public record struct TextInfo(PointD Anchor, TextAlign Align, double WidthEstima
     public RectangleD TextBoundingBoxEstimate(double? distanceBetweenBaselineAndDescender = null)
     {
         var size = TextSizeEstimate();
-        var descenderY = Anchor.Y - (distanceBetweenBaselineAndDescender ?? Font.Size * 0.23);
-        var ascenderY = descenderY + size.Height;
         var leftX = Align switch
         {
             TextAlign.Left => Anchor.X,
@@ -131,10 +181,27 @@ public record struct TextInfo(PointD Anchor, TextAlign Align, double WidthEstima
             TextAlign.Right => Anchor.X - size.Width,
             _ => throw new InvalidOperationException()
         };
-        var origin = new PointD(leftX, descenderY);
-        if (CoordSystem == CoordinateSystem.TopLeft)
+
+        var d = distanceBetweenBaselineAndDescender ?? Font.Size * 0.23;
+        double descender;
+        if (CoordSystem == CoordinateSystem.BottomLeft)
         {
-            origin = new PointD(leftX, ascenderY);
+            descender = Baseline - d;
+        }
+        else
+        {
+            descender = Baseline + d;
+        }
+
+        PointD origin;
+        if (CoordSystem == CoordinateSystem.BottomLeft)
+        {
+            origin = new PointD(leftX, descender);
+        }
+        else
+        {
+            var ascender = descender - size.Height;
+            origin = new PointD(leftX, ascender);
         }
         return new RectangleD(origin, size);
     }
@@ -180,48 +247,4 @@ internal static class PointDArrayExtension
 {
     internal static PointD[] ForCoordSystem(this PointD[] self, CoordinateSystem coordSystem, double maxY)
         => self.Select(a => a.ForCoordSystem(coordSystem, maxY)).ToArray();
-}
-
-/// <summary>
-/// See https://graphviz.org/docs/outputs/canon/#xdot for semantics.
-/// 
-/// Within the context of a single drawing attribute, e.g., draw, there is an implicit state for the
-/// graphical attributes. That is, once a color or style is set, it remains valid for all relevant
-/// drawing operations until the value is reset by another xdot cmd.
-/// 
-/// Note that the filled figures (ellipses, polygons and B-Splines) imply two operations: first,
-/// drawing the filled figure with the current fill color; second, drawing an unfilled figure with
-/// the current pen color, pen width and pen style.
-/// 
-/// The text operation is only used in the label attributes. Normally, the non-text operations are
-/// only used in the non-label attributes. If, however, the decorate attribute is set on an edge,
-/// its label attribute will also contain a polyline operation. In addition, if a label is a
-/// complex, HTML-like label, it will also contain non-text operations.
-/// 
-/// NOTE: we've slightly trimmed down the number of cases w.r.t. the actual xdot operations.
-/// All font related operations have been condensed into the text operations.
-/// We only have a single Color type, which has three subtypes.
-/// </summary>
-public abstract record class XDotOp
-{
-    private XDotOp() { }
-
-    public sealed record class FilledEllipse(RectangleD Value) : XDotOp { }
-    public sealed record class UnfilledEllipse(RectangleD Value) : XDotOp { }
-    public sealed record class FilledPolygon(PointD[] Points) : XDotOp { }
-    public sealed record class UnfilledPolygon(PointD[] Points) : XDotOp { }
-    public sealed record class PolyLine(PointD[] Points) : XDotOp { }
-    public sealed record class FilledBezier(PointD[] Points) : XDotOp { }
-    public sealed record class UnfilledBezier(PointD[] Points) : XDotOp { }
-    public sealed record class Text(TextInfo Value) : XDotOp { }
-    public sealed record class Image(ImageInfo Value) : XDotOp { }
-    public sealed record class FillColor(Color Value) : XDotOp { }
-    public sealed record class PenColor(Color Value) : XDotOp { }
-    /// <summary>
-    /// Style values which can be incorporated in the graphics model do not appear in xdot
-    /// output. In particular, the style values filled, rounded, diagonals, and invis will not
-    /// appear. Indeed, if style contains invis, there will not be any xdot output at all.
-    /// For reference see https://graphviz.org/docs/attr-types/style/
-    /// </summary>
-    public sealed record class Style(string Value) : XDotOp { }
 }
