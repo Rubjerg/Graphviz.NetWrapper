@@ -97,7 +97,7 @@ internal static class XDotFFI
     public static extern double get_y_text(IntPtr txt);
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    public static extern XDotAlign get_align(IntPtr txt);
+    public static extern TextAlign get_align(IntPtr txt);
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     public static extern double get_width(IntPtr txt);

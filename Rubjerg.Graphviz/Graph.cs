@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
@@ -567,28 +565,35 @@ public class Graph : CGraphThing
     /// Compute the layout in a separate process by calling dot.exe, and return a new graph, which is a copy of the old
     /// graph with the xdot information added to it.
     /// </summary>
-    public RootGraph CreateLayout(string engine = LayoutEngines.Dot)
+    public RootGraph CreateLayout(string engine = LayoutEngines.Dot, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
-        return GraphvizCommand.CreateLayout(this, engine: engine);
+        return GraphvizCommand.CreateLayout(this, engine, coordinateSystem);
     }
 
-    public RectangleF GetBoundingBox()
+    /// <summary>
+    /// Untransformed boundingbox. Still needs to be transformed to the desired coordinate system.
+    /// </summary>
+    internal RectangleD RawBoundingBox()
     {
         string bb_string = Agget(_ptr, "bb");
         if (string.IsNullOrEmpty(bb_string))
             return default;
-        // x and y are the topleft point of the bb
-        char sep = ',';
-        string[] bb = bb_string.Split(sep);
-        float x = float.Parse(bb[0], NumberStyles.Any, CultureInfo.InvariantCulture);
-        float y = float.Parse(bb[1], NumberStyles.Any, CultureInfo.InvariantCulture);
-        float w = float.Parse(bb[2], NumberStyles.Any, CultureInfo.InvariantCulture) - x;
-        float h = float.Parse(bb[3], NumberStyles.Any, CultureInfo.InvariantCulture) - y;
-        return new RectangleF(x, y, w, h);
+        return ParseRect(bb_string);
     }
 
-    public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
-    public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
+    internal double RawMaxY()
+    {
+        return RawBoundingBox().FarPoint().Y;
+    }
+
+    /// <summary>
+    /// The bounding box of this (sub)graph.
+    /// </summary>
+    public RectangleD GetBoundingBox()
+    {
+        var untransformed = RawBoundingBox();
+        return untransformed.ForCoordSystem(MyRootGraph.CoordinateSystem, MyRootGraph.RawMaxY());
+    }
 
     private void ToFile(string filepath, string format, string engine)
     {
@@ -648,15 +653,6 @@ public class Graph : CGraphThing
         var render_rc = GvRenderFilename(GVC, _ptr, format, filename);
         if (render_rc != 0)
             throw new ApplicationException($"Graphviz render returned error code {render_rc}");
-    }
-
-    [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
-    public GraphvizLabel GetLabel()
-    {
-        IntPtr labelptr = GraphLabel(_ptr);
-        if (labelptr == IntPtr.Zero)
-            return null;
-        return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered);
     }
 
     #endregion

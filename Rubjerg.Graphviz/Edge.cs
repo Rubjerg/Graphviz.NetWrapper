@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
@@ -70,7 +68,6 @@ public class Edge : CGraphThing
     {
         var tail = Tail();
         var head = Head();
-        Debug.Assert(node == tail || node == head);
         return node == tail ? head : tail;
     }
 
@@ -96,7 +93,7 @@ public class Edge : CGraphThing
         if (!MyRootGraph.IsCompound())
             throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
         string ltailname = ltail.GetName();
-        SafeSetAttribute("ltail", ltailname, "");
+        SetAttribute("ltail", ltailname);
     }
 
     /// <summary>
@@ -110,7 +107,7 @@ public class Edge : CGraphThing
         if (!MyRootGraph.IsCompound())
             throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
         string lheadname = lhead.GetName();
-        SafeSetAttribute("lhead", lheadname, "");
+        SetAttribute("lhead", lheadname);
     }
 
     /// <summary>
@@ -152,7 +149,7 @@ public class Edge : CGraphThing
     /// This method only returns the first spline that is defined.
     /// Returns null if no splines exist.
     /// </summary>
-    public PointF[] GetFirstSpline()
+    public PointD[] GetFirstSpline()
     {
         return GetSplines().FirstOrDefault();
     }
@@ -163,17 +160,26 @@ public class Edge : CGraphThing
     /// https://github.com/ellson/graphviz/issues/1277
     /// Edge arrows are ignored.
     /// </summary>
-    public IEnumerable<PointF[]> GetSplines()
+    public IEnumerable<PointD[]> GetSplines()
     {
-        return GetDrawing().OfType<XDotOp.UnfilledBezier>()
-            .Select(x => x.Value.Points.Select(p => new PointF((float)p.X, (float)p.Y)).ToArray());
+        return GetDrawing().OfType<XDotOp.UnfilledBezier>().Select(x => x.Points);
     }
 
-    public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
-    public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
+    /// <summary>
+    /// See documentation on <see cref="XDotOp"/>
+    /// </summary>
     public IReadOnlyList<XDotOp> GetHeadArrowDrawing() => GetXDotValue(this, "_hdraw_");
+    /// <summary>
+    /// See documentation on <see cref="XDotOp"/>
+    /// </summary>
     public IReadOnlyList<XDotOp> GetTailArrowDrawing() => GetXDotValue(this, "_tdraw_");
+    /// <summary>
+    /// See documentation on <see cref="XDotOp"/>
+    /// </summary>
     public IReadOnlyList<XDotOp> GetHeadLabelDrawing() => GetXDotValue(this, "_hldraw_");
+    /// <summary>
+    /// See documentation on <see cref="XDotOp"/>
+    /// </summary>
     public IReadOnlyList<XDotOp> GetTailLabelDrawing() => GetXDotValue(this, "_tldraw_");
 
     #endregion

@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using System.Drawing;
 using System.Linq;
 
 namespace Rubjerg.Graphviz.Test;
@@ -8,7 +7,7 @@ namespace Rubjerg.Graphviz.Test;
 public class Tutorial
 {
     public const string PointPattern = @"{X=[\d.]+, Y=[\d.]+}";
-    public const string RectPattern = @"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}";
+    public const string RectPattern = @"{X=[\d.]+, Y=[\d.]+, Width=[\d.]+, Height=[\d.]+}";
     public const string SplinePattern =
         @"{X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}";
 
@@ -80,57 +79,52 @@ public class Tutorial
 
         // Or we can ask Graphviz to compute the layout and programatically read out the layout attributes
         // This will create a copy of our original graph with layout information attached to it in the form
-        // of attributes.
-        RootGraph layout = root.CreateLayout();
+        // of attributes. Graphviz outputs coordinates in a bottom-left originated coordinate system.
+        // But since many applications require rendering in a top-left originated coordinate system,
+        // we provide a way to translate the coordinates.
+        RootGraph layout = root.CreateLayout(coordinateSystem: CoordinateSystem.TopLeft);
 
         // There are convenience methods available that parse these attributes for us and give
         // back the layout information in an accessible form.
         Node nodeA = layout.GetNode("A");
-        PointF position = nodeA.GetPosition();
+        PointD position = nodeA.GetPosition();
         Utils.AssertPattern(PointPattern, position.ToString());
 
-        RectangleF nodeboundingbox = nodeA.GetBoundingBox();
+        RectangleD nodeboundingbox = nodeA.GetBoundingBox();
         Utils.AssertPattern(RectPattern, nodeboundingbox.ToString());
 
         // Or splines between nodes
         Node nodeB = layout.GetNode("B");
         Edge edge = layout.GetEdge(nodeA, nodeB, "Some edge name");
-        PointF[] spline = edge.GetFirstSpline();
+        PointD[] spline = edge.GetFirstSpline();
         string splineString = string.Join(", ", spline.Select(p => p.ToString()));
         Utils.AssertPattern(SplinePattern, splineString);
 
         // If we require detailed drawing information for any object, we can retrieve the so called "xdot"
         // operations. See https://graphviz.org/docs/outputs/canon/#xdot for a specification.
-        var activeColor = Color.Black;
+        var activeFillColor = System.Drawing.Color.Black;
         foreach (var op in nodeA.GetDrawing())
         {
-            if (op is XDotOp.FillColor { Value: string htmlColor })
+            if (op is XDotOp.FillColor { Value: Color.Uniform { HtmlColor: var htmlColor } })
             {
-                activeColor = ColorTranslator.FromHtml(htmlColor);
+                activeFillColor = System.Drawing.ColorTranslator.FromHtml(htmlColor);
             }
-            else if (op is XDotOp.FilledEllipse { Value: var filledEllipse })
+            else if (op is XDotOp.FilledEllipse { Value: var boundingBox })
             {
-                var boundingBox = filledEllipse.ToRectangleF();
                 Utils.AssertPattern(RectPattern, boundingBox.ToString());
             }
             // Handle any xdot operation you require
         }
 
-        var activeFont = XDotFont.Default;
-        foreach (var op in nodeA.GetDrawing())
+        foreach (var op in nodeA.GetLabelDrawing())
         {
-            if (op is XDotOp.Font { Value: var font })
+            if (op is XDotOp.Text { Value: var text })
             {
-                activeFont = font;
-                Utils.AssertPattern(@"Times-Roman", font.Name);
-            }
-            else if (op is XDotOp.Text { Value: var text })
-            {
-                var anchor = text.Anchor();
-                Utils.AssertPattern(PointPattern, anchor.ToString());
-                var boundingBox = text.TextBoundingBox(activeFont);
+                Utils.AssertPattern(PointPattern, text.Anchor.ToString());
+                var boundingBox = text.TextBoundingBoxEstimate();
                 Utils.AssertPattern(RectPattern, boundingBox.ToString());
                 Assert.AreEqual(text.Text, "A");
+                Assert.AreEqual(text.Font.Name, "Times-Roman");
             }
             // Handle any xdot operation you require
         }
@@ -172,8 +166,8 @@ public class Tutorial
         var layout = root.CreateLayout();
 
         SubGraph cluster = layout.GetSubgraph("cluster_1");
-        RectangleF clusterbox = cluster.GetBoundingBox();
-        RectangleF rootgraphbox = layout.GetBoundingBox();
+        RectangleD clusterbox = cluster.GetBoundingBox();
+        RectangleD rootgraphbox = layout.GetBoundingBox();
         Utils.AssertPattern(RectPattern, clusterbox.ToString());
         Utils.AssertPattern(RectPattern, rootgraphbox.ToString());
     }
@@ -183,14 +177,17 @@ public class Tutorial
     {
         RootGraph root = RootGraph.CreateNew(GraphType.Directed, "Graph with records");
         Node nodeA = root.GetOrAddNode("A");
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+        nodeA.SetAttribute("shape", "record");
+        // New line characters are not supported by record labels, and will be ignored by Graphviz
+        nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
         var layout = root.CreateLayout();
 
         // The order of the list matches the order in which the labels occur in the label string above.
         var rects = layout.GetNode("A").GetRecordRectangles().ToList();
+        var rectLabels = layout.GetNode("A").GetRecordRectangleLabels().Select(l => l.Text).ToList();
         Assert.AreEqual(9, rects.Count);
+        Assert.AreEqual(new[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, rectLabels);
     }
 
     [Test, Order(5)]
@@ -210,8 +207,8 @@ public class Tutorial
         var somePortId = "port id with :| special characters";
         var validPortName = Edge.ConvertUidToPortName(somePortId);
         Node nodeB = root.GetOrAddNode("B");
-        nodeB.SafeSetAttribute("shape", "record", "");
-        nodeB.SafeSetAttribute("label", $"<{validPortName}>1|2", "\\N");
+        nodeB.SetAttribute("shape", "record");
+        nodeB.SetAttribute("label", $"<{validPortName}>1|2");
 
         // The conversion function makes sure different strings don't accidentally map onto the same portname
         Assert.AreNotEqual(Edge.ConvertUidToPortName(":"), Edge.ConvertUidToPortName("|"));

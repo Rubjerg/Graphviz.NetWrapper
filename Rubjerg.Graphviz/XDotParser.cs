@@ -32,12 +32,12 @@ internal struct XDot
 
 internal static class XDotParser
 {
-    public static List<XDotOp> ParseXDot(string xdotString)
+    public static List<XDotOp> ParseXDot(string xdotString, CoordinateSystem coordinateSystem, double maxY)
     {
         IntPtr xdot = XDotFFI.parseXDot(xdotString);
         try
         {
-            return TranslateXDot(xdot);
+            return TranslateXDot(xdot, coordinateSystem, maxY);
         }
         finally
         {
@@ -48,7 +48,7 @@ internal static class XDotParser
         }
     }
 
-    internal static List<XDotOp> TranslateXDot(IntPtr xdotPtr)
+    internal static List<XDotOp> TranslateXDot(IntPtr xdotPtr, CoordinateSystem coordinateSystem, double maxY)
     {
         if (xdotPtr == IntPtr.Zero)
             throw new ArgumentNullException(nameof(xdotPtr));
@@ -62,184 +62,145 @@ internal static class XDotParser
         int count = xdot.Count;
         xdot.Ops = new XDotOp[count];
         var opsPtr = XDotFFI.get_ops(xdotPtr);
+
+        var activeFont = Font.Default;
+        var activeFontChar = FontChar.None;
         for (int i = 0; i < count; ++i)
         {
             IntPtr xdotOpPtr = XDotFFI.get_op_at_index(opsPtr, i);
-            xdot.Ops[i] = TranslateXDotOp(xdotOpPtr);
+            var kind = XDotFFI.get_kind(xdotOpPtr);
+            switch (kind)
+            {
+                case XDotKind.FilledEllipse:
+                    xdot.Ops[i] = new XDotOp.FilledEllipse(TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr))
+                        .ForCoordSystem(coordinateSystem, maxY));
+                    break;
+                case XDotKind.UnfilledEllipse:
+                    xdot.Ops[i] = new XDotOp.UnfilledEllipse(TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr))
+                        .ForCoordSystem(coordinateSystem, maxY));
+                    break;
+                case XDotKind.FilledPolygon:
+                    xdot.Ops[i] = new XDotOp.FilledPolygon(TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                        .ForCoordSystem(coordinateSystem, maxY));
+                    break;
+                case XDotKind.UnfilledPolygon:
+                    xdot.Ops[i] = new XDotOp.FilledPolygon(TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                        .ForCoordSystem(coordinateSystem, maxY));
+                    break;
+                case XDotKind.FilledBezier:
+                    xdot.Ops[i] = new XDotOp.FilledBezier(TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                        .ForCoordSystem(coordinateSystem, maxY));
+                    break;
+                case XDotKind.UnfilledBezier:
+                    xdot.Ops[i] = new XDotOp.UnfilledBezier(TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                        .ForCoordSystem(coordinateSystem, maxY));
+                    break;
+                case XDotKind.Polyline:
+                    xdot.Ops[i] = new XDotOp.PolyLine(TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                        .ForCoordSystem(coordinateSystem, maxY));
+                    break;
+                case XDotKind.Text:
+                    xdot.Ops[i] = new XDotOp.Text(TranslateText(XDotFFI.get_text(xdotOpPtr), activeFont, activeFontChar)
+                        .ForCoordSystem(coordinateSystem, maxY));
+                    break;
+                case XDotKind.FillColor:
+                    xdot.Ops[i] = new XDotOp.FillColor(new Color.Uniform(XDotFFI.GetColor(xdotOpPtr)));
+                    break;
+                case XDotKind.PenColor:
+                    xdot.Ops[i] = new XDotOp.PenColor(new Color.Uniform(XDotFFI.GetColor(xdotOpPtr)));
+                    break;
+                case XDotKind.GradFillColor:
+                    xdot.Ops[i] = new XDotOp.FillColor(TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr)));
+                    break;
+                case XDotKind.GradPenColor:
+                    xdot.Ops[i] = new XDotOp.PenColor(TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr)));
+                    break;
+                case XDotKind.Font:
+                    activeFont = TranslateFont(XDotFFI.get_font(xdotOpPtr));
+                    break;
+                case XDotKind.Style:
+                    xdot.Ops[i] = new XDotOp.Style(XDotFFI.GetStyle(xdotOpPtr));
+                    break;
+                case XDotKind.Image:
+                    xdot.Ops[i] = new XDotOp.Image(TranslateImage(XDotFFI.get_image(xdotOpPtr))
+                        .ForCoordSystem(coordinateSystem, maxY));
+                    break;
+                case XDotKind.FontChar:
+                    activeFontChar = TranslateFontChar(XDotFFI.get_fontchar(xdotOpPtr));
+                    break;
+                default:
+                    throw new ArgumentException($"Unexpected XDotOp.Kind: {kind}");
+            }
         }
 
         return xdot.Ops.ToList();
     }
 
-    private static XDotOp TranslateXDotOp(IntPtr xdotOpPtr)
+    private static FontChar TranslateFontChar(uint value)
     {
-        if (xdotOpPtr == IntPtr.Zero)
-            throw new ArgumentNullException(nameof(xdotOpPtr));
-
-        var kind = XDotFFI.get_kind(xdotOpPtr);
-        switch (kind)
-        {
-            case XDotKind.FilledEllipse:
-                return new XDotOp.FilledEllipse()
-                {
-                    Value = TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr))
-                };
-            case XDotKind.UnfilledEllipse:
-                return new XDotOp.UnfilledEllipse()
-                {
-                    Value = TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr))
-                };
-            case XDotKind.FilledPolygon:
-                return new XDotOp.FilledPolygon()
-                {
-                    Value = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
-                };
-            case XDotKind.UnfilledPolygon:
-                return new XDotOp.FilledPolygon()
-                {
-                    Value = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
-                };
-            case XDotKind.FilledBezier:
-                return new XDotOp.FilledBezier()
-                {
-                    Value = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
-                };
-            case XDotKind.UnfilledBezier:
-                return new XDotOp.UnfilledBezier()
-                {
-                    Value = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
-                };
-            case XDotKind.Polyline:
-                return new XDotOp.PolyLine()
-                {
-                    Value = TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
-                };
-            case XDotKind.Text:
-                return new XDotOp.Text()
-                {
-                    Value = TranslateText(XDotFFI.get_text(xdotOpPtr))
-                };
-            case XDotKind.FillColor:
-                return new XDotOp.FillColor()
-                {
-                    Value = XDotFFI.GetColor(xdotOpPtr)
-                };
-            case XDotKind.PenColor:
-                return new XDotOp.PenColor()
-                {
-                    Value = XDotFFI.GetColor(xdotOpPtr)
-                };
-            case XDotKind.GradFillColor:
-                return new XDotOp.GradFillColor()
-                {
-                    Value = TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr))
-                };
-            case XDotKind.GradPenColor:
-                return new XDotOp.GradPenColor()
-                {
-                    Value = TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr))
-                };
-            case XDotKind.Font:
-                return new XDotOp.Font()
-                {
-                    Value = TranslateFont(XDotFFI.get_font(xdotOpPtr))
-                };
-            case XDotKind.Style:
-                return new XDotOp.Style()
-                {
-                    Value = XDotFFI.GetStyle(xdotOpPtr)
-                };
-            case XDotKind.Image:
-                return new XDotOp.Image()
-                {
-                    Value = TranslateImage(XDotFFI.get_image(xdotOpPtr))
-                };
-            case XDotKind.FontChar:
-                return new XDotOp.FontChar()
-                {
-                    Value = TranslateFontChar(XDotFFI.get_fontchar(xdotOpPtr))
-                };
-            default:
-                throw new ArgumentException($"Unexpected XDotOp.Kind: {kind}");
-        }
+        return (FontChar)(int)value;
     }
 
-    private static XDotFontChar TranslateFontChar(uint value)
+    private static ImageInfo TranslateImage(IntPtr imagePtr)
     {
-        return (XDotFontChar)(int)value;
-    }
-    private static XDotImage TranslateImage(IntPtr imagePtr)
-    {
-        XDotImage image = new XDotImage
-        {
-            Pos = TranslateRect(XDotFFI.get_pos(imagePtr)),
-            Name = XDotFFI.GetNameImage(imagePtr)
-        };
+        ImageInfo image = new ImageInfo
+        (
+            Position: TranslateRect(XDotFFI.get_pos(imagePtr)),
+            Name: XDotFFI.GetNameImage(imagePtr)
+        );
 
         return image;
     }
 
-    private static XDotFont TranslateFont(IntPtr fontPtr)
+    private static Font TranslateFont(IntPtr fontPtr)
     {
-        XDotFont font = new XDotFont
-        {
-            Size = XDotFFI.get_size(fontPtr),
-            Name = XDotFFI.GetNameFont(fontPtr)
-        };
+        Font font = new Font
+        (
+            Size: XDotFFI.get_size(fontPtr),
+            Name: XDotFFI.GetNameFont(fontPtr)
+        );
 
         return font;
     }
 
-    private static XDotRect TranslateEllipse(IntPtr ellipsePtr)
+    private static RectangleD TranslateEllipse(IntPtr ellipsePtr)
     {
-        XDotRect ellipse = new XDotRect
-        {
-            X = XDotFFI.get_x_rect(ellipsePtr),
-            Y = XDotFFI.get_y_rect(ellipsePtr),
-            Width = XDotFFI.get_w_rect(ellipsePtr),
-            Height = XDotFFI.get_h_rect(ellipsePtr)
-        };
+        RectangleD ellipse = RectangleD.Create
+        (
+            XDotFFI.get_x_rect(ellipsePtr),
+            XDotFFI.get_y_rect(ellipsePtr),
+            XDotFFI.get_w_rect(ellipsePtr),
+            XDotFFI.get_h_rect(ellipsePtr)
+        );
 
         return ellipse;
     }
 
-    private static XDotGradColor TranslateGradColor(IntPtr colorPtr)
+    private static Color TranslateGradColor(IntPtr colorPtr)
     {
         var type = XDotFFI.get_type(colorPtr);
         switch (type)
         {
             case XDotGradType.None:
-                return new XDotGradColor.Uniform()
-                {
-                    Color = XDotFFI.GetClr(colorPtr)
-                };
+                return new Color.Uniform(XDotFFI.GetClr(colorPtr));
             case XDotGradType.Linear:
-                return new XDotGradColor.LinearGradient()
-                {
-                    LinearGrad = TranslateLinearGrad(XDotFFI.get_ling(colorPtr))
-                };
+                return new Color.Linear(TranslateLinearGrad(XDotFFI.get_ling(colorPtr)));
             case XDotGradType.Radial:
-                return new XDotGradColor.RadialGradient()
-                {
-                    RadialGrad = TranslateRadialGrad(XDotFFI.get_ring(colorPtr))
-                };
+                return new Color.Radial(TranslateRadialGrad(XDotFFI.get_ring(colorPtr)));
             default:
                 throw new ArgumentException($"Unexpected XDotColor.Type: {type}");
         }
     }
 
-    private static XDotLinearGrad TranslateLinearGrad(IntPtr lingPtr)
+    private static LinearGradient TranslateLinearGrad(IntPtr lingPtr)
     {
         int count = XDotFFI.get_n_stops_ling(lingPtr);
-        XDotLinearGrad linearGrad = new XDotLinearGrad
-        {
-            X0 = XDotFFI.get_x0_ling(lingPtr),
-            Y0 = XDotFFI.get_y0_ling(lingPtr),
-            X1 = XDotFFI.get_x1_ling(lingPtr),
-            Y1 = XDotFFI.get_y1_ling(lingPtr),
-            NStops = count,
-            Stops = new XDotColorStop[count]
-        };
+        LinearGradient linearGrad = new LinearGradient
+        (
+            Point0: new PointD(XDotFFI.get_x0_ling(lingPtr), XDotFFI.get_y0_ling(lingPtr)),
+            Point1: new PointD(XDotFFI.get_x1_ling(lingPtr), XDotFFI.get_y1_ling(lingPtr)),
+            Stops: new ColorStop[count]
+        );
 
         // Translate the array of ColorStops
         var stopsPtr = XDotFFI.get_stops_ling(lingPtr);
@@ -252,20 +213,17 @@ internal static class XDotParser
         return linearGrad;
     }
 
-    private static XDotRadialGrad TranslateRadialGrad(IntPtr ringPtr)
+    private static RadialGradient TranslateRadialGrad(IntPtr ringPtr)
     {
         int count = XDotFFI.get_n_stops_ring(ringPtr);
-        XDotRadialGrad radialGrad = new XDotRadialGrad
-        {
-            X0 = XDotFFI.get_x0_ring(ringPtr),
-            Y0 = XDotFFI.get_y0_ring(ringPtr),
-            R0 = XDotFFI.get_r0_ring(ringPtr),
-            X1 = XDotFFI.get_x1_ring(ringPtr),
-            Y1 = XDotFFI.get_y1_ring(ringPtr),
-            R1 = XDotFFI.get_r1_ring(ringPtr),
-            NStops = count,
-            Stops = new XDotColorStop[count]
-        };
+        RadialGradient radialGrad = new RadialGradient
+        (
+            Point0: new PointD(XDotFFI.get_x0_ring(ringPtr), XDotFFI.get_y0_ring(ringPtr)),
+            Point1: new PointD(XDotFFI.get_x1_ring(ringPtr), XDotFFI.get_y1_ring(ringPtr)),
+            Radius0: XDotFFI.get_r0_ring(ringPtr),
+            Radius1: XDotFFI.get_r1_ring(ringPtr),
+            Stops: new ColorStop[count]
+        );
 
         // Translate the array of ColorStops
         var stopsPtr = XDotFFI.get_stops_ring(ringPtr);
@@ -278,72 +236,69 @@ internal static class XDotParser
         return radialGrad;
     }
 
-    private static XDotColorStop TranslateColorStop(IntPtr stopPtr)
+    private static ColorStop TranslateColorStop(IntPtr stopPtr)
     {
-        XDotColorStop colorStop = new XDotColorStop
-        {
-            Frac = XDotFFI.get_frac(stopPtr),
-            Color = XDotFFI.GetColorStop(stopPtr)
-        };
+        ColorStop colorStop = new ColorStop
+        (
+            Frac: XDotFFI.get_frac(stopPtr),
+            HtmlColor: XDotFFI.GetColorStop(stopPtr)
+        );
 
         return colorStop;
     }
 
-    private static XDotPolyline TranslatePolyline(IntPtr polylinePtr)
+    private static PointD[] TranslatePolyline(IntPtr polylinePtr)
     {
         int count = (int)XDotFFI.get_cnt_polyline(polylinePtr);
-        XDotPolyline polyline = new XDotPolyline
-        {
-            Count = count,
-            Points = new XDotPoint[count]
-        };
+        var points = new PointD[count];
 
         // Translate the array of Points
         var pointsPtr = XDotFFI.get_pts_polyline(polylinePtr);
         for (int i = 0; i < count; ++i)
         {
             IntPtr pointPtr = XDotFFI.get_pt_at_index(pointsPtr, i);
-            polyline.Points[i] = TranslatePoint(pointPtr);
+            points[i] = TranslatePoint(pointPtr);
         }
 
-        return polyline;
+        return points;
     }
 
-    private static XDotPoint TranslatePoint(IntPtr pointPtr)
+    private static PointD TranslatePoint(IntPtr pointPtr)
     {
-        XDotPoint point = new XDotPoint
-        {
-            X = XDotFFI.get_x_point(pointPtr),
-            Y = XDotFFI.get_y_point(pointPtr),
-            Z = XDotFFI.get_z_point(pointPtr)
-        };
+        var point = new PointD
+        (
+            X: XDotFFI.get_x_point(pointPtr),
+            Y: XDotFFI.get_y_point(pointPtr)
+        );
 
         return point;
     }
 
-    private static XDotRect TranslateRect(IntPtr rectPtr)
+    private static RectangleD TranslateRect(IntPtr rectPtr)
     {
-        XDotRect rect = new XDotRect
-        {
-            X = XDotFFI.get_x_rect(rectPtr),
-            Y = XDotFFI.get_y_rect(rectPtr),
-            Width = XDotFFI.get_w_rect(rectPtr),
-            Height = XDotFFI.get_h_rect(rectPtr)
-        };
+        var rect = RectangleD.Create
+        (
+            x: XDotFFI.get_x_rect(rectPtr),
+            y: XDotFFI.get_y_rect(rectPtr),
+            width: XDotFFI.get_w_rect(rectPtr),
+            height: XDotFFI.get_h_rect(rectPtr)
+        );
 
         return rect;
     }
 
-    private static XDotText TranslateText(IntPtr txtPtr)
+    private static TextInfo TranslateText(IntPtr txtPtr, Font activeFont, FontChar activeFontChar)
     {
-        XDotText text = new XDotText
-        {
-            X = XDotFFI.get_x_text(txtPtr),
-            Y = XDotFFI.get_y_text(txtPtr),
-            Align = XDotFFI.get_align(txtPtr),
-            Width = XDotFFI.get_width(txtPtr),
-            Text = XDotFFI.GetTextStr(txtPtr)
-        };
+        TextInfo text = new TextInfo
+        (
+            new PointD(XDotFFI.get_x_text(txtPtr), XDotFFI.get_y_text(txtPtr)),
+            XDotFFI.get_align(txtPtr),
+            XDotFFI.get_width(txtPtr),
+            XDotFFI.GetTextStr(txtPtr),
+            activeFont,
+            activeFontChar,
+            CoordinateSystem.BottomLeft
+        );
 
         return text;
     }

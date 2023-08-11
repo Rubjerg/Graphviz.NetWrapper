@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
@@ -160,11 +159,11 @@ public class Node : CGraphThing
 
     public void MakeInvisibleAndSmall()
     {
-        SafeSetAttribute("style", "invis", "");
-        SafeSetAttribute("margin", "0", "");
-        SafeSetAttribute("width", "0", "");
-        SafeSetAttribute("height", "0", "");
-        SafeSetAttribute("shape", "point", "");
+        SetAttribute("style", "invis");
+        SetAttribute("margin", "0");
+        SetAttribute("width", "0");
+        SetAttribute("height", "0");
+        SetAttribute("shape", "point");
     }
 
     #region layout attributes
@@ -172,33 +171,38 @@ public class Node : CGraphThing
     /// <summary>
     /// The position of the center of the node.
     /// </summary>
-    public PointF GetPosition()
+    public PointD GetPosition()
     {
         // The "pos" attribute is available as part of xdot output
+        PointD result;
         if (HasAttribute("pos"))
         {
             var posString = GetAttribute("pos");
             var coords = posString.Split(',');
-            float x = float.Parse(coords[0], NumberStyles.Any, CultureInfo.InvariantCulture);
-            float y = float.Parse(coords[1], NumberStyles.Any, CultureInfo.InvariantCulture);
-            return new PointF(x, y);
+            double x = double.Parse(coords[0], NumberStyles.Any, CultureInfo.InvariantCulture);
+            double y = double.Parse(coords[1], NumberStyles.Any, CultureInfo.InvariantCulture);
+            result = new PointD(x, y);
         }
-        // If the "pos" attribute is not available, try the following FFI functions,
-        // which are available after a ComputeLayout
-        return new PointF(Convert.ToSingle(NodeX(_ptr)), Convert.ToSingle(NodeY(_ptr)));
+        else
+        {
+            // If the "pos" attribute is not available, try the following FFI functions,
+            // which are available after a ComputeLayout
+            result = new PointD(Convert.ToSingle(NodeX(_ptr)), Convert.ToSingle(NodeY(_ptr)));
+        }
+        return result.ForCoordSystem(MyRootGraph.CoordinateSystem, MyRootGraph.RawMaxY());
     }
 
     /// <summary>
     /// The size of bounding box of the node.
     /// </summary>
-    public SizeF GetSize()
+    public SizeD GetSize()
     {
         // The "width" and "height" attributes are available as part of xdot output
-        float w, h;
+        double w, h;
         if (HasAttribute("width") && HasAttribute("height"))
         {
-            w = float.Parse(GetAttribute("width"), NumberStyles.Any, CultureInfo.InvariantCulture);
-            h = float.Parse(GetAttribute("height"), NumberStyles.Any, CultureInfo.InvariantCulture);
+            w = double.Parse(GetAttribute("width"), NumberStyles.Any, CultureInfo.InvariantCulture);
+            h = double.Parse(GetAttribute("height"), NumberStyles.Any, CultureInfo.InvariantCulture);
         }
         else
         {
@@ -209,45 +213,70 @@ public class Node : CGraphThing
         }
         // Coords are in points, sizes in inches. 72 points = 1 inch
         // We return everything in terms of points.
-        return new SizeF(w * 72, h * 72);
+        return new SizeD(w * 72, h * 72);
     }
 
-    public RectangleF GetBoundingBox()
+    public RectangleD GetBoundingBox()
     {
         var size = GetSize();
         var center = GetPosition();
-        var bottomleft = new PointF(center.X - size.Width / 2, center.Y - size.Height / 2);
-        return new RectangleF(bottomleft, size);
+        var rectangleOrigin = new PointD(center.X - size.Width / 2, center.Y - size.Height / 2);
+        return new RectangleD(rectangleOrigin, size);
     }
 
     /// <summary>
     /// If the shape of this node was set to 'record', this method allows you to retrieve the
     /// resulting rectangles.
+    /// The order of the list matches the order in which the labels occur in the label string.
     /// </summary>
-    public IEnumerable<RectangleF> GetRecordRectangles()
+    /// <param name="snapOntoDrawingCoordinates">
+    /// There is a lingering issue in Graphviz where the coordinates of the record rectangles may be off.
+    /// As a workaround we snap onto the coordinates from the drawing info, which seem to be more reliable.
+    /// https://github.com/Rubjerg/Graphviz.NetWrapper/issues/30
+    /// </param>
+    public IEnumerable<RectangleD> GetRecordRectangles(bool snapOntoDrawingCoordinates = false)
     {
         if (!HasAttribute("rects"))
             yield break;
 
-        // There is a lingering issue in Graphviz where the x coordinates of the record rectangles may be off.
-        // As a workaround we consult the x coordinates, and attempt to snap onto those.
-        // https://github.com/Rubjerg/Graphviz.NetWrapper/issues/30
-        var validXCoords = GetDrawing().OfType<XDotOp.PolyLine>()
-            .SelectMany(p => p.Value.Points).Select(p => p.X).ToList();
+        var polylinePoints = GetDrawing().OfType<IHasPoints>().SelectMany(p => p.Points).ToList();
+        var validXCoords = polylinePoints.Select(p => p.X).OrderBy(x => x).Distinct().ToList();
+        var validYCoords = polylinePoints.Select(p => p.Y).OrderBy(x => x).Distinct().ToList();
 
+        var maxY = MyRootGraph.RawMaxY();
         foreach (string rectStr in GetAttribute("rects").Split(' '))
         {
-            var rect = ParseRect(rectStr);
-
-            var x1 = rect.X;
-            var x2 = rect.X + rect.Width;
-            var fixedX1 = (float)FindClosest(validXCoords, x1);
-            var fixedX2 = (float)FindClosest(validXCoords, x2);
-            var fixedRect = new RectangleF(
-                new PointF(fixedX1, rect.Y),
-                new SizeF(fixedX2 - rect.X, rect.Height));
-            yield return fixedRect;
+            var rect = ParseRect(rectStr).ForCoordSystem(MyRootGraph.CoordinateSystem, maxY);
+            if (!snapOntoDrawingCoordinates)
+            {
+                yield return rect;
+            }
+            else
+            {
+                var x1 = rect.X;
+                var x2 = rect.X + rect.Width;
+                var y1 = rect.Y;
+                var y2 = rect.Y + rect.Height;
+                var snappedX1 = FindClosest(validXCoords, x1);
+                var snappedX2 = FindClosest(validXCoords, x2);
+                var snappedY1 = FindClosest(validYCoords, y1);
+                var snappedY2 = FindClosest(validYCoords, y2);
+                var snappedRect = new RectangleD(
+                    new PointD(snappedX1, snappedY1),
+                    new SizeD(snappedX2 - snappedX1, snappedY2 - snappedY1));
+                yield return snappedRect;
+            }
         }
+    }
+
+    /// <summary>
+    /// If the shape of this node was set to 'record', this method allows you to retrieve the
+    /// text objects of the resulting rectangles.
+    /// The order of the list matches the order in which the labels occur in the label string.
+    /// </summary>
+    public IEnumerable<TextInfo> GetRecordRectangleLabels()
+    {
+        return GetLabelDrawing().OfType<XDotOp.Text>().Select(x => x.Value);
     }
 
     /// <summary>
@@ -261,27 +290,5 @@ public class Node : CGraphThing
         return target;
     }
 
-    private RectangleF ParseRect(string rect)
-    {
-        string[] points = rect.Split(',');
-        float leftX = float.Parse(points[0], NumberStyles.Any, CultureInfo.InvariantCulture);
-        float upperY = float.Parse(points[1], NumberStyles.Any, CultureInfo.InvariantCulture);
-        float rightX = float.Parse(points[2], NumberStyles.Any, CultureInfo.InvariantCulture);
-        float lowerY = float.Parse(points[3], NumberStyles.Any, CultureInfo.InvariantCulture);
-        return new RectangleF(leftX, upperY, rightX - leftX, lowerY - upperY);
-    }
-
-    public IReadOnlyList<XDotOp> GetDrawing() => GetXDotValue(this, "_draw_");
-    public IReadOnlyList<XDotOp> GetLabelDrawing() => GetXDotValue(this, "_ldraw_");
-
     #endregion
-
-    [Obsolete("This method is only available after ComputeLayout(), and may crash otherwise. It is obsoleted by GetLabelDrawing(). Refer to tutorial.")]
-    public GraphvizLabel GetLabel()
-    {
-        IntPtr labelptr = NodeLabel(_ptr);
-        if (labelptr == IntPtr.Zero)
-            return null;
-        return new GraphvizLabel(labelptr, BoundingBoxCoords.Centered, new PointF(0, 0));
-    }
 }

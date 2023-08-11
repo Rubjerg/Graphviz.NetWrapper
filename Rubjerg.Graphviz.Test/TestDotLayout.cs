@@ -34,14 +34,13 @@ public class TestDotLayout
     {
         CreateSimpleTestGraph(out RootGraph root, out Node nodeA, out Edge edge);
 
-        Assert.AreEqual(root.GetBoundingBox(), default(RectangleF));
-        Assert.AreEqual(root.GetColor(), Color.Black);
+        Assert.AreEqual(root.GetBoundingBox(), default(RectangleD));
         Assert.AreEqual(root.GetDrawing().Count, 0);
         Assert.AreEqual(root.GetLabelDrawing().Count, 0);
 
-        Assert.AreEqual(nodeA.GetPosition(), default(PointF));
-        Assert.AreEqual(nodeA.GetBoundingBox(), default(RectangleF));
-        Assert.AreEqual(nodeA.GetSize(), default(SizeF));
+        Assert.AreEqual(nodeA.GetPosition(), default(PointD));
+        Assert.AreEqual(nodeA.GetBoundingBox(), default(RectangleD));
+        Assert.AreEqual(nodeA.GetSize(), default(SizeD));
         Assert.AreEqual(nodeA.GetRecordRectangles().Count(), 0);
         Assert.AreEqual(nodeA.GetDrawing().Count, 0);
         Assert.AreEqual(nodeA.GetLabelDrawing().Count, 0);
@@ -65,12 +64,10 @@ public class TestDotLayout
 
         root.ComputeLayout();
 
-        Assert.AreEqual(root.GetColor(), Color.Black);
         Assert.AreNotEqual(root.GetBoundingBox(), default(RectangleF));
         Assert.AreNotEqual(root.GetDrawing().Count, 0);
         Assert.AreNotEqual(root.GetLabelDrawing().Count, 0);
 
-        Assert.AreEqual(nodeA.GetColor(), Color.Red);
         Assert.AreEqual(nodeA.GetRecordRectangles().Count(), 2);
         Assert.AreNotEqual(nodeA.GetPosition(), default(PointF));
         Assert.AreNotEqual(nodeA.GetBoundingBox(), default(RectangleF));
@@ -98,12 +95,10 @@ public class TestDotLayout
         var xnodeB = xroot.GetNode("B");
         Edge xedge = xroot.GetEdge(xnodeA, xnodeB, "");
 
-        Assert.AreEqual(xroot.GetColor(), Color.Black);
         Assert.AreNotEqual(xroot.GetBoundingBox(), default(RectangleF));
         Assert.AreNotEqual(xroot.GetDrawing().Count, 0);
         Assert.AreNotEqual(xroot.GetLabelDrawing().Count, 0);
 
-        Assert.AreEqual(xnodeA.GetColor(), Color.Red);
         Assert.AreEqual(xnodeA.GetRecordRectangles().Count(), 2);
         Assert.AreNotEqual(xnodeA.GetPosition(), default(PointF));
         Assert.AreNotEqual(xnodeA.GetBoundingBox(), default(RectangleF));
@@ -179,15 +174,14 @@ public class TestDotLayout
         RootGraph root = CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
 
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
         root.ComputeLayout();
 
         var rects = nodeA.GetRecordRectangles().ToList();
 
-        // Because Graphviz uses a lower-left originated coordinate system, we need to flip the y coordinates
-        Utils.AssertOrder(rects, r => (r.Left, -r.Top));
+        Utils.AssertOrder(rects, r => (r.Origin.X, -r.Origin.Y));
         Assert.That(rects.Count, Is.EqualTo(9));
     }
 
@@ -196,8 +190,8 @@ public class TestDotLayout
     {
         RootGraph root = CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "||||", "");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "||||");
 
         root.ComputeLayout();
 
@@ -223,11 +217,11 @@ public class TestDotLayout
         {
             RootGraph root = CreateUniqueTestGraph();
             Node node = root.GetOrAddNode("N");
-            node.SafeSetAttribute("shape", "record", "");
-            node.SafeSetAttribute("label", label, "");
+            node.SetAttribute("shape", "record");
+            node.SetAttribute("label", label);
             Edge edge = root.GetOrAddEdge(node, node, "");
-            edge.SafeSetAttribute("tailport", port1 + ":n", "");
-            edge.SafeSetAttribute("headport", port2 + ":s", "");
+            edge.SetAttribute("tailport", port1 + ":n");
+            edge.SetAttribute("headport", port2 + ":s");
             root.ToDotFile(GetTestFilePath("out.gv"));
         }
 
@@ -269,12 +263,12 @@ public class TestDotLayout
         {
             RootGraph root = CreateUniqueTestGraph();
             Node node1 = root.GetOrAddNode("1");
-            node1.SafeSetAttribute("shape", "record", "");
-            node1.SafeSetAttribute("label", label1, "");
+            node1.SetAttribute("shape", "record");
+            node1.SetAttribute("label", label1);
             Node node2 = root.GetOrAddNode("2");
-            node2.SafeSetAttribute("label", label2, "");
+            node2.SetAttribute("label", label2);
             Node node3 = root.GetOrAddNode("3");
-            node3.SafeSetAttribute("label", label3, "");
+            node3.SetAttribute("label", label3);
             root.ToDotFile(GetTestFilePath("out.gv"));
         }
 

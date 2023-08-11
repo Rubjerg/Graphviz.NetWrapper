@@ -33,15 +33,16 @@ public class Reproductions
 
         Node nodeA = root.GetOrAddNode("A");
 
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "{20 VH|{1|2}}", "");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "{20 VH|{1|2}}");
 
         //TestContext.Write(root.ToDotString());
         root.ComputeLayout();
         //TestContext.Write(root.ToDotString());
 
-        var rects = nodeA.GetRecordRectangles().ToList();
-        Assert.That(rects[0].Right, Is.EqualTo(rects[2].Right));
+        // This test is fixed by passing snapOntoDrawingCoordinates: true
+        var rects = nodeA.GetRecordRectangles(snapOntoDrawingCoordinates: true).ToList();
+        Assert.That(rects[0].FarPoint().X, Is.EqualTo(rects[2].FarPoint().X));
     }
 
     // This test only failed when running in isolation
@@ -74,8 +75,8 @@ public class Reproductions
         RootGraph root = Utils.CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
 
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
         var dotString = root.ToDotString();
         Assert.IsFalse(dotString.Contains("\r"));
@@ -88,8 +89,8 @@ public class Reproductions
         RootGraph root = Utils.CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
 
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
         var xdotGraph = root.CreateLayout();
         var xNodeA = xdotGraph.GetNode("A");

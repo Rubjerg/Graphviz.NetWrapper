@@ -27,7 +27,7 @@ F 12 5 -Arial
 S 6 -dashed
 I 90 10 5 5 8 -image.png
 ";
-        var result = XDotParser.ParseXDot(testcase);
+        var result = XDotParser.ParseXDot(testcase, CoordinateSystem.BottomLeft, 0);
         Assert.AreEqual(14, result.Count);
 
     }
@@ -38,9 +38,9 @@ I 90 10 5 5 8 -image.png
         RootGraph root = Utils.CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
 
-        nodeA.SafeSetAttribute("shape", "record", "");
-        // FIXNOW: document that newlines are not supported in record labels
-        nodeA.SafeSetAttribute("label", "1|{2\n3}", "\\N");
+        nodeA.SetAttribute("shape", "record");
+        // New lines in record labels are ignored by Graphviz
+        nodeA.SetAttribute("label", "1|{2\n3}");
 
         var xdotGraph = root.CreateLayout();
         var xNodeA = xdotGraph.GetNode("A");
@@ -56,9 +56,9 @@ I 90 10 5 5 8 -image.png
     {
         RootGraph root = Utils.CreateUniqueTestGraph();
         SubGraph cluster = root.GetOrAddSubgraph("cluster_1");
-        cluster.SafeSetAttribute("label", "1\n2", "");
+        cluster.SetAttribute("label", "1\n2");
         Node nodeA = cluster.GetOrAddNode("A");
-        nodeA.SafeSetAttribute("label", "a\nb", "");
+        nodeA.SetAttribute("label", "a\nb");
 
         var xdotGraph = root.CreateLayout();
 
@@ -78,17 +78,16 @@ I 90 10 5 5 8 -image.png
         RootGraph root = Utils.CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
 
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}", "\\N");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
 
-        var xdotGraph = root.CreateLayout();
+        var xdotGraph = root.CreateLayout(coordinateSystem: CoordinateSystem.TopLeft);
 
         var xNodeA = xdotGraph.GetNode("A");
         var rects = xNodeA.GetRecordRectangles().ToList();
 
-        // Because Graphviz uses a lower-left originated coordinate system, we need to flip the y coordinates
-        Utils.AssertOrder(rects, r => (r.Left, -r.Top));
+        Utils.AssertOrder(rects, r => (r.Origin.X, r.Origin.Y));
         Assert.That(rects.Count, Is.EqualTo(9));
 
         // Test xdot translation
@@ -100,13 +99,24 @@ I 90 10 5 5 8 -image.png
     {
         RootGraph root = Utils.CreateUniqueTestGraph();
         Node nodeA = root.GetOrAddNode("A");
-        nodeA.SafeSetAttribute("shape", "record", "");
-        nodeA.SafeSetAttribute("label", "||||", "");
+        nodeA.SetAttribute("shape", "record");
+        nodeA.SetAttribute("label", "||||");
 
         var xdotGraph = root.CreateLayout();
 
         var xNodeA = xdotGraph.GetNode("A");
         var rects = xNodeA.GetRecordRectangles().ToList();
         Assert.That(rects.Count, Is.EqualTo(5));
+    }
+
+    [Test()]
+    public void TestCoordinateTransformation()
+    {
+        RootGraph root = Utils.CreateUniqueTestGraph();
+        Node nodeA = root.GetOrAddNode("A");
+        var xdotGraph = root.CreateLayout(coordinateSystem: CoordinateSystem.TopLeft);
+        // Check that translating back gets us the old bounding box
+        var translatedBack = xdotGraph.GetBoundingBox().ForCoordSystem(CoordinateSystem.BottomLeft, xdotGraph.RawMaxY());
+        Assert.AreEqual(translatedBack, xdotGraph.RawBoundingBox());
     }
 }

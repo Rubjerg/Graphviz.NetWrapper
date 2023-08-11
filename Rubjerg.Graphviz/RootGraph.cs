@@ -5,6 +5,9 @@ using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz;
 
+/// <summary>
+/// Strict means that there can be at most one edge between any two nodes.
+/// </summary>
 public enum GraphType
 {
     Directed = 0,
@@ -20,7 +23,17 @@ public enum GraphType
 public class RootGraph : Graph
 {
     private long _added_pressure = 0;
-    protected RootGraph(IntPtr ptr) : base(ptr, null) { }
+
+    public CoordinateSystem CoordinateSystem { get; }
+    /// <summary>
+    /// Contains any warnings that Graphviz generated during computation of the layout.
+    /// </summary>
+    public string Warnings { get; internal set; }
+
+    protected RootGraph(IntPtr ptr, CoordinateSystem coordinateSystem) : base(ptr, null)
+    {
+        CoordinateSystem = coordinateSystem;
+    }
     ~RootGraph()
     {
         if (_added_pressure > 0)
@@ -54,11 +67,11 @@ public class RootGraph : Graph
     /// The name is not interpreted by Graphviz,
     /// except it is recorded and preserved when the graph is written as a file
     /// </param>
-    public static RootGraph CreateNew(GraphType graphtype, string name = null)
+    public static RootGraph CreateNew(GraphType graphtype, string name = null, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
         name = NameString(name);
         var ptr = Rjagopen(name, (int)graphtype);
-        return new RootGraph(ptr);
+        return new RootGraph(ptr, coordinateSystem);
     }
 
     public static RootGraph FromDotFile(string filename)
@@ -86,9 +99,9 @@ public class RootGraph : Graph
         return result;
     }
 
-    public static RootGraph FromDotString(string graph)
+    public static RootGraph FromDotString(string graph, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
-        return FromDotString(graph, ptr => new RootGraph(ptr));
+        return FromDotString(graph, ptr => new RootGraph(ptr, coordinateSystem));
     }
 
     public void ConvertToUndirectedGraph()

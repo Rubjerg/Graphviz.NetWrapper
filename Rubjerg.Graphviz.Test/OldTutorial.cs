@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using System.Drawing;
 using System.Linq;
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -69,27 +68,22 @@ public class OldTutorial
 
         // Or programatically read out the layout attributes
         Node nodeA = root.GetNode("A");
-        PointF position = nodeA.GetPosition();
+        PointD position = nodeA.GetPosition();
         Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+}", position.ToString());
 
         // Like a bounding box of an object
-        RectangleF nodeboundingbox = nodeA.GetBoundingBox();
-        Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", nodeboundingbox.ToString());
+        RectangleD nodeboundingbox = nodeA.GetBoundingBox();
+        Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+, Width=[\d.]+, Height=[\d.]+}", nodeboundingbox.ToString());
 
         // Or splines between nodes
         Node nodeB = root.GetNode("B");
         Edge edge = root.GetEdge(nodeA, nodeB, "Some edge name");
-        PointF[] spline = edge.GetFirstSpline();
+        PointD[] spline = edge.GetFirstSpline();
         string splineString = string.Join(", ", spline.Select(p => p.ToString()));
         string expectedSplinePattern =
             @"{X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+},"
             + @" {X=[\d.]+, Y=[\d.]+}, {X=[\d.]+, Y=[\d.]+}";
         Utils.AssertPattern(expectedSplinePattern, splineString);
-
-        GraphvizLabel nodeLabel = nodeA.GetLabel();
-        Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}",
-            nodeLabel.BoundingBox().ToString());
-        Utils.AssertPattern(@"Times-Roman", nodeLabel.FontName().ToString());
 
         // Once all layout information is obtained from the graph, the resources should be
         // reclaimed. To do this, the application should call the cleanup routine associated
@@ -137,10 +131,10 @@ public class OldTutorial
         root.ComputeLayout();
 
         SubGraph cluster = root.GetSubgraph("cluster_1");
-        RectangleF clusterbox = cluster.GetBoundingBox();
-        RectangleF rootgraphbox = root.GetBoundingBox();
-        Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", clusterbox.ToString());
-        Utils.AssertPattern(@"{X=[\d.]+,Y=[\d.]+,Width=[\d.]+,Height=[\d.]+}", rootgraphbox.ToString());
+        RectangleD clusterbox = cluster.GetBoundingBox();
+        RectangleD rootgraphbox = root.GetBoundingBox();
+        Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+, Width=[\d.]+, Height=[\d.]+}", clusterbox.ToString());
+        Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+, Width=[\d.]+, Height=[\d.]+}", rootgraphbox.ToString());
     }
 
     [Test, Order(4)]
