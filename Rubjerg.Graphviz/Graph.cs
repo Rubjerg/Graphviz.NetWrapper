@@ -180,6 +180,7 @@ public class Graph : CGraphThing
     /// Attributes with the empty string as default are not correctly exported.
     /// https://gitlab.com/graphviz/graphviz/-/issues/1887
     /// </summary>
+    /// <returns>string with unix line endings</returns>
     public string ToDotString()
     {
         return Rjagmemwrite(_ptr);
@@ -600,10 +601,24 @@ public class Graph : CGraphThing
         _ = GraphvizCommand.Exec(this, format: format, filepath, engine: engine);
     }
 
+    private byte[] ToBytes(string format, string engine)
+    {
+        var (stdout, _) = GraphvizCommand.Exec(this, format: format, engine: engine);
+        return stdout;
+    }
+
+    public void ToXDotFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "xdot", engine);
     public void ToSvgFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "svg", engine);
     public void ToPngFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "png", engine);
     public void ToPdfFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "pdf", engine);
     public void ToPsFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "ps", engine);
+
+    /// <returns>string with unix line endings</returns>
+    public string ToSvgString(string engine = LayoutEngines.Dot) => GraphvizCommand.ConvertBytesToString(ToBytes("svg", engine));
+    public byte[] ToPngBytes(string engine = LayoutEngines.Dot) => ToBytes("png", engine);
+    public byte[] ToPdfBytes(string engine = LayoutEngines.Dot) => ToBytes("pdf", engine);
+    public byte[] ToPsBytes(string engine = LayoutEngines.Dot) => ToBytes("ps", engine);
+
     #endregion
 
 

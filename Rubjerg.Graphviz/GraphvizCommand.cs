@@ -13,9 +13,21 @@ public class GraphvizCommand
     public static RootGraph CreateLayout(Graph input, string engine = LayoutEngines.Dot, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
         var (stdout, stderr) = Exec(input, engine: engine);
-        var resultGraph = RootGraph.FromDotString(stdout, coordinateSystem);
+        var stdoutStr = ConvertBytesToString(stdout);
+        var resultGraph = RootGraph.FromDotString(stdoutStr, coordinateSystem);
         resultGraph.Warnings = stderr;
         return resultGraph;
+    }
+
+    public static string ConvertBytesToString(byte[] data)
+    {
+        using (MemoryStream ms = new MemoryStream(data))
+        using (StreamReader reader = new StreamReader(ms, true))
+        {
+            // Just to be safe, make sure the input has unix line endings. Graphviz does not properly support
+            // windows line endings passed to stdin when it comes to attribute line continuations.
+            return reader.ReadToEnd().Replace("\r\n", "\n");
+        }
     }
 
     /// <summary>
@@ -23,7 +35,7 @@ public class GraphvizCommand
     /// </summary>
     /// <exception cref="ApplicationException">When the Graphviz process did not return successfully</exception>
     /// <returns>stderr may contain warnings</returns>
-    public static (string stdout, string stderr) Exec(Graph input, string format = "xdot", string outputPath = null, string engine = LayoutEngines.Dot)
+    public static (byte[] stdout, string stderr) Exec(Graph input, string format = "xdot", string outputPath = null, string engine = LayoutEngines.Dot)
     {
         string exeName = "dot.exe";
         string arguments = $"-T{format} -K{engine}";
@@ -56,19 +68,22 @@ public class GraphvizCommand
 
         // Write to stdin
         using (StreamWriter sw = process.StandardInput)
-            sw.WriteLine(inputToStdin);
+            sw.Write(inputToStdin);
 
-        // Read from stdout
-        string stdout;
-        using (StreamReader sr = process.StandardOutput)
-            stdout = sr.ReadToEnd()
-                .Replace("\r\n", "\n"); // File operations do this automatically, but stream operations do not
+        // Read from stdout, can be binary output such as pdf
+        byte[] stdout;
+        using (MemoryStream memoryStream = new MemoryStream())
+        {
+            process.StandardOutput.BaseStream.CopyTo(memoryStream);
+            stdout = memoryStream.ToArray();
+        }
 
         // Read from stderr
         string stderr;
         using (StreamReader sr = process.StandardError)
-            stderr = sr.ReadToEnd()
-                .Replace("\r\n", "\n"); // File operations do this automatically, but stream operations do not
+            // Just to be safe, make sure the input has unix line endings. Graphviz does not properly support
+            // windows line endings passed to stdin when it comes to attribute line continuations.
+            stderr = sr.ReadToEnd().Replace("\r\n", "\n");
 
         process.WaitForExit();
 
