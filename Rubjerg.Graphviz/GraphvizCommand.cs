@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 namespace Rubjerg.Graphviz;
 
@@ -16,6 +17,7 @@ public class GraphvizCommand
         return resultGraph;
     }
 
+    // FIXNOW: expose stderr and return code too
     public static string Exec(Graph input, string format = "xdot", string outputPath = null, string engine = LayoutEngines.Dot)
     {
         string exeName = "dot.exe";
@@ -27,7 +29,9 @@ public class GraphvizCommand
         string inputToStdin = input.ToDotString();
 
         // Get the location of the currently executing DLL
-        string exeDirectory = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
+        // https://learn.microsoft.com/en-us/dotnet/api/system.reflection.assembly.codebase?view=net-5.0
+        string exeDirectory = AppDomain.CurrentDomain.RelativeSearchPath
+            ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         // Construct the path to the executable
         string exePath = Path.Combine(exeDirectory, exeName);
