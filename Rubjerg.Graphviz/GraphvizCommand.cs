@@ -81,8 +81,7 @@ public class GraphvizCommand
         // Read from stderr
         string stderr;
         using (StreamReader sr = process.StandardError)
-            // Just to be safe, make sure the input has unix line endings. Graphviz does not properly support
-            // windows line endings passed to stdin when it comes to attribute line continuations.
+            // Let's use unix line endings for consistency with stdout
             stderr = sr.ReadToEnd().Replace("\r\n", "\n");
 
         process.WaitForExit();
