@@ -29,8 +29,22 @@ public class TestInterop
 
         Assert.AreEqual("", ReturnEmptyString());
         Assert.AreEqual("hello", ReturnHello());
+        Assert.AreEqual("©", ReturnCopyRight());
         Assert.AreEqual("1", EchoString("1"));
         Assert.AreEqual("", EchoString(""));
         Assert.AreEqual("hello", EchoString("hello"));
+        Assert.AreEqual("©", EchoString("©"));
+    }
+
+    [Test()]
+    public void TestOutputEncoding()
+    {
+        var root = Utils.CreateUniqueTestGraph();
+        var nodeA = root.GetOrAddNode("©");
+        var dotStr = root.ToDotString();
+        Assert.IsTrue(dotStr.Contains("©"));
+        var svgStr = root.ToSvgString();
+        Assert.IsTrue(svgStr.Contains("©"));
+        // FIXNOW: test with files
     }
 }

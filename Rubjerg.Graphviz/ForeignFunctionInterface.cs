@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace Rubjerg.Graphviz;
 
+using static Marshaling;
+
 /// <summary>
 /// Graphviz is thread unsafe, so we wrap all function calls inside a lock to make sure we don't run into
 /// issues caused by multiple threads accessing the graphviz datastructures (like the GC executing a destructor).
@@ -29,7 +31,7 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            return gvLayout(gvc, graph, engine);
+            return MarshalToUtf8(engine, enginePtr => gvLayout(gvc, graph, enginePtr));
         }
     }
     public static int GvFreeLayout(IntPtr gvc, IntPtr graph)
@@ -43,21 +45,24 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            return gvRender(gvc, graph, format, @out);
+            return MarshalToUtf8(format, formatPtr => gvRender(gvc, graph, formatPtr, @out));
         }
     }
     public static int GvRenderFilename(IntPtr gvc, IntPtr graph, string format, string filename)
     {
         lock (_mutex)
         {
-            return gvRenderFilename(gvc, graph, format, filename);
+            return
+                MarshalToUtf8(format, formatPtr =>
+                MarshalToUtf8(filename, filenamePtr =>
+                gvRenderFilename(gvc, graph, formatPtr, filenamePtr)));
         }
     }
     public static IntPtr Agnode(IntPtr graph, string name, int create)
     {
         lock (_mutex)
         {
-            return agnode(graph, name, create);
+            return MarshalToUtf8(name, namePtr => agnode(graph, namePtr, create));
         }
     }
     public static int Agdegree(IntPtr graph, IntPtr node, int inset, int outset)
@@ -113,15 +118,21 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            agattr(graph, type, name, deflt);
+            MarshalToUtf8(deflt, defltPtr =>
+            MarshalToUtf8(name, namePtr =>
+            agattr(graph, type, namePtr, defltPtr)));
         }
     }
     public static void AgattrHtml(IntPtr graph, int type, string name, string deflt)
     {
         lock (_mutex)
         {
-            var ptr = agstrdup_html(agroot(graph), deflt);
-            agattr(graph, type, name, ptr);
+            MarshalToUtf8(name, namePtr =>
+            MarshalToUtf8(deflt, defltPtr =>
+            {
+                var htmlPtr = agstrdup_html(agroot(graph), defltPtr);
+                agattr(graph, type, namePtr, htmlPtr);
+            }));
         }
     }
 
@@ -129,7 +140,9 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            agset(obj, name, value);
+            MarshalToUtf8(name, namePtr =>
+            MarshalToUtf8(value, valuePtr =>
+            agset(obj, namePtr, valuePtr)));
         }
     }
 
@@ -137,8 +150,12 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            var ptr = agstrdup_html(agroot(obj), value);
-            agset(obj, name, ptr);
+            MarshalToUtf8(name, namePtr =>
+            MarshalToUtf8(value, valuePtr =>
+            {
+                var htmlPtr = agstrdup_html(agroot(obj), valuePtr);
+                agset(obj, namePtr, htmlPtr);
+            }));
         }
     }
 
@@ -146,15 +163,23 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            agsafeset(obj, name, val, deflt);
+            MarshalToUtf8(name, namePtr =>
+            MarshalToUtf8(val, valPtr =>
+            MarshalToUtf8(deflt, defltPtr =>
+            agsafeset(obj, namePtr, valPtr, defltPtr))));
         }
     }
     public static void AgsafesetHtml(IntPtr obj, string name, string val, string deflt)
     {
         lock (_mutex)
         {
-            var ptr = agstrdup_html(agroot(obj), deflt);
-            agsafeset(obj, name, val, ptr);
+            MarshalToUtf8(name, namePtr =>
+            MarshalToUtf8(val, valPtr =>
+            MarshalToUtf8(deflt, defltPtr =>
+            {
+                var htmlPtr = agstrdup_html(agroot(obj), defltPtr);
+                agsafeset(obj, namePtr, valPtr, htmlPtr);
+            })));
         }
     }
     public static IntPtr Agroot(IntPtr obj)
@@ -203,7 +228,7 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            return agedge(graph, tail, head, name, create);
+            return MarshalToUtf8(name, namePtr => agedge(graph, tail, head, namePtr, create));
         }
     }
     public static IntPtr Agmkin(IntPtr edge)
@@ -266,7 +291,7 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            return agsubg(graph, name, create);
+            return MarshalToUtf8(name, namePtr => agsubg(graph, namePtr, create));
         }
     }
     public static IntPtr Agfstsubg(IntPtr graph)
@@ -329,10 +354,8 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            var ptr = rj_agmemwrite(graph);
-            var result = Marshal.PtrToStringAnsi(ptr);
-            free_str(ptr);
-            return result;
+            var strPtr = rj_agmemwrite(graph);
+            return MarshalFromUtf8(strPtr, true);
         }
     }
     public static IntPtr GraphLabel(IntPtr node)
@@ -346,14 +369,14 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            return Marshal.PtrToStringAnsi(agget(obj, name));
+            return MarshalToUtf8(name, namePtr => MarshalFromUtf8(agget(obj, namePtr), false));
         }
     }
     public static string Rjagnameof(IntPtr obj)
     {
         lock (_mutex)
         {
-            return Marshal.PtrToStringAnsi(agnameof(obj));
+            return MarshalFromUtf8(agnameof(obj), false);
         }
     }
     public static void CloneAttributeDeclarations(IntPtr graphfrom, IntPtr graphto)
@@ -367,7 +390,7 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            return Marshal.PtrToStringAnsi(rj_sym_key(sym));
+            return MarshalFromUtf8(rj_sym_key(sym), false);
         }
     }
     public static double LabelX(IntPtr label)
@@ -402,7 +425,7 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            return Marshal.PtrToStringAnsi(label_text(label));
+            return MarshalFromUtf8(label_text(label), false);
         }
     }
     public static double LabelFontsize(IntPtr label)
@@ -416,7 +439,7 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            return Marshal.PtrToStringAnsi(label_fontname(label));
+            return MarshalFromUtf8(label_fontname(label), false);
         }
     }
     public static double NodeX(IntPtr node)
@@ -465,35 +488,33 @@ internal static class ForeignFunctionInterface
     {
         lock (_mutex)
         {
-            return rj_agmemread(input);
+            return MarshalToUtf8(input, rj_agmemread);
         }
     }
     public static IntPtr Rjagopen(string name, int graphtype)
     {
         lock (_mutex)
         {
-            return rj_agopen(name, graphtype);
+            return MarshalToUtf8(name, namePtr => rj_agopen(namePtr, graphtype));
         }
     }
 
-    [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void free_str(IntPtr ptr);
-
+    // FIXNOW remove all superfluous charset stuff
     [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr gvContext();
     [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern int gvFreeContext(IntPtr gvc);
     [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern int gvLayout(IntPtr gvc, IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string engine);
+    private static extern int gvLayout(IntPtr gvc, IntPtr graph, IntPtr engine);
     [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern int gvFreeLayout(IntPtr gvc, IntPtr graph);
     [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern int gvRender(IntPtr gvc, IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string format, IntPtr @out);
+    private static extern int gvRender(IntPtr gvc, IntPtr graph, IntPtr format, IntPtr @out);
     [DllImport("gvc.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern int gvRenderFilename(IntPtr gvc, IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string format, [MarshalAs(UnmanagedType.LPStr)] string filename);
+    private static extern int gvRenderFilename(IntPtr gvc, IntPtr graph, IntPtr format, IntPtr filename);
 
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr agnode(IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string name, int create);
+    private static extern IntPtr agnode(IntPtr graph, IntPtr name, int create);
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern int agdegree(IntPtr graph, IntPtr node, int inset, int outset);
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -510,19 +531,13 @@ internal static class ForeignFunctionInterface
     private static extern IntPtr agnxtedge(IntPtr graph, IntPtr edge, IntPtr node);
 
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void agattr(IntPtr graph, int type, [MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string deflt);
+    private static extern void agattr(IntPtr graph, int type, IntPtr name, IntPtr deflt);
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void agattr(IntPtr graph, int type, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr deflt);
-    [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void agset(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string value);
-    [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void agset(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr value);
+    private static extern void agset(IntPtr obj, IntPtr name, IntPtr value);
     [DllImport("cgraph.dll", SetLastError = false, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr agstrdup_html(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string html);
+    private static extern IntPtr agstrdup_html(IntPtr obj, IntPtr html);
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void agsafeset(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string val, [MarshalAs(UnmanagedType.LPStr)] string deflt);
-    [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void agsafeset(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string val, IntPtr deflt);
+    private static extern void agsafeset(IntPtr obj, IntPtr name, IntPtr val, IntPtr deflt);
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agroot(IntPtr obj);
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -538,7 +553,7 @@ internal static class ForeignFunctionInterface
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr rj_aghead(IntPtr node);
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr agedge(IntPtr graph, IntPtr tail, IntPtr head, [MarshalAs(UnmanagedType.LPStr)] string name, int create);
+    private static extern IntPtr agedge(IntPtr graph, IntPtr tail, IntPtr head, IntPtr name, int create);
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr rj_agmkin(IntPtr edge);
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -559,7 +574,7 @@ internal static class ForeignFunctionInterface
     private static extern int agcontains(IntPtr graph, IntPtr obj);
 
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr agsubg(IntPtr graph, [MarshalAs(UnmanagedType.LPStr)] string name, int create);
+    private static extern IntPtr agsubg(IntPtr graph, IntPtr name, int create);
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agfstsubg(IntPtr graph);
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -584,7 +599,7 @@ internal static class ForeignFunctionInterface
     private static extern IntPtr graph_label(IntPtr node);
 
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr agget(IntPtr obj, [MarshalAs(UnmanagedType.LPStr)] string name);
+    private static extern IntPtr agget(IntPtr obj, IntPtr name);
     [DllImport("cgraph.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agnameof(IntPtr obj);
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -621,9 +636,9 @@ internal static class ForeignFunctionInterface
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern void convert_to_undirected(IntPtr graph);
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr rj_agmemread([MarshalAs(UnmanagedType.LPStr)] string input);
+    private static extern IntPtr rj_agmemread(IntPtr input);
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr rj_agopen([MarshalAs(UnmanagedType.LPStr)] string name, int graphtype);
+    private static extern IntPtr rj_agopen(IntPtr name, int graphtype);
 
 
     /// <summary>
@@ -686,21 +701,25 @@ internal static class ForeignFunctionInterface
     public static extern TestEnum echo_enum(TestEnum e);
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr echo_string([MarshalAs(UnmanagedType.LPStr)] string str);
+    private static extern IntPtr echo_string(IntPtr str);
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr return_empty_string();
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr return_hello();
+    [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr return_copyright();
 
     public static string EchoString(string str)
     {
-        // echo_string gives us ownership over the string, which means that we have to free it.
-        var ptr = echo_string(str);
-        var result = Marshal.PtrToStringAnsi(ptr);
-        free_str(ptr);
-        return result;
+        return MarshalToUtf8(str, ptr =>
+        {
+            var returnPtr = echo_string(ptr);
+            // echo_string gives us ownership over the string, which means that we have to free it.
+            return MarshalFromUtf8(returnPtr, true);
+        });
     }
-    public static string ReturnEmptyString() => Marshal.PtrToStringAnsi(return_empty_string());
-    public static string ReturnHello() => Marshal.PtrToStringAnsi(return_hello());
+    public static string ReturnEmptyString() => MarshalFromUtf8(return_empty_string(), false);
+    public static string ReturnHello() => MarshalFromUtf8(return_hello(), false);
+    public static string ReturnCopyRight() => MarshalFromUtf8(return_copyright(), false);
     #endregion
 }

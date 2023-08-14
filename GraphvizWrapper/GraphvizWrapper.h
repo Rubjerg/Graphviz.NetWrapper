@@ -159,6 +159,7 @@ extern "C" {
     __declspec(dllexport) char* echo_string(char* str);
     __declspec(dllexport) char* return_empty_string();
     __declspec(dllexport) char* return_hello();
+    __declspec(dllexport) char* return_copyright();
     __declspec(dllexport) int stackoverflow_repro();
     __declspec(dllexport) int missing_label_repro();
     __declspec(dllexport) int test_agread();
