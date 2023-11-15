@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace Rubjerg.Graphviz;
 
@@ -64,7 +65,11 @@ public class GraphvizCommand
         process.StartInfo.RedirectStandardInput = true;
         process.StartInfo.RedirectStandardError = true;
 
+        StringBuilder stderr = new StringBuilder();
+        process.ErrorDataReceived += (_, e) => stderr.AppendLine(e.Data);
+
         _ = process.Start();
+        process.BeginErrorReadLine();
 
         // Write to stdin
         using (StreamWriter sw = process.StandardInput)
@@ -78,12 +83,6 @@ public class GraphvizCommand
             stdout = memoryStream.ToArray();
         }
 
-        // Read from stderr
-        string stderr;
-        using (StreamReader sr = process.StandardError)
-            // Let's use unix line endings for consistency with stdout
-            stderr = sr.ReadToEnd().Replace("\r\n", "\n");
-
         process.WaitForExit();
 
         if (process.ExitCode != 0)
@@ -94,7 +93,8 @@ public class GraphvizCommand
         else
         {
             // Process completed successfully.
-            return (stdout, stderr);
+            // Let's use unix line endings for consistency with stdout
+            return (stdout, stderr.ToString().Replace("\r\n", "\n"));
         }
     }
 }
