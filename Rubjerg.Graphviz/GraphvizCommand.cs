@@ -64,6 +64,9 @@ public class GraphvizCommand
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardInput = true;
         process.StartInfo.RedirectStandardError = true;
+        // In some situations starting a new process also starts a new console window, which is distracting and causes slowdown.
+        // This flag prevents this from happening.
+        process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
         StringBuilder stderr = new StringBuilder();
         process.ErrorDataReceived += (_, e) => stderr.AppendLine(e.Data);
