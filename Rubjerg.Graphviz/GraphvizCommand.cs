@@ -42,7 +42,7 @@ public class GraphvizCommand
         string arguments = $"-T{format} -K{engine}";
         if (outputPath != null)
         {
-            arguments = $"{arguments} -o{outputPath}";
+            arguments = $"{arguments} -o\"{outputPath}\"";
         }
         string inputToStdin = input.ToDotString();
 

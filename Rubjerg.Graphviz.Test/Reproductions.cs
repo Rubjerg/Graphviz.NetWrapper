@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -18,6 +19,15 @@ public class Reproductions
     {
         // Store the test directory.
         _testDir = TestContext.CurrentContext.TestDirectory;
+    }
+
+    [Test()]
+    public void ExportPathWithSpaces()
+    {
+        RootGraph root = RootGraph.CreateNew(GraphType.Directed, "");
+        _ = root.GetOrAddNode("A");
+        root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/name with spaces.dot");
+        root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/name with spaces.svg");
     }
 
     [Test()]
