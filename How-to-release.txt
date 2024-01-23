@@ -3,6 +3,7 @@
 - Upload the generated .nupkg file to nuget.org.
   - Located at Rubjerg.Graphviz\bin\x64\Release\Rubjerg.Graphviz.x.y.z.nupkg
   - Upload to https://www.nuget.org/packages/manage/upload
+- Make a cup of coffee
 - Update the version of the referenced Nuget package in the NugetTest project to the package that was just uploaded and run the test.
 - If the build and test succeeds we are ready to release. Commit the changes, and push this to github.
 - In GitHub, add a new release of the just pushed commit at https://github.com/Rubjerg/Graphviz.NetWrapper/releases.
