@@ -6,4 +6,5 @@
 - Make a cup of coffee
 - Update the version of the referenced Nuget package in the NugetTest project to the package that was just uploaded and run the test.
 - If the build and test succeeds we are ready to release. Commit the changes, and push this to github.
+- Add a new version tag (git tag vx.y.z) and push this too (git push --tags)
 - In GitHub, add a new release of the just pushed commit at https://github.com/Rubjerg/Graphviz.NetWrapper/releases.
