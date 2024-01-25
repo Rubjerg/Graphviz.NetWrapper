@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -18,12 +18,6 @@
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\GraphvizWrapper\GraphvizWrapper.vcxproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>
 
   <ItemGroup>
     <None Update="*.dll;*.lib;*.pdb;*.exp;config6">

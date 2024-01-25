@@ -1,5 +1,6 @@
-﻿using System.Linq;
+using System.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Rubjerg.Graphviz.NugetTest
 {
@@ -20,11 +21,11 @@ digraph test {
 }
 ");
             var A = root.GetNode("A");
-            Assert.AreEqual(3, A.EdgesOut().Count());
+            ClassicAssert.AreEqual(3, A.EdgesOut().Count());
 
             var B = root.GetNode("B");
             _ = root.GetOrAddEdge(A, B, "");
-            Assert.AreEqual(4, A.EdgesOut().Count());
+            ClassicAssert.AreEqual(4, A.EdgesOut().Count());
         }
     }
 }

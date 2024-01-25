@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -58,12 +59,12 @@ namespace Rubjerg.Graphviz.Test
 
         public static void AssertPattern(string expectedRegex, string actual)
         {
-            Assert.IsTrue(Regex.IsMatch(actual, expectedRegex));
+            ClassicAssert.IsTrue(Regex.IsMatch(actual, expectedRegex));
         }
 
         public static void AssertOrder<T, TKey>(this IEnumerable<T> source, Func<T, TKey> keySelector)
         {
-            Assert.IsTrue(IsOrdered(source, keySelector));
+            ClassicAssert.IsTrue(IsOrdered(source, keySelector));
         }
 
         public static bool IsOrdered<T, TKey>(this IEnumerable<T> source, Func<T, TKey> keySelector)

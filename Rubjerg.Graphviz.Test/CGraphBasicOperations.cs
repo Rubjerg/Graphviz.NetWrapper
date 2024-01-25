@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Rubjerg.Graphviz.Test
 {
@@ -23,20 +24,20 @@ digraph test {
             var edges = root.Edges().ToList();
             var names = edges.Select(e => e.GetName());
             // The attribute 'key' maps to the edgename
-            Assert.IsTrue(names.Any(n => n == "edgename"));
-            Assert.IsTrue(names.All(n => n == "edgename" || string.IsNullOrEmpty(n)));
+            ClassicAssert.IsTrue(names.Any(n => n == "edgename"));
+            ClassicAssert.IsTrue(names.All(n => n == "edgename" || string.IsNullOrEmpty(n)));
 
             // However, it is strange that the other two edges both seem to have the same name, namely ""
             // According to the documentation, the name is used to distinguish between multi-edges
             var A = root.GetNode("A");
             var B = root.GetNode("B");
-            Assert.AreEqual(3, A.EdgesOut().Count());
+            ClassicAssert.AreEqual(3, A.EdgesOut().Count());
 
             // The documentation seem to be correct for edges that are added through the C interface
             _ = root.GetOrAddEdge(A, B, "");
-            Assert.AreEqual(4, A.EdgesOut().Count());
+            ClassicAssert.AreEqual(4, A.EdgesOut().Count());
             _ = root.GetOrAddEdge(A, B, "");
-            Assert.AreEqual(4, A.EdgesOut().Count());
+            ClassicAssert.AreEqual(4, A.EdgesOut().Count());
         }
 
         [Test()]
@@ -45,15 +46,15 @@ digraph test {
             RootGraph root = Utils.CreateUniqueTestGraph();
             Node n1 = root.GetOrAddNode("1");
             Node.IntroduceAttribute(root, "test", "foo");
-            Assert.AreEqual("foo", n1.GetAttribute("test"));
+            ClassicAssert.AreEqual("foo", n1.GetAttribute("test"));
             n1.SetAttribute("test", "bar");
-            Assert.AreEqual("bar", n1.GetAttribute("test"));
+            ClassicAssert.AreEqual("bar", n1.GetAttribute("test"));
 
             RootGraph root2 = Utils.CreateUniqueTestGraph();
             Node n2 = root2.GetOrAddNode("2");
-            Assert.AreEqual(null, n2.GetAttribute("test"));
-            Assert.AreEqual(0, n1.CopyAttributesTo(n2));
-            Assert.AreEqual("bar", n2.GetAttribute("test"));
+            ClassicAssert.AreEqual(null, n2.GetAttribute("test"));
+            ClassicAssert.AreEqual(0, n1.CopyAttributesTo(n2));
+            ClassicAssert.AreEqual("bar", n2.GetAttribute("test"));
         }
 
         [Test()]
@@ -71,24 +72,24 @@ digraph test {
             Edge tailin = root.GetOrAddEdge(other, tail, "tailin");
             Edge headin = root.GetOrAddEdge(other, head, "headin");
 
-            Assert.IsTrue(root.Equals(root.MyRootGraph));
-            Assert.IsTrue(root.Equals(tail.MyRootGraph));
-            Assert.IsTrue(root.Equals(edge.MyRootGraph));
+            ClassicAssert.IsTrue(root.Equals(root.MyRootGraph));
+            ClassicAssert.IsTrue(root.Equals(tail.MyRootGraph));
+            ClassicAssert.IsTrue(root.Equals(edge.MyRootGraph));
 
-            Assert.AreEqual(3, tail.TotalDegree());
-            Assert.AreEqual(3, head.TotalDegree());
-            Assert.AreEqual(3, root.Nodes().Count());
+            ClassicAssert.AreEqual(3, tail.TotalDegree());
+            ClassicAssert.AreEqual(3, head.TotalDegree());
+            ClassicAssert.AreEqual(3, root.Nodes().Count());
 
             root.Delete(edge);
 
-            Assert.AreEqual(2, tail.TotalDegree());
-            Assert.AreEqual(2, head.TotalDegree());
-            Assert.AreEqual(3, root.Nodes().Count());
+            ClassicAssert.AreEqual(2, tail.TotalDegree());
+            ClassicAssert.AreEqual(2, head.TotalDegree());
+            ClassicAssert.AreEqual(3, root.Nodes().Count());
 
             root.Delete(tail);
 
-            Assert.AreEqual(2, root.Nodes().Count());
-            Assert.AreEqual(2, other.TotalDegree());
+            ClassicAssert.AreEqual(2, root.Nodes().Count());
+            ClassicAssert.AreEqual(2, other.TotalDegree());
         }
 
         [Test()]
@@ -107,9 +108,9 @@ digraph test {
             Edge mergein = root.GetOrAddEdge(other, merge, "mergein");
             Edge targetin = root.GetOrAddEdge(other, target, "targetin");
 
-            Assert.AreEqual(6, merge.TotalDegree());
-            Assert.AreEqual(4, target.TotalDegree());
-            Assert.AreEqual(3, root.Nodes().Count());
+            ClassicAssert.AreEqual(6, merge.TotalDegree());
+            ClassicAssert.AreEqual(4, target.TotalDegree());
+            ClassicAssert.AreEqual(3, root.Nodes().Count());
 
             //root.ComputeDotLayout();
             //root.ToSvgFile("dump1.svg");
@@ -123,11 +124,11 @@ digraph test {
             //root.FreeLayout();
             //root.ToDotFile("dump2.dot");
 
-            Assert.AreEqual(2, root.Nodes().Count());
-            Assert.AreEqual(3, target.InDegree());
-            Assert.AreEqual(3, target.OutDegree());
-            Assert.AreEqual(2, other.InDegree());
-            Assert.AreEqual(2, other.OutDegree());
+            ClassicAssert.AreEqual(2, root.Nodes().Count());
+            ClassicAssert.AreEqual(3, target.InDegree());
+            ClassicAssert.AreEqual(3, target.OutDegree());
+            ClassicAssert.AreEqual(2, other.InDegree());
+            ClassicAssert.AreEqual(2, other.OutDegree());
         }
 
         [Test()]
@@ -159,9 +160,9 @@ digraph test {
             }
 
 
-            Assert.AreEqual(5, tail.TotalDegree());
-            Assert.AreEqual(5, head.TotalDegree());
-            Assert.AreEqual(3, root.Nodes().Count());
+            ClassicAssert.AreEqual(5, tail.TotalDegree());
+            ClassicAssert.AreEqual(5, head.TotalDegree());
+            ClassicAssert.AreEqual(3, root.Nodes().Count());
 
             Node contraction = root.Contract(contracted, "contraction result");
 
@@ -177,11 +178,11 @@ digraph test {
             }
 
             //Console.Read();
-            Assert.AreEqual(2, root.Nodes().Count());
-            Assert.AreEqual(2, contraction.InDegree());
-            Assert.AreEqual(2, contraction.OutDegree());
-            Assert.AreEqual(2, other.InDegree());
-            Assert.AreEqual(2, other.OutDegree());
+            ClassicAssert.AreEqual(2, root.Nodes().Count());
+            ClassicAssert.AreEqual(2, contraction.InDegree());
+            ClassicAssert.AreEqual(2, contraction.OutDegree());
+            ClassicAssert.AreEqual(2, other.InDegree());
+            ClassicAssert.AreEqual(2, other.OutDegree());
         }
 
     }
