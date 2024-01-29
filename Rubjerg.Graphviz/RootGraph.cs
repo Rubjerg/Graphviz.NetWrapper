@@ -28,7 +28,7 @@ public class RootGraph : Graph
     /// <summary>
     /// Contains any warnings that Graphviz generated during computation of the layout.
     /// </summary>
-    public string Warnings { get; internal set; }
+    public string? Warnings { get; internal set; }
 
     protected RootGraph(IntPtr ptr, CoordinateSystem coordinateSystem) : base(ptr, null)
     {
@@ -67,7 +67,7 @@ public class RootGraph : Graph
     /// The name is not interpreted by Graphviz,
     /// except it is recorded and preserved when the graph is written as a file
     /// </param>
-    public static RootGraph CreateNew(GraphType graphtype, string name = null, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
+    public static RootGraph CreateNew(GraphType graphtype, string? name = null, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
         name = NameString(name);
         var ptr = Rjagopen(name, (int)graphtype);

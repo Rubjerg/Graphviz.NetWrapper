@@ -12,23 +12,25 @@ public static class GraphComparer
         logger("");
 
         bool result = true;
-        var common_nodenames = new List<string>();
+        var common_nodenames = new List<string?>();
         foreach (var node in A.Nodes())
         {
             var othernode = B.GetNode(node.GetName());
-            if (othernode == null)
+            if (othernode is null)
             {
                 logger($"graph B does not contain node {node.GetName()}");
                 result = false;
-                continue;
             }
-            common_nodenames.Add(node.GetName());
+            else
+            {
+                common_nodenames.Add(node.GetName());
+            }
         }
 
         foreach (var node in B.Nodes())
         {
             var othernode = A.GetNode(node.GetName());
-            if (othernode == null)
+            if (othernode is null)
             {
                 logger($"graph A does not contain node {node.GetName()}");
                 result = false;
@@ -45,9 +47,9 @@ public static class GraphComparer
         return result;
     }
 
-    private static bool CheckNode(Graph A, Graph B, Node nA, Node nB, Action<string> logger)
+    private static bool CheckNode(Graph A, Graph B, Node? nA, Node? nB, Action<string> logger)
     {
-        return InnerCheckNode(A, B, nA, nB, logger, "B") & InnerCheckNode(B, A, nA, nB, logger, "A");
+        return nA is not null && nB is not null && InnerCheckNode(A, B, nA, nB, logger, "B") & InnerCheckNode(B, A, nA, nB, logger, "A");
     }
 
     private static bool InnerCheckNode(Graph A, Graph B, Node nA, Node nB, Action<string> logger, string nameOfGraphOfNodeB)

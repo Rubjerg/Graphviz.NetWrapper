@@ -20,15 +20,15 @@ public abstract class CGraphThing : GraphvizThing
     /// Argument root may be null.
     /// In that case, it is assumed this is a RootGraph, and MyRootGraph is set to `this`.
     /// </summary>
-    internal CGraphThing(IntPtr ptr, RootGraph root) : base(ptr)
+    internal CGraphThing(IntPtr ptr, RootGraph? root) : base(ptr)
     {
-        if (root == null)
+        if (root is null)
             MyRootGraph = (RootGraph)this;
         else
             MyRootGraph = root;
     }
 
-    protected static string NameString(string name)
+    protected static string? NameString(string? name)
     {
         // Because graphviz does not properly export empty strings to dot, this opens a can of worms.
         // So we disallow it, and map it onto null.
@@ -40,7 +40,7 @@ public abstract class CGraphThing : GraphvizThing
     /// Identifier for this object. Used to distinghuish multi edges.
     /// Edges can be nameless, and in that case this method returns null.
     /// </summary>
-    public string GetName()
+    public string? GetName()
     {
         return NameString(Rjagnameof(_ptr));
     }
@@ -53,7 +53,7 @@ public abstract class CGraphThing : GraphvizThing
     /// <summary>
     /// Set attribute, and introduce it with the given default if it is not introduced yet.
     /// </summary>
-    public void SafeSetAttribute(string name, string value, string deflt)
+    public void SafeSetAttribute(string name, string? value, string? deflt)
     {
         _ = deflt ?? throw new ArgumentNullException(nameof(deflt));
         Agsafeset(_ptr, name, value, deflt);
@@ -62,7 +62,7 @@ public abstract class CGraphThing : GraphvizThing
     /// <summary>
     /// Set attribute, and introduce it with the empty string if it does not exist yet.
     /// </summary>
-    public void SetAttribute(string name, string value)
+    public void SetAttribute(string name, string? value)
     {
         Agsafeset(_ptr, name, value, "");
     }
@@ -71,7 +71,7 @@ public abstract class CGraphThing : GraphvizThing
     /// Get the attribute value for this object, or the default value of the attribute if no explicit value was set.
     /// If the attribute was not introduced, return null.
     /// </summary>
-    public string GetAttribute(string name)
+    public string? GetAttribute(string name)
     {
         return Agget(_ptr, name);
     }
@@ -79,10 +79,10 @@ public abstract class CGraphThing : GraphvizThing
     /// <summary>
     /// Get the attribute if it was introduced and contains a non-empty value, otherwise return deflt.
     /// </summary>
-    public string SafeGetAttribute(string name, string deflt)
+    public string? SafeGetAttribute(string name, string? deflt)
     {
         if (HasAttribute(name))
-            return GetAttribute(name);
+            return GetAttribute(name)!;
         return deflt;
     }
 
@@ -103,13 +103,13 @@ public abstract class CGraphThing : GraphvizThing
             IntPtr sym = Agnxtattr(MyRootGraph._ptr, kind, IntPtr.Zero);
             while (sym != IntPtr.Zero)
             {
-                string key = ImsymKey(sym);
-                if (HasAttribute(key))
+                string? key = ImsymKey(sym);
+                if (key is not null && HasAttribute(key))
                 {
-                    string value = GetAttribute(key);
+                    string? value = GetAttribute(key);
                     if (!string.IsNullOrEmpty(value))
                     {
-                        attributes[key] = value;
+                        attributes[key] = value!;
                     }
                 }
                 sym = Agnxtattr(MyRootGraph._ptr, kind, sym);

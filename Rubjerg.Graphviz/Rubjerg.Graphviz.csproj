@@ -8,6 +8,7 @@
     <LangVersion>latest</LangVersion>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Nullable>Enable</Nullable>
     <NoWarn>1701;1702;NU5100</NoWarn>
     <Version>2.0.1</Version>
     <Authors>Chiel ten Brinke</Authors>

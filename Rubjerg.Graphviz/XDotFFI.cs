@@ -27,7 +27,7 @@ internal static class XDotFFI
     // Accessors for xdot_image
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr get_name_image(IntPtr img);
-    public static string GetNameImage(IntPtr img) => MarshalFromUtf8(get_name_image(img), false);
+    public static string? GetNameImage(IntPtr img) => MarshalFromUtf8(get_name_image(img), false);
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr get_pos(IntPtr img);
@@ -38,7 +38,7 @@ internal static class XDotFFI
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr get_name_font(IntPtr font);
-    public static string GetNameFont(IntPtr img) => MarshalFromUtf8(get_name_font(img), false);
+    public static string? GetNameFont(IntPtr img) => MarshalFromUtf8(get_name_font(img), false);
 
     // Accessors for xdot_op
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -64,7 +64,7 @@ internal static class XDotFFI
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr get_color(IntPtr op);
-    public static string GetColor(IntPtr op) => MarshalFromUtf8(get_color(op), false);
+    public static string? GetColor(IntPtr op) => MarshalFromUtf8(get_color(op), false);
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr get_grad_color(IntPtr op);
@@ -74,7 +74,7 @@ internal static class XDotFFI
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr get_style(IntPtr op);
-    public static string GetStyle(IntPtr op) => MarshalFromUtf8(get_style(op), false);
+    public static string? GetStyle(IntPtr op) => MarshalFromUtf8(get_style(op), false);
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     public static extern uint get_fontchar(IntPtr op);
@@ -85,7 +85,7 @@ internal static class XDotFFI
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr get_clr(IntPtr clr);
-    public static string GetClr(IntPtr clr) => MarshalFromUtf8(get_clr(clr), false);
+    public static string? GetClr(IntPtr clr) => MarshalFromUtf8(get_clr(clr), false);
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr get_ling(IntPtr clr);
@@ -108,7 +108,7 @@ internal static class XDotFFI
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr get_text_str(IntPtr txt);
-    public static string GetTextStr(IntPtr txt) => MarshalFromUtf8(get_text_str(txt), false);
+    public static string? GetTextStr(IntPtr txt) => MarshalFromUtf8(get_text_str(txt), false);
 
     // Accessors for xdot_linear_grad
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -160,7 +160,7 @@ internal static class XDotFFI
 
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr get_color_stop(IntPtr stop);
-    public static string GetColorStop(IntPtr stop) => MarshalFromUtf8(get_color_stop(stop), false);
+    public static string? GetColorStop(IntPtr stop) => MarshalFromUtf8(get_color_stop(stop), false);
 
     // Accessors for xdot_polyline
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]

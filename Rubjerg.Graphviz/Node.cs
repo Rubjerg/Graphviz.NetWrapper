@@ -13,7 +13,7 @@ public class Node : CGraphThing
     /// </summary>
     internal Node(IntPtr ptr, RootGraph rootgraph) : base(ptr, rootgraph) { }
 
-    internal static Node Get(Graph graph, string name)
+    internal static Node? Get(Graph graph, string? name)
     {
         name = NameString(name);
         IntPtr ptr = Agnode(graph._ptr, name, 0);
@@ -24,7 +24,7 @@ public class Node : CGraphThing
 
     internal static Node GetOrCreate(Graph graph, string name)
     {
-        name = NameString(name);
+        name = NameString(name)!;
         IntPtr ptr = Agnode(graph._ptr, name, 1);
         return new Node(ptr, graph.MyRootGraph);
     }
@@ -45,7 +45,7 @@ public class Node : CGraphThing
         AgattrHtml(root._ptr, 1, name, deflt);
     }
 
-    public IEnumerable<Edge> EdgesOut(Graph graph = null)
+    public IEnumerable<Edge> EdgesOut(Graph? graph = null)
     {
         IntPtr graph_ptr = graph?._ptr ?? MyRootGraph._ptr;
         var current = Agfstout(graph_ptr, _ptr);
@@ -56,7 +56,7 @@ public class Node : CGraphThing
         }
     }
 
-    public IEnumerable<Edge> EdgesIn(Graph graph = null)
+    public IEnumerable<Edge> EdgesIn(Graph? graph = null)
     {
         IntPtr graph_ptr = graph?._ptr ?? MyRootGraph._ptr;
         var current = Agfstin(graph_ptr, _ptr);
@@ -70,7 +70,7 @@ public class Node : CGraphThing
     /// <summary>
     /// Iterate over both in and out edges. This will not yield self loops twice.
     /// </summary>
-    public IEnumerable<Edge> Edges(Graph graph = null)
+    public IEnumerable<Edge> Edges(Graph? graph = null)
     {
         IntPtr graph_ptr = graph?._ptr ?? MyRootGraph._ptr;
         var current = Agfstedge(graph_ptr, _ptr);
@@ -84,7 +84,7 @@ public class Node : CGraphThing
     /// <summary>
     /// Get all neighbors connected via an out edge.
     /// </summary>
-    public IEnumerable<Node> NeighborsOut(Graph graph = null)
+    public IEnumerable<Node> NeighborsOut(Graph? graph = null)
     {
         return EdgesOut(graph).Select(e => e.OppositeEndpoint(this));
     }
@@ -92,7 +92,7 @@ public class Node : CGraphThing
     /// <summary>
     /// Get all neighbors connected via an in edge.
     /// </summary>
-    public IEnumerable<Node> NeighborsIn(Graph graph = null)
+    public IEnumerable<Node> NeighborsIn(Graph? graph = null)
     {
         return EdgesIn(graph).Select(e => e.OppositeEndpoint(this));
     }
@@ -100,7 +100,7 @@ public class Node : CGraphThing
     /// <summary>
     /// Get all neighbors.
     /// </summary>
-    public IEnumerable<Node> Neighbors(Graph graph = null)
+    public IEnumerable<Node> Neighbors(Graph? graph = null)
     {
         return Edges(graph).Select(e => e.OppositeEndpoint(this));
     }
@@ -108,7 +108,7 @@ public class Node : CGraphThing
     /// <summary>
     /// Get all neighbors fullfilling a given attribute constraint.
     /// </summary>
-    public IEnumerable<Node> NeighborsByAttribute(string attr_name, string attr_value, Graph graph = null)
+    public IEnumerable<Node> NeighborsByAttribute(string attr_name, string attr_value, Graph? graph = null)
     {
         return Neighbors(graph).Where(n => n.GetAttribute(attr_name) == attr_value);
     }
@@ -116,7 +116,7 @@ public class Node : CGraphThing
     /// <summary>
     /// Get all neighbors connected by an edge with given name.
     /// </summary>
-    public IEnumerable<Node> NeighborsByEdgeName(string edgename, Graph graph = null)
+    public IEnumerable<Node> NeighborsByEdgeName(string edgename, Graph? graph = null)
     {
         return Edges(graph).Where(e => e.GetName() == edgename).Select(e => e.OppositeEndpoint(this));
     }
@@ -129,24 +129,24 @@ public class Node : CGraphThing
     /// </summary>
     public Node CopyToOtherRoot(RootGraph destination)
     {
-        Node result = destination.GetOrAddNode(GetName());
+        Node result = destination.GetOrAddNode(GetName()!);
         _ = CopyAttributesTo(result);
         return result;
     }
 
-    public int OutDegree(Graph graph = null)
+    public int OutDegree(Graph? graph = null)
     {
         IntPtr graph_ptr = graph?._ptr ?? MyRootGraph._ptr;
         return Agdegree(graph_ptr, _ptr, 0, 1);
     }
 
-    public int InDegree(Graph graph = null)
+    public int InDegree(Graph? graph = null)
     {
         IntPtr graph_ptr = graph?._ptr ?? MyRootGraph._ptr;
         return Agdegree(graph_ptr, _ptr, 1, 0);
     }
 
-    public int TotalDegree(Graph graph = null)
+    public int TotalDegree(Graph? graph = null)
     {
         IntPtr graph_ptr = graph?._ptr ?? MyRootGraph._ptr;
         return Agdegree(graph_ptr, _ptr, 1, 1);
@@ -175,9 +175,8 @@ public class Node : CGraphThing
     {
         // The "pos" attribute is available as part of xdot output
         PointD result;
-        if (HasAttribute("pos"))
+        if (HasAttribute("pos") && GetAttribute("pos") is string posString)
         {
-            var posString = GetAttribute("pos");
             var coords = posString.Split(',');
             double x = double.Parse(coords[0], NumberStyles.Any, CultureInfo.InvariantCulture);
             double y = double.Parse(coords[1], NumberStyles.Any, CultureInfo.InvariantCulture);
@@ -236,35 +235,35 @@ public class Node : CGraphThing
     /// </param>
     public IEnumerable<RectangleD> GetRecordRectangles(bool snapOntoDrawingCoordinates = false)
     {
-        if (!HasAttribute("rects"))
-            yield break;
-
-        var polylinePoints = GetDrawing().OfType<IHasPoints>().SelectMany(p => p.Points).ToList();
-        var validXCoords = polylinePoints.Select(p => p.X).OrderBy(x => x).Distinct().ToList();
-        var validYCoords = polylinePoints.Select(p => p.Y).OrderBy(x => x).Distinct().ToList();
-
-        var maxY = MyRootGraph.RawMaxY();
-        foreach (string rectStr in GetAttribute("rects").Split(' '))
+        if (HasAttribute("rects") && GetAttribute("rects") is string rects)
         {
-            var rect = ParseRect(rectStr).ForCoordSystem(MyRootGraph.CoordinateSystem, maxY);
-            if (!snapOntoDrawingCoordinates)
+            var polylinePoints = GetDrawing().OfType<IHasPoints>().SelectMany(p => p.Points).ToList();
+            var validXCoords = polylinePoints.Select(p => p.X).OrderBy(x => x).Distinct().ToList();
+            var validYCoords = polylinePoints.Select(p => p.Y).OrderBy(x => x).Distinct().ToList();
+
+            var maxY = MyRootGraph.RawMaxY();
+            foreach (var rectStr in rects.Split(' '))
             {
-                yield return rect;
-            }
-            else
-            {
-                var x1 = rect.X;
-                var x2 = rect.X + rect.Width;
-                var y1 = rect.Y;
-                var y2 = rect.Y + rect.Height;
-                var snappedX1 = FindClosest(validXCoords, x1);
-                var snappedX2 = FindClosest(validXCoords, x2);
-                var snappedY1 = FindClosest(validYCoords, y1);
-                var snappedY2 = FindClosest(validYCoords, y2);
-                var snappedRect = new RectangleD(
-                    new PointD(snappedX1, snappedY1),
-                    new SizeD(snappedX2 - snappedX1, snappedY2 - snappedY1));
-                yield return snappedRect;
+                var rect = ParseRect(rectStr).ForCoordSystem(MyRootGraph.CoordinateSystem, maxY);
+                if (!snapOntoDrawingCoordinates)
+                {
+                    yield return rect;
+                }
+                else
+                {
+                    var x1 = rect.X;
+                    var x2 = rect.X + rect.Width;
+                    var y1 = rect.Y;
+                    var y2 = rect.Y + rect.Height;
+                    var snappedX1 = FindClosest(validXCoords, x1);
+                    var snappedX2 = FindClosest(validXCoords, x2);
+                    var snappedY1 = FindClosest(validYCoords, y1);
+                    var snappedY2 = FindClosest(validYCoords, y2);
+                    var snappedRect = new RectangleD(
+                        new PointD(snappedX1, snappedY1),
+                        new SizeD(snappedX2 - snappedX1, snappedY2 - snappedY1));
+                    yield return snappedRect;
+                }
             }
         }
     }

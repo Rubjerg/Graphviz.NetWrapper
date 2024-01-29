@@ -11,7 +11,7 @@ public class SubGraph : Graph
     /// </summary>
     internal SubGraph(IntPtr ptr, RootGraph rootgraph) : base(ptr, rootgraph) { }
 
-    internal static SubGraph Get(Graph parent, string name = null)
+    internal static SubGraph? Get(Graph parent, string? name = null)
     {
         name = NameString(name);
         IntPtr ptr = Agsubg(parent._ptr, name, 0);
@@ -21,7 +21,7 @@ public class SubGraph : Graph
 
     }
 
-    internal static SubGraph GetOrCreate(Graph parent, string name = null)
+    internal static SubGraph GetOrCreate(Graph parent, string? name = null)
     {
         name = NameString(name);
         IntPtr ptr = Agsubg(parent._ptr, name, 1);

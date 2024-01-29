@@ -41,14 +41,14 @@ internal static class ForeignFunctionInterface
             return gvFreeLayout(gvc, graph);
         }
     }
-    public static int GvRender(IntPtr gvc, IntPtr graph, string format, IntPtr @out)
+    public static int GvRender(IntPtr gvc, IntPtr graph, string? format, IntPtr @out)
     {
         lock (_mutex)
         {
             return MarshalToUtf8(format, formatPtr => gvRender(gvc, graph, formatPtr, @out));
         }
     }
-    public static int GvRenderFilename(IntPtr gvc, IntPtr graph, string format, string filename)
+    public static int GvRenderFilename(IntPtr gvc, IntPtr graph, string? format, string? filename)
     {
         lock (_mutex)
         {
@@ -58,7 +58,7 @@ internal static class ForeignFunctionInterface
                 gvRenderFilename(gvc, graph, formatPtr, filenamePtr)));
         }
     }
-    public static IntPtr Agnode(IntPtr graph, string name, int create)
+    public static IntPtr Agnode(IntPtr graph, string? name, int create)
     {
         lock (_mutex)
         {
@@ -159,7 +159,7 @@ internal static class ForeignFunctionInterface
         }
     }
 
-    public static void Agsafeset(IntPtr obj, string name, string val, string deflt)
+    public static void Agsafeset(IntPtr obj, string name, string? val, string? deflt)
     {
         lock (_mutex)
         {
@@ -169,7 +169,7 @@ internal static class ForeignFunctionInterface
             agsafeset(obj, namePtr, valPtr, defltPtr))));
         }
     }
-    public static void AgsafesetHtml(IntPtr obj, string name, string val, string deflt)
+    public static void AgsafesetHtml(IntPtr obj, string name, string? val, string? deflt)
     {
         lock (_mutex)
         {
@@ -224,7 +224,7 @@ internal static class ForeignFunctionInterface
             return rj_aghead(node);
         }
     }
-    public static IntPtr Agedge(IntPtr graph, IntPtr tail, IntPtr head, string name, int create)
+    public static IntPtr Agedge(IntPtr graph, IntPtr tail, IntPtr head, string? name, int create)
     {
         lock (_mutex)
         {
@@ -287,7 +287,7 @@ internal static class ForeignFunctionInterface
             return agcontains(graph, obj);
         }
     }
-    public static IntPtr Agsubg(IntPtr graph, string name, int create)
+    public static IntPtr Agsubg(IntPtr graph, string? name, int create)
     {
         lock (_mutex)
         {
@@ -350,7 +350,7 @@ internal static class ForeignFunctionInterface
             return edge_label(node);
         }
     }
-    public static string Rjagmemwrite(IntPtr graph)
+    public static string? Rjagmemwrite(IntPtr graph)
     {
         lock (_mutex)
         {
@@ -365,14 +365,14 @@ internal static class ForeignFunctionInterface
             return graph_label(node);
         }
     }
-    public static string Agget(IntPtr obj, string name)
+    public static string? Agget(IntPtr obj, string name)
     {
         lock (_mutex)
         {
             return MarshalToUtf8(name, namePtr => MarshalFromUtf8(agget(obj, namePtr), false));
         }
     }
-    public static string Rjagnameof(IntPtr obj)
+    public static string? Rjagnameof(IntPtr obj)
     {
         lock (_mutex)
         {
@@ -386,7 +386,7 @@ internal static class ForeignFunctionInterface
             clone_attribute_declarations(graphfrom, graphto);
         }
     }
-    public static string ImsymKey(IntPtr sym)
+    public static string? ImsymKey(IntPtr sym)
     {
         lock (_mutex)
         {
@@ -421,7 +421,7 @@ internal static class ForeignFunctionInterface
             return label_height(label);
         }
     }
-    public static string LabelText(IntPtr label)
+    public static string? LabelText(IntPtr label)
     {
         lock (_mutex)
         {
@@ -435,7 +435,7 @@ internal static class ForeignFunctionInterface
             return label_fontsize(label);
         }
     }
-    public static string LabelFontname(IntPtr label)
+    public static string? LabelFontname(IntPtr label)
     {
         lock (_mutex)
         {
@@ -491,7 +491,7 @@ internal static class ForeignFunctionInterface
             return MarshalToUtf8(input, rj_agmemread);
         }
     }
-    public static IntPtr Rjagopen(string name, int graphtype)
+    public static IntPtr Rjagopen(string? name, int graphtype)
     {
         lock (_mutex)
         {
@@ -709,7 +709,7 @@ internal static class ForeignFunctionInterface
     [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr return_copyright();
 
-    public static string EchoString(string str)
+    public static string? EchoString(string? str)
     {
         return MarshalToUtf8(str, ptr =>
         {
@@ -718,8 +718,8 @@ internal static class ForeignFunctionInterface
             return MarshalFromUtf8(returnPtr, true);
         });
     }
-    public static string ReturnEmptyString() => MarshalFromUtf8(return_empty_string(), false);
-    public static string ReturnHello() => MarshalFromUtf8(return_hello(), false);
-    public static string ReturnCopyRight() => MarshalFromUtf8(return_copyright(), false);
+    public static string? ReturnEmptyString() => MarshalFromUtf8(return_empty_string(), false);
+    public static string? ReturnHello() => MarshalFromUtf8(return_hello(), false);
+    public static string? ReturnCopyRight() => MarshalFromUtf8(return_copyright(), false);
     #endregion
 }

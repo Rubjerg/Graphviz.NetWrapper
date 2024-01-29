@@ -36,7 +36,7 @@ public class GraphvizCommand
     /// </summary>
     /// <exception cref="ApplicationException">When the Graphviz process did not return successfully</exception>
     /// <returns>stderr may contain warnings</returns>
-    public static (byte[] stdout, string stderr) Exec(Graph input, string format = "xdot", string outputPath = null, string engine = LayoutEngines.Dot)
+    public static (byte[] stdout, string stderr) Exec(Graph input, string format = "xdot", string? outputPath = null, string engine = LayoutEngines.Dot)
     {
         string exeName = "dot.exe";
         string arguments = $"-T{format} -K{engine}";
@@ -44,7 +44,7 @@ public class GraphvizCommand
         {
             arguments = $"{arguments} -o\"{outputPath}\"";
         }
-        string inputToStdin = input.ToDotString();
+        string? inputToStdin = input.ToDotString();
 
         // Get the location of the currently executing DLL
         // https://learn.microsoft.com/en-us/dotnet/api/system.reflection.assembly.codebase?view=net-5.0

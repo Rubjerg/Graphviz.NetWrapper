@@ -44,7 +44,7 @@ public abstract record class XDotOp
     /// appear. Indeed, if style contains invis, there will not be any xdot output at all.
     /// For reference see https://graphviz.org/docs/attr-types/style/
     /// </summary>
-    public sealed record class Style(string Value) : XDotOp { }
+    public sealed record class Style(string? Value) : XDotOp { }
 }
 
 public interface IHasPoints
@@ -110,7 +110,7 @@ public record struct RectangleD(PointD Origin, SizeD Size)
     public override string ToString() => $"{{X={X}, Y={Y}, Width={Width}, Height={Height}}}";
 }
 
-public record struct ColorStop(float Frac, string HtmlColor);
+public record struct ColorStop(float Frac, string? HtmlColor);
 
 public record struct LinearGradient(PointD Point0, PointD Point1, ColorStop[] Stops)
 {
@@ -133,7 +133,7 @@ public record struct RadialGradient(PointD Point0, double Radius0, PointD Point1
 public abstract record class Color
 {
     private Color() { }
-    public sealed record class Uniform(string HtmlColor) : Color { }
+    public sealed record class Uniform(string? HtmlColor) : Color { }
     public sealed record class Linear(LinearGradient Gradient) : Color { }
     public sealed record class Radial(RadialGradient Gradient) : Color { }
 }
@@ -159,7 +159,7 @@ public enum TextAlign
 /// <param name="Text"></param>
 /// <param name="Font"></param>
 /// <param name="CoordSystem">Used for computing the bounding box in the correct orientation.</param>
-public record struct TextInfo(PointD Anchor, TextAlign Align, double WidthEstimate, string Text,
+public record struct TextInfo(PointD Anchor, TextAlign Align, double WidthEstimate, string? Text,
     Font Font, FontChar FontChar, CoordinateSystem CoordSystem)
 {
     public SizeD TextSizeEstimate() => new SizeD(WidthEstimate, Font.Size);
@@ -217,7 +217,7 @@ public record struct TextInfo(PointD Anchor, TextAlign Align, double WidthEstima
     };
 }
 
-public record struct ImageInfo(RectangleD Position, string Name)
+public record struct ImageInfo(RectangleD Position, string? Name)
 {
     internal ImageInfo ForCoordSystem(CoordinateSystem coordSystem, double maxY) => this with
     {
@@ -229,7 +229,7 @@ public record struct ImageInfo(RectangleD Position, string Name)
 /// Font size in points. This is usually the distance between the ascender and the descender of the font.
 /// </param>
 /// <param name="Name">Font name</param>
-public record struct Font(double Size, string Name)
+public record struct Font(double Size, string? Name)
 {
     public static Font Default => new() { Size = 14, Name = "Times-Roman" };
 }
