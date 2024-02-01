@@ -25,18 +25,6 @@
 #include <stdint.h>
 #include <assert.h>
 #include <signal.h>
-
-/// @cond
-
-#ifndef FALSE
-#define FALSE 0
-#endif
-#ifndef TRUE
-#define TRUE (!FALSE)
-#endif
-
-/// @endcond
-
 #include "geom.h"
 #include "gvcext.h"
 #include "pathgeom.h"
@@ -57,17 +45,6 @@ extern "C" {
 #define HEAD_ID "headport"
 
     typedef struct htmllabel_t htmllabel_t;
-
-    typedef union inside_t {
-	struct {
-	    pointf* p;
-	    double* r;
-	} a;
-	struct {
-	    node_t* n;
-	    boxf*    bp;
-	} s;
-    } inside_t;
 
     typedef struct port {	/* internal edge endpoint specification */
 	pointf p;		/* aiming point relative to node center */
@@ -112,7 +89,7 @@ extern "C" {
 
     typedef struct bezier {
 	pointf *list;
-	int size;
+	size_t size;
 	uint32_t sflag;
 	uint32_t eflag;
 	pointf sp;
@@ -150,14 +127,32 @@ extern "C" {
 
     typedef struct polygon_t {	/* mutable shape information for a node */
 	int regular;		/* true for symmetric shapes */
-	int peripheries;	/* number of periphery lines */
-	int sides;		/* number of sides */
+	size_t peripheries; ///< number of periphery lines
+	size_t sides; ///< number of sides
 	double orientation;	/* orientation of shape (+ve degrees) */
 	double distortion;	/* distortion factor - as in trapezium */
 	double skew;		/* skew factor - as in parallelogram */
 	int option;		/* ROUNDED, DIAGONAL corners, etc. */
 	pointf *vertices;	/* array of vertex points */
     } polygon_t;
+
+typedef union inside_t {
+  struct {
+    pointf *p;
+    double *r;
+  } a;
+  struct {
+    node_t *n;
+    boxf *bp;
+    node_t *lastn;        ///< last node argument
+    double radius;        ///< last radius seen
+    polygon_t *last_poly; ///< last seen polygon
+    size_t last;          ///< last used polygon vertex
+    size_t outp;          ///< last used outline periphery
+    double scalex, scaley, box_URx, box_URy;
+        ///< various computed sizes of aspects of the last seen polygon
+  } s;
+} inside_t;
 
     typedef struct stroke_t {	/* information about a single stroke */
 	/* we would have called it a path if that term wasn't already used */
