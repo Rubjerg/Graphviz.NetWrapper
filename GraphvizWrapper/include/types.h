@@ -192,11 +192,7 @@ extern "C" {
 	node_t **tail;
     } nodequeue;
 
-    typedef struct adjmatrix_t {
-	int nrows;
-	int ncols;
-	char *data;
-    } adjmatrix_t;
+    typedef struct adjmatrix_t adjmatrix_t;
 
     typedef struct rank_t {
 	int n;			/* number of nodes in this rank  */
@@ -259,8 +255,17 @@ extern "C" {
 #define GUI_STATE_VISITED   (1<<2)
 #define GUI_STATE_DELETED   (1<<3)
 
-#define elist_append(item,L)  do {L.list = ALLOC(L.size + 2,L.list,edge_t*); L.list[L.size++] = item; L.list[L.size] = NULL;} while(0)
-#define alloc_elist(n,L)      do {L.size = 0; L.list = N_NEW(n + 1,edge_t*); } while (0)
+#define elist_append(item, L)                                                  \
+  do {                                                                         \
+    L.list = gv_recalloc(L.list, L.size + 1, L.size + 2, sizeof(edge_t *));    \
+    L.list[L.size++] = item;                                                   \
+    L.list[L.size] = NULL;                                                     \
+  } while (0)
+#define alloc_elist(n, L)                                                      \
+  do {                                                                         \
+    L.size = 0;                                                                \
+    L.list = gv_calloc(n + 1, sizeof(edge_t *));                               \
+  } while (0)
 #define free_list(L)          free(L.list)
 
 typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
@@ -564,7 +569,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	int cutvalue;
 	int tree_index;
 	short count;
-	unsigned short minlen;
+	int minlen;
 	edge_t *to_virt;
 #endif
     } Agedgeinfo_t;

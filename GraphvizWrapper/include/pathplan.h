@@ -2,6 +2,13 @@
  * @file
  * @brief finds and smooths shortest paths
  * @ingroup public_apis
+ *
+ * **libpathplan** provides functions for creating spline paths in the plane
+ * that are constrained by a polygonal boundary or obstacles to avoid.
+ * All polygons must be simple, but need not be convex.
+ *
+ * [man 3 pathplan](https://graphviz.org/pdf/pathplan.3.pdf)
+ *
  */
 
 /*************************************************************************

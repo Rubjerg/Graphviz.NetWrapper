@@ -2,6 +2,13 @@
  * @file
  * @brief Graphviz context library
  * @ingroup gvc_api
+ *
+ * **libgvc** provides a context for applications wishing to manipulate
+ * and render graphs. It provides command line parsing,
+ * common rendering code, and a plugin mechanism for renderers.
+ *
+ * [man 3 gvc](https://graphviz.org/pdf/gvc.3.pdf)
+ *
  */
 
 /*************************************************************************
@@ -109,11 +116,8 @@ GVC_API int gvFreeContext(GVC_t *gvc);
  * freeing each item, then the list.
  * Returns NULL on error, or if there are no plugins.
  * In the former case, sz is unchanged; in the latter, sz = 0.
- *
- * At present, the str argument is unused, but may be used to modify
- * the search as in gvplugin_list above.
  */
-GVC_API char** gvPluginList (GVC_t *gvc, const char* kind, int* sz, char*);
+GVC_API char **gvPluginList(GVC_t *gvc, const char *kind, int *sz);
 
 /** Add a library from your user application
  * @param gvc Graphviz context to add library to

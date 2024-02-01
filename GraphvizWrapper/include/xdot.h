@@ -1,5 +1,14 @@
-/// @file
-/// @ingroup public_apis
+/**
+ * @file
+ * @ingroup public_apis
+ * @brief parsing and deparsing of [xdot](https://graphviz.org/docs/outputs/canon/#xdot) operations
+ *
+ * **libxdot** provides support for parsing and deparsing graphical operations specified by the xdot language.
+ * [xdot](https://graphviz.org/docs/outputs/canon/#xdot) is extended dot format containing complete layout information.
+ *
+ * [man 3 xdot](https://graphviz.org/pdf/xdot.3.pdf)
+ *
+ */
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -30,8 +39,6 @@ extern "C" {
 #ifndef XDOT_API
 #define XDOT_API /* nothing */
 #endif
-
-#define INITIAL_XDOT_CAPACITY 512
 
 typedef enum {
     xd_none,
