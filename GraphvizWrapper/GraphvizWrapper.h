@@ -40,7 +40,7 @@ static int rj_flush(void* stream)
 }
 
 static Agiodisc_t memIoDisc = { rj_afread, rj_putstr, rj_flush };
-static Agdisc_t memDisc = { 0, 0, &memIoDisc };
+static Agdisc_t memDisc = { 0, &memIoDisc };
 
 extern "C" {
 
