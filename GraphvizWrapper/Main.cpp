@@ -16,13 +16,13 @@ void free_str(char* str) {
 Agraph_t* rj_agopen(char* name, int graphtype)
 {
     if (graphtype == 0)
-        return agopen(name, Agdirected, &memDisc);
+        return agopen(name, Agdirected, &disc);
     if (graphtype == 1)
-        return agopen(name, Agstrictdirected, &memDisc);
+        return agopen(name, Agstrictdirected, &disc);
     if (graphtype == 2)
-        return agopen(name, Agundirected, &memDisc);
+        return agopen(name, Agundirected, &disc);
     if (graphtype == 3)
-        return agopen(name, Agstrictundirected, &memDisc);
+        return agopen(name, Agstrictundirected, &disc);
     return 0;
 }
 
@@ -30,11 +30,11 @@ Agraph_t* rj_agmemread(const char* s)
 {
     stringstream stream;
     stream << s;
-    Agraph_t* g = agread(&stream, &memDisc);
+    Agraph_t* g = agread(&stream, &disc);
     return g;
 }
 
-// Note: for this function to work, the graph has to be created with the memDisc, e.g. using rj_agopen
+// Note: for this function to work, the graph has to be created with the disc, e.g. using rj_agopen
 // This function transfers ownership of the string result.
 // The caller has to call free_str to free it.
 const char* rj_agmemwrite(Agraph_t* g)
