@@ -14,28 +14,24 @@ public class GraphvizCommand
     public static RootGraph CreateLayout(Graph input, string engine = LayoutEngines.Dot, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
         var (stdout, stderr) = Exec(input, engine: engine);
-        var stdoutStr = ConvertBytesToString(stdout);
+        var stdoutStr = ConvertBytesOutputToString(stdout);
         var resultGraph = RootGraph.FromDotString(stdoutStr, coordinateSystem);
         resultGraph.Warnings = stderr;
         return resultGraph;
     }
 
-    public static string ConvertBytesToString(byte[] data)
+    public static string ConvertBytesOutputToString(byte[] data)
     {
-        using (MemoryStream ms = new MemoryStream(data))
-        using (StreamReader reader = new StreamReader(ms, true))
-        {
-            // Just to be safe, make sure the input has unix line endings. Graphviz does not properly support
-            // windows line endings passed to stdin when it comes to attribute line continuations.
-            return reader.ReadToEnd().Replace("\r\n", "\n");
-        }
+        // Just to be safe, make sure the input has unix line endings. Graphviz does not properly support
+        // windows line endings passed to stdin when it comes to attribute line continuations.
+        return Encoding.UTF8.GetString(data).Replace("\r\n", "\n");
     }
 
     /// <summary>
     /// Start dot.exe to compute a layout.
     /// </summary>
     /// <exception cref="ApplicationException">When the Graphviz process did not return successfully</exception>
-    /// <returns>stderr may contain warnings</returns>
+    /// <returns>stderr may contain warnings, stdout is in utf8 encoding</returns>
     public static (byte[] stdout, string stderr) Exec(Graph input, string format = "xdot", string? outputPath = null, string engine = LayoutEngines.Dot)
     {
         string exeName = "dot.exe";

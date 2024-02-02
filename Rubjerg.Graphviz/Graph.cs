@@ -618,7 +618,7 @@ public class Graph : CGraphThing
     public void ToPsFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "ps", engine);
 
     /// <returns>string with unix line endings</returns>
-    public string ToSvgString(string engine = LayoutEngines.Dot) => GraphvizCommand.ConvertBytesToString(ToBytes("svg", engine));
+    public string ToSvgString(string engine = LayoutEngines.Dot) => GraphvizCommand.ConvertBytesOutputToString(ToBytes("svg", engine));
     public byte[] ToPngBytes(string engine = LayoutEngines.Dot) => ToBytes("png", engine);
     public byte[] ToPdfBytes(string engine = LayoutEngines.Dot) => ToBytes("pdf", engine);
     public byte[] ToPsBytes(string engine = LayoutEngines.Dot) => ToBytes("ps", engine);
