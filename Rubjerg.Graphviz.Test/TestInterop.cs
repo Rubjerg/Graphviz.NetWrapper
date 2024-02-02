@@ -38,6 +38,15 @@ public class TestInterop
     }
 
     [Test()]
+    public void TestInternalEncoding()
+    {
+        var root = Utils.CreateUniqueTestGraph();
+        var nodeA = root.GetOrAddNode("✅");
+        var nodeB = root.GetOrAddNode("✅");
+        Assert.AreEqual(nodeA, nodeB);
+    }
+
+    [Test()]
     public void TestOutputEncoding()
     {
         var root = Utils.CreateUniqueTestGraph();
