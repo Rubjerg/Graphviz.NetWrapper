@@ -87,6 +87,6 @@ internal static class Marshaling
         return byteArray;
     }
 
-    [DllImport("GraphvizWrapper.dll", SetLastError = true, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("GraphvizWrapper.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern void free_str(IntPtr ptr);
 }
