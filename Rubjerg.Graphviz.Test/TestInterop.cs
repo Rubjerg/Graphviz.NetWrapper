@@ -44,8 +44,8 @@ public class TestInterop
         nodeA.SetAttribute("label", "✅");
         var dotStr = root.ToDotString();
         Assert.IsTrue(dotStr.Contains("✅"));
-        //var svgStr = root.ToSvgString();
-        //Assert.IsTrue(svgStr.Contains("©"));
+        var svgStr = root.ToSvgString();
+        Assert.IsTrue(svgStr.Contains("✅"));
         // FIXNOW: test with files
     }
 }

@@ -64,6 +64,8 @@ public class GraphvizCommand
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardInput = true;
         process.StartInfo.RedirectStandardError = true;
+        process.StartInfo.StandardOutputEncoding = Encoding.UTF8;
+        process.StartInfo.StandardErrorEncoding = Encoding.UTF8;
         // In some situations starting a new process also starts a new console window, which is distracting and causes slowdown.
         // This flag prevents this from happening.
         process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -75,8 +77,9 @@ public class GraphvizCommand
         process.BeginErrorReadLine();
 
         // Write to stdin
-        using (StreamWriter sw = process.StandardInput)
-            sw.Write(inputToStdin);
+        var inputBytes = Encoding.UTF8.GetBytes(inputToStdin);
+        using (var sw = process.StandardInput.BaseStream)
+            sw.Write(inputBytes, 0, inputBytes.Length);
 
         // Read from stdout, can be binary output such as pdf
         byte[] stdout;
