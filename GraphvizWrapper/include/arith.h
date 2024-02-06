@@ -37,6 +37,7 @@ extern "C" {
 #endif
 #define MAX(a,b)	((a)>(b)?(a):(b))
 
+#define AVG(a,b)	((a + b) / 2)
 #define SGN(a)		(((a)<0)? -1 : 1)
 #define CMP(a,b)	(((a)<(b)) ? -1 : (((a)>(b)) ? 1 : 0))
 
