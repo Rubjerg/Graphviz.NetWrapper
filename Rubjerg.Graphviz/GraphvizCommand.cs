@@ -49,7 +49,8 @@ public class GraphvizCommand
         // Get the location of the currently executing DLL
         // https://learn.microsoft.com/en-us/dotnet/api/system.reflection.assembly.codebase?view=net-5.0
         string exeDirectory = AppDomain.CurrentDomain.RelativeSearchPath
-            ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+            ?? Path.GetDirectoryName(System.AppContext.BaseDirectory);
 
         // Construct the path to the executable
         string exePath = Path.Combine(exeDirectory, exeName);
