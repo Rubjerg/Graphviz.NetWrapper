@@ -41,12 +41,12 @@ public abstract class GraphvizThing
         return _ptr.GetHashCode();
     }
 
-    public static bool operator ==(GraphvizThing a, GraphvizThing b)
+    public static bool operator ==(GraphvizThing? a, GraphvizThing? b)
     {
         return Equals(a, b);
     }
 
-    public static bool operator !=(GraphvizThing a, GraphvizThing b)
+    public static bool operator !=(GraphvizThing? a, GraphvizThing? b)
     {
         return !(a == b);
     }
