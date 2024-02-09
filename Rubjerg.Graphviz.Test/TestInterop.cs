@@ -70,8 +70,5 @@ public class TestInterop
 
         // PDF doesn't seem to support unicode correctly?
         // Open issue: https://gitlab.com/graphviz/graphviz/-/issues/2508
-        //root.ToPdfFile(TestContext.CurrentContext.TestDirectory + "/utf8.pdf");
-        //var pdfFileStr = File.ReadAllText(TestContext.CurrentContext.TestDirectory + "/utf8.pdf");
-        //Assert.IsTrue(pdfFileStr.Contains("✅"));
     }
 }
