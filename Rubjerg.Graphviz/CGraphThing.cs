@@ -79,11 +79,21 @@ public abstract class CGraphThing : GraphvizThing
     /// <summary>
     /// Get the attribute if it was introduced and contains a non-empty value, otherwise return deflt.
     /// </summary>
-    public string? SafeGetAttribute(string name, string? deflt)
+    public string SafeGetAttribute(string name, string deflt)
     {
         if (HasAttribute(name))
             return GetAttribute(name)!;
         return deflt;
+    }
+    
+    /// <summary>
+    /// Get the attribute if it was introduced and contains a non-empty value, otherwise return null.
+    /// </summary>
+    public string? SafeGetAttribute(string name)
+    {
+        if (HasAttribute(name))
+            return GetAttribute(name)!;
+        return null;
     }
 
     public void SetAttributeHtml(string name, string value)
@@ -97,7 +107,7 @@ public abstract class CGraphThing : GraphvizThing
     /// <returns></returns>
     public Dictionary<string, string> GetAttributes()
     {
-        Dictionary<string, string> attributes = new Dictionary<string, string>();
+        var attributes = new Dictionary<string, string>();
         for (int kind = 0; kind < 3; ++kind)
         {
             IntPtr sym = Agnxtattr(MyRootGraph._ptr, kind, IntPtr.Zero);
@@ -216,7 +226,7 @@ public abstract class CGraphThing : GraphvizThing
 
     protected List<XDotOp> GetXDotValue(CGraphThing obj, string attrName)
     {
-        var xdotString = obj.SafeGetAttribute(attrName, null);
+        var xdotString = obj.SafeGetAttribute(attrName);
         if (xdotString is null)
             return new List<XDotOp>();
 
