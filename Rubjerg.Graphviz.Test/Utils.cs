@@ -39,9 +39,9 @@ public static class Utils
             // We already have one out edge for each node
             for (int x = 0; x < out_degree - 2; x++)
             {
-                var node = root.GetNode(i.ToString());
+                var node = root.GetNode(i.ToString())!;
                 int j = _rand.Next(size - 1);
-                var neighbor = root.GetNode(j.ToString());
+                var neighbor = root.GetNode(j.ToString())!;
                 _ = root.GetOrAddEdge(node, neighbor, $"{i} to {j}");
             }
         }

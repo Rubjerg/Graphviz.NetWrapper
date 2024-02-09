@@ -94,10 +94,10 @@ internal static class XDotParser
                         .ForCoordSystem(coordinateSystem, maxY));
                     break;
                 case XDotKind.FillColor:
-                    xdot.Ops[i] = new XDotOp.FillColor(new Color.Uniform(XDotFFI.GetColor(xdotOpPtr)));
+                    xdot.Ops[i] = new XDotOp.FillColor(new Color.Uniform(XDotFFI.GetColor(xdotOpPtr)!));
                     break;
                 case XDotKind.PenColor:
-                    xdot.Ops[i] = new XDotOp.PenColor(new Color.Uniform(XDotFFI.GetColor(xdotOpPtr)));
+                    xdot.Ops[i] = new XDotOp.PenColor(new Color.Uniform(XDotFFI.GetColor(xdotOpPtr)!));
                     break;
                 case XDotKind.GradFillColor:
                     xdot.Ops[i] = new XDotOp.FillColor(TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr)));
@@ -109,7 +109,7 @@ internal static class XDotParser
                     activeFont = TranslateFont(XDotFFI.get_font(xdotOpPtr));
                     break;
                 case XDotKind.Style:
-                    xdot.Ops[i] = new XDotOp.Style(XDotFFI.GetStyle(xdotOpPtr));
+                    xdot.Ops[i] = new XDotOp.Style(XDotFFI.GetStyle(xdotOpPtr)!);
                     break;
                 case XDotKind.Image:
                     xdot.Ops[i] = new XDotOp.Image(TranslateImage(XDotFFI.get_image(xdotOpPtr))
@@ -147,7 +147,7 @@ internal static class XDotParser
         Font font = new Font
         (
             Size: XDotFFI.get_size(fontPtr),
-            Name: XDotFFI.GetNameFont(fontPtr)
+            Name: XDotFFI.GetNameFont(fontPtr)!
         );
 
         return font;
@@ -172,7 +172,7 @@ internal static class XDotParser
         switch (type)
         {
             case XDotGradType.None:
-                return new Color.Uniform(XDotFFI.GetClr(colorPtr));
+                return new Color.Uniform(XDotFFI.GetClr(colorPtr)!);
             case XDotGradType.Linear:
                 return new Color.Linear(TranslateLinearGrad(XDotFFI.get_ling(colorPtr)));
             case XDotGradType.Radial:
@@ -231,7 +231,7 @@ internal static class XDotParser
         ColorStop colorStop = new ColorStop
         (
             Frac: XDotFFI.get_frac(stopPtr),
-            HtmlColor: XDotFFI.GetColorStop(stopPtr)
+            HtmlColor: XDotFFI.GetColorStop(stopPtr)!
         );
 
         return colorStop;
@@ -284,7 +284,7 @@ internal static class XDotParser
             new PointD(XDotFFI.get_x_text(txtPtr), XDotFFI.get_y_text(txtPtr)),
             XDotFFI.get_align(txtPtr),
             XDotFFI.get_width(txtPtr),
-            XDotFFI.GetTextStr(txtPtr),
+            XDotFFI.GetTextStr(txtPtr)!,
             activeFont,
             activeFontChar,
             CoordinateSystem.BottomLeft

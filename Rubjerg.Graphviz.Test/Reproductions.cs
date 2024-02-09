@@ -89,7 +89,7 @@ public class Reproductions
         nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
         var dotString = root.ToDotString();
-        Assert.IsFalse(dotString.Contains("\r"));
+        Assert.IsFalse(dotString!.Contains("\r"));
     }
 
 
@@ -104,8 +104,8 @@ public class Reproductions
 
         var xdotGraph = root.CreateLayout();
         var xNodeA = xdotGraph.GetNode("A");
-        var ldraw = xNodeA.GetAttribute("_ldraw_");
-        Assert.IsFalse(ldraw.Contains("\n"));
+        var ldraw = xNodeA!.GetAttribute("_ldraw_");
+        Assert.IsFalse(ldraw!.Contains("\n"));
         Assert.IsFalse(ldraw.Contains("\r"));
         Assert.IsFalse(ldraw.Contains("\\"));
     }
@@ -138,9 +138,9 @@ width = 1.8958];
 }";
         var graph = RootGraph.FromDotString(dotstrCrLf);
         var nodeA = graph.GetNode("A");
-        var ldraw = nodeA.GetAttribute("_ldraw_");
+        var ldraw = nodeA!.GetAttribute("_ldraw_");
 
-        Assert.IsFalse(ldraw.Contains("\n"));
+        Assert.IsFalse(ldraw!.Contains("\n"));
         Assert.IsFalse(ldraw.Contains("\r"));
         Assert.IsFalse(ldraw.Contains("\\"));
     }

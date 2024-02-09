@@ -30,6 +30,11 @@ public class Node : CGraphThing
     }
 
     /// <summary>
+    /// Identifier for this node.
+    /// </summary>
+    public new string GetName() => base.GetName()!;
+    
+    /// <summary>
     /// Introduces an attribute for nodes in the given graph by giving a default value.
     /// A given default can be overwritten by calling this method again.
     /// </summary>
