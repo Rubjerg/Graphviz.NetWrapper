@@ -35,7 +35,17 @@ internal static class XDotParser
     public static List<XDotOp> ParseXDot(string xdotString, CoordinateSystem coordinateSystem, double maxY)
     {
         IntPtr xdot = XDotFFI.ParseXDot(xdotString);
-        return TranslateXDot(xdot, coordinateSystem, maxY);
+        try
+        {
+            return TranslateXDot(xdot, coordinateSystem, maxY);
+        }
+        finally
+        {
+            if (xdot != IntPtr.Zero)
+            {
+                XDotFFI.freeXDot(xdot);
+            }
+        }
     }
 
     internal static List<XDotOp> TranslateXDot(IntPtr xdotPtr, CoordinateSystem coordinateSystem, double maxY)
