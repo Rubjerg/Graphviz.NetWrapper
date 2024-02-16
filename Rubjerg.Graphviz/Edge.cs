@@ -12,7 +12,7 @@ public class Edge : CGraphThing
     /// </summary>
     internal Edge(IntPtr ptr, RootGraph rootgraph) : base(ptr, rootgraph) { }
 
-    internal static Edge Get(Graph graph, Node tail, Node head, string name)
+    internal static Edge? Get(Graph graph, Node tail, Node head, string? name)
     {
         name = NameString(name);
         IntPtr ptr = Agedge(graph._ptr, tail._ptr, head._ptr, name, 0);
@@ -21,7 +21,7 @@ public class Edge : CGraphThing
         return new Edge(ptr, graph.MyRootGraph);
     }
 
-    internal static Edge GetOrCreate(Graph graph, Node tail, Node head, string name)
+    internal static Edge GetOrCreate(Graph graph, Node tail, Node head, string? name)
     {
         name = NameString(name);
         IntPtr ptr = Agedge(graph._ptr, tail._ptr, head._ptr, name, 1);
@@ -92,7 +92,7 @@ public class Edge : CGraphThing
             throw new InvalidOperationException("ltail must be a cluster");
         if (!MyRootGraph.IsCompound())
             throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
-        string ltailname = ltail.GetName();
+        string? ltailname = ltail.GetName();
         SetAttribute("ltail", ltailname);
     }
 
@@ -106,7 +106,7 @@ public class Edge : CGraphThing
             throw new InvalidOperationException("ltail must be a cluster");
         if (!MyRootGraph.IsCompound())
             throw new InvalidOperationException("rootgraph must be compound for lheads/ltails to be used");
-        string lheadname = lhead.GetName();
+        string? lheadname = lhead.GetName();
         SetAttribute("lhead", lheadname);
     }
 
@@ -128,7 +128,7 @@ public class Edge : CGraphThing
 
     // Because there are two valid pointers to each edge, we have to override the default equals behaviour
     // which simply compares the wrapped pointers.
-    public override bool Equals(GraphvizThing obj)
+    public override bool Equals(GraphvizThing? obj)
     {
         if (obj is Edge)
             return Ageqedge(_ptr, obj._ptr);

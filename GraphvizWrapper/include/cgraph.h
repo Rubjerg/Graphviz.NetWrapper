@@ -38,7 +38,10 @@
 #pragma once
 
 #include <inttypes.h>
+#include <stdbool.h>
+#include <stdio.h>
 #include "cdt.h"
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,16 +61,9 @@ extern "C" {
 #define CGRAPH_API /* nothing */
 #endif
 
-#ifndef FALSE
-#define FALSE (0)
-#endif
-#ifndef TRUE
-#define TRUE (!FALSE)
-#endif
-
 /// @endcond
 
-/// @defgroup cgraph_other other
+/// @addtogroup cgraph_misc
 /// @{
 typedef uint64_t IDTYPE;
 
@@ -83,7 +79,7 @@ typedef struct Agnode_s Agnode_t;       ///< node (atom)
 typedef struct Agedge_s Agedge_t;       ///< node pair
 /// @ingroup cgraph_graph
 typedef struct Agdesc_s Agdesc_t;       ///< graph descriptor
-/// @addtogroup cgraph_other
+/// @addtogroup cgraph_misc
 /// @{
 typedef struct Agiddisc_s Agiddisc_t;   ///< object ID allocator
 typedef struct Agiodisc_s Agiodisc_t;   ///< IO services
@@ -132,6 +128,8 @@ typedef struct Agsubnode_s Agsubnode_t;
  *  @ref AgDataRecName,
  *  @ref DRName).
  *
+ *  Internally, records Agrec_s are maintained in circular linked lists
+ *  attached to graph objects Agobj_s.
  *  To allow referencing application-dependent data without function calls or search,
  *  Libcgraph allows setting and locking the list pointer
  *  of a graph, node, or edge on a particular record
@@ -162,19 +160,30 @@ typedef struct Agrec_s Agrec_t;
 /// implementation of @ref Agrec_t
 struct Agrec_s {
     char *name;
-    Agrec_t *next;
+    Agrec_t *next; ///< **circular** linked list of records
     /* following this would be any programmer-defined data */
 };
 /// @}
+/// @}
 
-/** @brief Object tag for graphs, nodes, and edges.
+/** @defgroup cgraph_object objects
+ *  @brief parent for @ref cgraph_graph, @ref cgraph_node, and @ref cgraph_edge.
+ *  @ingroup cgraph_api
+ *
+ * Common parameter for functions:
+ * @param obj generic pointer to @ref Agraph_t, @ref Agnode_t or @ref Agedge_t
+ * @{
+ */
+
+/** @brief tag in @ref Agobj_s for graphs, nodes, and edges.
 
 While there may be several structs
 for a given node or edges, there is only one unique ID (per main graph).  */
 
 struct Agtag_s {
+    /// access with @ref AGTYPE
     unsigned objtype:2;		/* see literal tags below */
-    unsigned mtflock:1;		/* move-to-front lock, see above */
+    unsigned mtflock:1; ///< @brief move-to-front lock, guards @ref Agobj_s.data
     unsigned attrwf:1;		/* attrs written (parity, write.c) */
     unsigned seq:(sizeof(unsigned) * 8 - 4);	/* sequence no. */
     IDTYPE id;		        /* client  ID */
@@ -187,10 +196,10 @@ struct Agtag_s {
 #define AGINEDGE			3	/* (1 << 1) indicates an edge tag.   */
 #define AGEDGE 				AGOUTEDGE	/* synonym in object kind args */
 
-/// a generic graph/node/edge header
+/// a generic header of @ref Agraph_s, @ref Agnode_s and @ref Agedge_s
 struct Agobj_s {
-    Agtag_t tag;
-    Agrec_t *data;
+    Agtag_t tag;   ///< access with @ref AGTAG
+    Agrec_t *data; ///< stores programmer-defined data, access with @ref AGDATA
 };
 
 #define AGTAG(obj)		(((Agobj_t*)(obj))->tag)
@@ -200,9 +209,17 @@ struct Agobj_s {
 #define AGATTRWF(obj)		(AGTAG(obj).attrwf)
 #define AGDATA(obj)		(((Agobj_t*)(obj))->data)
 /// @}
+/// @} cgraph_api
 
-/// @addtogroup cgraph_node
-/// @{
+/** @defgroup cgraph_node nodes
+ *  @ingroup cgraph_object
+ *
+ * A node is created by giving a unique string name or programmer
+ * defined integer ID, and is represented by a unique internal object.
+ * (%Node equality can checked by pointer comparison.)
+ *
+ * @{
+ */
 
 /** @brief This is the node struct allocated per graph (or subgraph).
 
@@ -254,11 +271,18 @@ struct Agdesc_s {		/* graph descriptor */
 /// @}
 
 /** @defgroup cgraph_disc disciplines
+ *  @ingroup cgraph_misc
  *  @brief disciplines for external resources needed by libgraph
  *  @{
  */
 
-/// object ID allocator discipline
+/**
+ * @brief object ID allocator discipline
+ *
+ * An ID allocator discipline allows a client to control assignment
+ * of IDs (uninterpreted integer values) to objects, and possibly how
+ * they are mapped to and from strings.
+ */
 
 struct Agiddisc_s {
     void *(*open) (Agraph_t * g, Agdisc_t*);	/* associated with a graph */
@@ -294,6 +318,7 @@ CGRAPH_API extern Agdisc_t AgDefaultDisc;
 /// @}
 
 /** @defgroup cgraph_graph graphs
+ *  @ingroup cgraph_object
  *  @{
  */
 struct Agdstate_s {
@@ -335,11 +360,12 @@ struct Agclos_s {
 struct Agraph_s {
     Agobj_t base;
     Agdesc_t desc;
-    Dtlink_t link;
+    Dtlink_t seq_link;
+    Dtlink_t id_link;
     Dict_t *n_seq;		/* the node set in sequence */
     Dict_t *n_id;		/* the node set indexed by ID */
     Dict_t *e_seq, *e_id;	/* holders for edge sets */
-    Dict_t *g_dict;		/* subgraphs - descendants */
+    Dict_t *g_seq, *g_id;	/* subgraphs - descendants */
     Agraph_t *parent, *root;	/* subgraphs - ancestors */
     Agclos_t *clos;		/* shared resources */
 };
@@ -349,7 +375,20 @@ CGRAPH_API int agpopdisc(Agraph_t * g, Agcbdisc_t * disc);
 
 /* graphs */
 CGRAPH_API Agraph_t *agopen(char *name, Agdesc_t desc, Agdisc_t * disc);
+/**<
+ * @brief creates a new graph with the given name and kind
+ *
+ * @param desc - graph kind, can be @ref Agdirected, @ref Agundirected,
+ * @ref Agstrictdirected or @ref Agstrictundirected.
+ * A strict graph cannot have multi-edges or self-arcs.
+ *
+ * @param disc - discipline structure which can be used
+ * to tailor I/O, memory allocation, and ID allocation. Typically, a NULL
+ * value will be used to indicate the default discipline @ref AgDefaultDisc.
+ */
+
 CGRAPH_API int agclose(Agraph_t * g);
+///< deletes a graph, freeing its associated storage
 CGRAPH_API Agraph_t *agread(void *chan, Agdisc_t * disc);
 CGRAPH_API Agraph_t *agmemread(const char *cp);
 CGRAPH_API Agraph_t *agmemconcat(Agraph_t *g, const char *cp);
@@ -363,7 +402,7 @@ CGRAPH_API int agisstrict(Agraph_t * g);
 CGRAPH_API int agissimple(Agraph_t * g);
 /// @}
 
-/// @defgroup cgraph_node nodes
+/// @addtogroup cgraph_node
 /// @{
 CGRAPH_API Agnode_t *agnode(Agraph_t * g, char *name, int createflag);
 CGRAPH_API Agnode_t *agidnode(Agraph_t * g, IDTYPE id, int createflag);
@@ -378,6 +417,7 @@ CGRAPH_API int agnodebefore(Agnode_t *u, Agnode_t *v); /* we have no shame */
 /// @}
 
 /** @defgroup cgraph_edge edges
+ *  @ingroup cgraph_object
  *
  * An abstract edge has two endpoint nodes called tail and head
  * where all outedges of the same node have it as the tail
@@ -410,8 +450,11 @@ CGRAPH_API Agedge_t *agfstedge(Agraph_t * g, Agnode_t * n);
 CGRAPH_API Agedge_t *agnxtedge(Agraph_t * g, Agedge_t * e, Agnode_t * n);
 /// @}
 
-/// @defgroup cgraph_generic generic
+/// @addtogroup cgraph_object
 /// @{
+
+// Generic object (graphs, nodes and edges) functions
+
 CGRAPH_API Agraph_t *agraphof(void* obj);
 CGRAPH_API Agraph_t *agroot(void* obj);
 CGRAPH_API int agcontains(Agraph_t *, void *);
@@ -424,8 +467,27 @@ CGRAPH_API int agdeledge(Agraph_t * g, Agedge_t * arg_e);
 CGRAPH_API int agobjkind(void *);
 /// @}
 
+/** @defgroup cgraph_string string utilities
+ *  @brief reference-counted strings
+ *  @ingroup cgraph_misc
+ *
+ *  Storage management of strings as reference-counted strings.
+ *  The caller does not need to dynamically allocate storage.
+ *
+ * @{
+ */
+CGRAPH_API char *agstrdup(Agraph_t *, const char *);
+CGRAPH_API char *agstrdup_html(Agraph_t *, const char *);
+CGRAPH_API int aghtmlstr(const char *);
+CGRAPH_API char *agstrbind(Agraph_t * g, const char *);
+CGRAPH_API int agstrfree(Agraph_t *, const char *);
+CGRAPH_API char *agcanon(char *, int);
+CGRAPH_API char *agstrcanon(char *, char *);
+CGRAPH_API char *agcanonStr(char *str);  /* manages its own buf */
+/// @}
+
 /** @defgroup cgraph_attr attributes
- *  @brief strings, symbols, and @ref cgraph_rec
+ *  @brief symbols, and @ref cgraph_rec
  *  @ingroup cgraph_api
  *
  * Programmer-defined values may be dynamically
@@ -435,15 +497,6 @@ CGRAPH_API int agobjkind(void *);
  *
  * @{
  */
-
-CGRAPH_API char *agstrdup(Agraph_t *, const char *);
-CGRAPH_API char *agstrdup_html(Agraph_t *, const char *);
-CGRAPH_API int aghtmlstr(const char *);
-CGRAPH_API char *agstrbind(Agraph_t * g, const char *);
-CGRAPH_API int agstrfree(Agraph_t *, const char *);
-CGRAPH_API char *agcanon(char *, int);
-CGRAPH_API char *agstrcanon(char *, char *);
-CGRAPH_API char *agcanonStr(char *str);  /* manages its own buf */
 
 /// definitions for dynamic string attributes
 
@@ -482,15 +535,28 @@ CGRAPH_API int      agcopyattr(void *oldobj, void *newobj);
 /// @{
 CGRAPH_API void *agbindrec(void *obj, const char *name, unsigned int recsize,
 		       int move_to_front);
-///< attach a new record of the given size to the object.
+///< @brief attach a new record of the given size to the object
+/// @param recsize if 0, the call to @ref agbindrec is simply a lookup
 
 CGRAPH_API Agrec_t *aggetrec(void *obj, const char *name, int move_to_front);
 ///< find record in circular list and do optional move-to-front and lock
 
 CGRAPH_API int agdelrec(void *obj, const char *name);
+///<  deletes a named record from one object
+
 CGRAPH_API void aginit(Agraph_t * g, int kind, const char *rec_name,
                        int rec_size, int move_to_front);
+/**< @brief attach new records to objects of specified kind
+ *
+ * @param kind may be @ref AGRAPH, @ref AGNODE, or @ref AGEDGE
+ * @param rec_size if is negative (of the actual rec_size) for graphs,
+ * @ref aginit is applied recursively to the graph and its subgraphs
+ */
+
 CGRAPH_API void agclean(Agraph_t * g, int kind, char *rec_name);
+///< @brief calls @ref agdelrec for all objects
+/// of the same class in an entire graph
+
 /// @}
 
 CGRAPH_API char *agget(void *obj, char *name);
@@ -501,7 +567,8 @@ CGRAPH_API int agsafeset(void* obj, char* name, const char* value,
                          const char* def);
 /// @}
 
-/// @defgroup cgraph_subgraph definitions for subgraphs
+/// @defgroup cgraph_subgraph subgraphs
+/// @ingroup cgraph_graph
 /// @{
 CGRAPH_API Agraph_t *agsubg(Agraph_t * g, char *name, int cflag);	/* constructor */
 CGRAPH_API Agraph_t *agidsubg(Agraph_t * g, IDTYPE id, int cflag);	/* constructor */
@@ -509,6 +576,11 @@ CGRAPH_API Agraph_t *agfstsubg(Agraph_t * g);
 CGRAPH_API Agraph_t *agnxtsubg(Agraph_t * subg);
 CGRAPH_API Agraph_t *agparent(Agraph_t * g);
 /// @}
+
+/** @defgroup cgraph_misc miscellaneous
+ *  @ingroup cgraph_api
+ *  @{
+ */
 
 /// @defgroup card set cardinality
 /// @{
@@ -561,8 +633,6 @@ CGRAPH_API agusererrf agseterrf(agusererrf);
 
 #undef PRINTF_LIKE
 
-/// @addtogroup cgraph_other
-/// @{
 /* data access macros */
 /* this assumes that e[0] is out and e[1] is inedge, see @ref Agedgepair_s  */
 #define AGIN2OUT(inedge)		((inedge)-1) ///< Agedgepair_s.in -> Agedgepair_s.out
@@ -585,14 +655,17 @@ CGRAPH_API agusererrf agseterrf(agusererrf);
 
 /// @addtogroup cgraph_graph
 /// @{
-CGRAPH_API extern Agdesc_t Agdirected;
+CGRAPH_API extern Agdesc_t Agdirected; ///< directed
 CGRAPH_API extern Agdesc_t Agstrictdirected;
-CGRAPH_API extern Agdesc_t Agundirected;
-CGRAPH_API extern Agdesc_t Agstrictundirected;
+///< strict directed. A strict graph cannot have multi-edges or self-arcs.
+CGRAPH_API extern Agdesc_t Agundirected; ///< undirected
+CGRAPH_API extern Agdesc_t Agstrictundirected; ///< strict undirected
 /// @}
 
-/// @defgroup cgraph_fast fast graphs
-/// @{
+/** @defgroup cgraph_fast fast graphs
+ *  @ingroup cgraph_misc
+ *  @{
+ */
 
 /* this is expedient but a bit slimey because it "knows" that dict entries of both nodes
 and edges are embedded in main graph objects but allocated separately in subgraphs */
@@ -600,7 +673,72 @@ and edges are embedded in main graph objects but allocated separately in subgrap
 #define EDGEOF(sn,rep)		(AGSNMAIN(sn)?((Agedge_t*)((unsigned char*)(rep) - offsetof(Agedge_t,seq_link))) : ((Dthold_t*)(rep))->obj)
 /// @}
 
+/// options for passing to `graphviz_acyclic`
+typedef struct {
+  FILE *outFile;
+  bool doWrite;
+  bool Verbose;
+} graphviz_acyclic_options_t;
+
+/// programmatic access to `acyclic`
+///
+/// See `man acyclic` for an explanation of the `acyclic` tool.
+///
+/// \param g Graph to operate on
+/// \param opts Options to control acyclic algorithm
+/// \param num_rev [inout] Running total of reversed edges
+/// \return True if a cycle was found, indicating failure
+CGRAPH_API bool graphviz_acyclic(Agraph_t *g,
+                                 const graphviz_acyclic_options_t *opts,
+                                 size_t *num_rev);
+
+/// options for passing to `graphviz_tred`
+typedef struct {
+  bool Verbose;
+  bool PrintRemovedEdges;
+  FILE *out; ///< stream to write result(s) to
+  FILE *err; ///< stream to print warnings to
+} graphviz_tred_options_t;
+
+/// programmatic access to `tred`
+///
+/// See `man tred` for an explanation of the `tred` tool.
+///
+/// \param g Graph to operate on
+/// \param opts Options to control tred algorithm
+CGRAPH_API void graphviz_tred(Agraph_t *g, const graphviz_tred_options_t *opts);
+
+/// options for passing to `graphviz_unflatten`
+typedef struct {
+  bool Do_fans;
+  int MaxMinlen;
+  int ChainLimit;
+} graphviz_unflatten_options_t;
+
+/// programmatic access to `unflatten`
+///
+/// See `man unflatten` for an explanation of the `unflatten` tool.
+///
+/// \param g Graph to operate on
+/// \param opts Options to control unflattening
+CGRAPH_API void graphviz_unflatten(Agraph_t *g,
+                                   const graphviz_unflatten_options_t *opts);
+
+/** add to a graph any edges with both endpoints within that graph
+ *
+ * If `edgeset` is given as `NULL`, edges from the root graph of `g` will be
+ * considered. In this case if `g` itself is the root graph, this call is a
+ * no-op.
+ *
+ * If `g` is a connected component, the edges added will be all edges attached
+ * to any node in `g`.
+ *
+ * \param g Graph to add edges to
+ * \param edgeset Graph whose edges to consider
+ * \return Number of edges added
+ */
+CGRAPH_API size_t graphviz_node_induce(Agraph_t *g, Agraph_t *edgeset);
+
 #ifdef __cplusplus
 }
 #endif
-/// @}

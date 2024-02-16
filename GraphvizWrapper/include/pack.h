@@ -107,7 +107,6 @@ typedef unsigned int packval_t;
     PACK_API Agraph_t **ccomps(Agraph_t *, int *, char *);
     PACK_API Agraph_t **cccomps(Agraph_t *, int *, char *);
     PACK_API Agraph_t **pccomps(Agraph_t *, int *, char *, bool *);
-    PACK_API int nodeInduce(Agraph_t *);
     PACK_API Agraph_t *mapClust(Agraph_t *);
 #undef PACK_API
 #ifdef __cplusplus

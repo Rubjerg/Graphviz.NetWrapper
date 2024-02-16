@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.IO;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz.Test;
@@ -29,8 +30,45 @@ public class TestInterop
 
         Assert.AreEqual("", ReturnEmptyString());
         Assert.AreEqual("hello", ReturnHello());
+        Assert.AreEqual("©", ReturnCopyRight());
         Assert.AreEqual("1", EchoString("1"));
         Assert.AreEqual("", EchoString(""));
         Assert.AreEqual("hello", EchoString("hello"));
+        Assert.AreEqual("©", EchoString("©"));
+    }
+
+    [Test()]
+    public void TestInternalEncoding()
+    {
+        var root = Utils.CreateUniqueTestGraph();
+        var nodeA = root.GetOrAddNode("✅");
+        var nodeB = root.GetOrAddNode("✅");
+        Assert.AreEqual(nodeA, nodeB);
+    }
+
+    [Test()]
+    public void TestOutputEncoding()
+    {
+        var root = Utils.CreateUniqueTestGraph();
+        var nodeA = root.GetOrAddNode("A");
+        nodeA.SetAttribute("label", "✅");
+        var dotStr = root.ToDotString();
+        Assert.IsTrue(dotStr.Contains("✅"));
+        var svgStr = root.ToSvgString();
+        Assert.IsTrue(svgStr.Contains("✅"));
+
+        // Also test with files
+        root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/utf8.dot");
+        var dotFileStr = File.ReadAllText(TestContext.CurrentContext.TestDirectory + "/utf8.dot");
+        Assert.IsTrue(dotFileStr.Contains("✅"));
+        root.ToXDotFile(TestContext.CurrentContext.TestDirectory + "/utf8.xdot");
+        var xdotFileStr = File.ReadAllText(TestContext.CurrentContext.TestDirectory + "/utf8.xdot");
+        Assert.IsTrue(xdotFileStr.Contains("✅"));
+        root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/utf8.svg");
+        var svgFileStr = File.ReadAllText(TestContext.CurrentContext.TestDirectory + "/utf8.svg");
+        Assert.IsTrue(svgFileStr.Contains("✅"));
+
+        // PDF doesn't seem to support unicode correctly?
+        // Open issue: https://gitlab.com/graphviz/graphviz/-/issues/2508
     }
 }

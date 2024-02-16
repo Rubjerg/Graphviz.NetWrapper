@@ -25,18 +25,6 @@
 #include <stdint.h>
 #include <assert.h>
 #include <signal.h>
-
-/// @cond
-
-#ifndef FALSE
-#define FALSE 0
-#endif
-#ifndef TRUE
-#define TRUE (!FALSE)
-#endif
-
-/// @endcond
-
 #include "geom.h"
 #include "gvcext.h"
 #include "pathgeom.h"
@@ -112,7 +100,7 @@ extern "C" {
 
     typedef struct bezier {
 	pointf *list;
-	int size;
+	size_t size;
 	uint32_t sflag;
 	uint32_t eflag;
 	pointf sp;
@@ -150,8 +138,8 @@ extern "C" {
 
     typedef struct polygon_t {	/* mutable shape information for a node */
 	int regular;		/* true for symmetric shapes */
-	int peripheries;	/* number of periphery lines */
-	int sides;		/* number of sides */
+	size_t peripheries; ///< number of periphery lines
+	size_t sides; ///< number of sides
 	double orientation;	/* orientation of shape (+ve degrees) */
 	double distortion;	/* distortion factor - as in trapezium */
 	double skew;		/* skew factor - as in parallelogram */

@@ -217,7 +217,7 @@ public record struct TextInfo(PointD Anchor, TextAlign Align, double WidthEstima
     };
 }
 
-public record struct ImageInfo(RectangleD Position, string Name)
+public record struct ImageInfo(RectangleD Position, string? Name)
 {
     internal ImageInfo ForCoordSystem(CoordinateSystem coordSystem, double maxY) => this with
     {

@@ -32,13 +32,13 @@ public class TestDotLayout
     {
         CreateSimpleTestGraph(out RootGraph root, out Node nodeA, out Edge edge);
 
-        Assert.AreEqual(root.GetBoundingBox(), default(RectangleD));
+        Assert.AreEqual(default(RectangleD), root.GetBoundingBox(), "Unexpected graph boundingbox");
         Assert.AreEqual(root.GetDrawing().Count, 0);
         Assert.AreEqual(root.GetLabelDrawing().Count, 0);
 
-        Assert.AreEqual(nodeA.GetPosition(), default(PointD));
-        Assert.AreEqual(nodeA.GetBoundingBox(), default(RectangleD));
-        Assert.AreEqual(nodeA.GetSize(), default(SizeD));
+        Assert.AreEqual(default(PointD), nodeA.GetPosition(), "Unexpected node position");
+        Assert.AreEqual(default(RectangleD), nodeA.GetBoundingBox(), "Unexpected node boundingbox");
+        Assert.AreEqual(default(SizeD), nodeA.GetSize(), "Unexpected node size");
         Assert.AreEqual(nodeA.GetRecordRectangles().Count(), 0);
         Assert.AreEqual(nodeA.GetDrawing().Count, 0);
         Assert.AreEqual(nodeA.GetLabelDrawing().Count, 0);

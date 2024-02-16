@@ -3,6 +3,8 @@ using System.Linq;
 
 namespace Rubjerg.Graphviz.Test;
 
+#nullable enable
+
 [TestFixture()]
 public class Tutorial
 {
@@ -86,7 +88,7 @@ public class Tutorial
 
         // There are convenience methods available that parse these attributes for us and give
         // back the layout information in an accessible form.
-        Node nodeA = layout.GetNode("A");
+        Node nodeA = layout.GetNode("A")!;
         PointD position = nodeA.GetPosition();
         Utils.AssertPattern(PointPattern, position.ToString());
 
@@ -94,8 +96,8 @@ public class Tutorial
         Utils.AssertPattern(RectPattern, nodeboundingbox.ToString());
 
         // Or splines between nodes
-        Node nodeB = layout.GetNode("B");
-        Edge edge = layout.GetEdge(nodeA, nodeB, "Some edge name");
+        Node nodeB = layout.GetNode("B")!;
+        Edge edge = layout.GetEdge(nodeA, nodeB, "Some edge name")!;
         PointD[] spline = edge.GetFirstSpline();
         string splineString = string.Join(", ", spline.Select(p => p.ToString()));
         Utils.AssertPattern(SplinePattern, splineString);
@@ -165,7 +167,7 @@ public class Tutorial
 
         var layout = root.CreateLayout();
 
-        SubGraph cluster = layout.GetSubgraph("cluster_1");
+        SubGraph cluster = layout.GetSubgraph("cluster_1")!;
         RectangleD clusterbox = cluster.GetBoundingBox();
         RectangleD rootgraphbox = layout.GetBoundingBox();
         Utils.AssertPattern(RectPattern, clusterbox.ToString());
@@ -184,8 +186,8 @@ public class Tutorial
         var layout = root.CreateLayout();
 
         // The order of the list matches the order in which the labels occur in the label string above.
-        var rects = layout.GetNode("A").GetRecordRectangles().ToList();
-        var rectLabels = layout.GetNode("A").GetRecordRectangleLabels().Select(l => l.Text).ToList();
+        var rects = layout.GetNode("A")!.GetRecordRectangles().ToList();
+        var rectLabels = layout.GetNode("A")!.GetRecordRectangleLabels().Select(l => l.Text).ToList();
         Assert.AreEqual(9, rects.Count);
         Assert.AreEqual(new[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, rectLabels);
     }
