@@ -26,14 +26,14 @@ public abstract class GraphvizThing
         _ptr = ptr;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as GraphvizThing);
     }
 
-    public virtual bool Equals(GraphvizThing obj)
+    public virtual bool Equals(GraphvizThing? obj)
     {
-        return obj != null && _ptr == obj._ptr;
+        return obj is not null && _ptr == obj._ptr;
     }
 
     public override int GetHashCode()
@@ -41,12 +41,12 @@ public abstract class GraphvizThing
         return _ptr.GetHashCode();
     }
 
-    public static bool operator ==(GraphvizThing a, GraphvizThing b)
+    public static bool operator ==(GraphvizThing? a, GraphvizThing? b)
     {
         return Equals(a, b);
     }
 
-    public static bool operator !=(GraphvizThing a, GraphvizThing b)
+    public static bool operator !=(GraphvizThing? a, GraphvizThing? b)
     {
         return !(a == b);
     }

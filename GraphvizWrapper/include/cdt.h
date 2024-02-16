@@ -46,7 +46,6 @@ typedef struct _dtdata_s	Dtdata_t;
 typedef struct _dt_s		Dt_t;
 typedef struct _dt_s		Dict_t;	/* for libdict compatibility */
 typedef struct _dtstat_s	Dtstat_t;
-typedef void*			(*Dtmemory_f)(Dt_t*,void*,size_t,Dtdisc_t*);
 typedef void*			(*Dtsearch_f)(Dt_t*,void*,int);
 typedef void* 		(*Dtmake_f)(void*,Dtdisc_t*);
 typedef void 			(*Dtfree_f)(void*,Dtdisc_t*);
@@ -93,23 +92,19 @@ struct _dtdisc_s
 	Dtmake_f	makef;	/* object constructor			*/
 	Dtfree_f	freef;	/* object destructor			*/
 	Dtcompar_f	comparf;/* to compare two objects		*/
-	Dtmemory_f	memoryf;/* to allocate/free memory		*/
 };
 
-#define DTDISC(dc, ky, sz, lk, mkf, frf, cmpf, memf) \
+#define DTDISC(dc, ky, sz, lk, mkf, frf, cmpf) \
 	( (dc)->key = (ky), (dc)->size = (sz), (dc)->link = (lk), \
 	  (dc)->makef = (mkf), (dc)->freef = (frf), \
-	  (dc)->comparf = (cmpf), \
-	  (dc)->memoryf = (memf) )
+	  (dc)->comparf = (cmpf) )
 
 /* the dictionary structure itself */
 struct _dt_s
 {	Dtsearch_f	searchf;/* search function			*/
 	Dtdisc_t*	disc;	/* method to manipulate objs		*/
 	Dtdata_t*	data;	/* sharable data			*/
-	Dtmemory_f	memoryf;/* function to alloc/free memory	*/
 	Dtmethod_t*	meth;	/* dictionary method			*/
-	int		type;	/* type information			*/
 	int		nview;	/* number of parent view dictionaries	*/
 	Dt_t*		view;	/* next on viewpath			*/
 	Dt_t*		walk;	/* dictionary being walked		*/
@@ -124,9 +119,6 @@ struct _dtstat_s
 	size_t dt_max; // max size of a chain or a level
 	size_t* dt_count; // counts of chains or levels by size
 };
-
-/* flag set if the last search operation actually found the object */
-#define DT_FOUND	0100000
 
 /* supported storage methods */
 #define DT_SET		0000001	/* set with unique elements		*/
@@ -194,17 +186,14 @@ CDT_API unsigned int dtstrhash(void*, int);
 
 #define dtfirst(d)	(*(_DT(d)->searchf))((d),(void*)(0),DT_FIRST)
 #define dtnext(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_NEXT)
-#define dtleast(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_SEARCH|DT_NEXT)
 #define dtlast(d)	(*(_DT(d)->searchf))((d),(void*)(0),DT_LAST)
 #define dtprev(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_PREV)
-#define dtmost(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_SEARCH|DT_PREV)
 #define dtsearch(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_SEARCH)
 #define dtmatch(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_MATCH)
 #define dtinsert(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_INSERT)
 #define dtdelete(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_DELETE)
 #define dtdetach(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_DETACH)
 #define dtclear(d)	(*(_DT(d)->searchf))((d),(void*)(0),DT_CLEAR)
-#define dtfound(d)	(_DT(d)->type & DT_FOUND)
 
 #define DT_PRIME	17109811 /* 2#00000001 00000101 00010011 00110011 */
 

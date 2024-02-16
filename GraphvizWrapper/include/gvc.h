@@ -48,7 +48,7 @@ extern "C" {
 /// @ingroup public_apis
 /// @{
 	
-#define LAYOUT_DONE(g) (agbindrec(g, "Agraphinfo_t", 0, TRUE) && GD_drawing(g))
+#define LAYOUT_DONE(g) (agbindrec(g, "Agraphinfo_t", 0, true) && GD_drawing(g))
 
 /* misc */
 /* FIXME - this needs eliminating or renaming */

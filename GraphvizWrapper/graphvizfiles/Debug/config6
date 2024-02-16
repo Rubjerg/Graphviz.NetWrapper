@@ -38,6 +38,8 @@ gvplugin_core.dll core {
 	}
 	device {
 		svg:svg 1
+		svgz:svg 1
+		svg_inline:svg 1
 	}
 	device {
 		json:json 1
@@ -72,6 +74,7 @@ gvplugin_core.dll core {
 	}
 	render {
 		svg 1
+		svg_inline 1
 	}
 	render {
 		json 1

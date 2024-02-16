@@ -30,6 +30,8 @@ char* echo_string(char* str) {
 char* return_empty_string() { return ""; }
 /// <returns>Ownership is not returned to the caller</returns>
 char* return_hello() { return "hello"; }
+/// <returns>Ownership is not returned to the caller</returns>
+char* return_copyright() { return u8"©"; }
 
 char* readFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::binary | std::ios::ate);

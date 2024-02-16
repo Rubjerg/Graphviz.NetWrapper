@@ -15,7 +15,7 @@ public class Graph : CGraphThing
     /// <summary>
     /// rootgraph may be null
     /// </summary>
-    protected Graph(IntPtr ptr, RootGraph rootgraph) : base(ptr, rootgraph) { }
+    protected Graph(IntPtr ptr, RootGraph? rootgraph) : base(ptr, rootgraph) { }
     public bool IsStrict() { return Agisstrict(_ptr) != 0; }
     public bool IsDirected() { return Agisdirected(_ptr) != 0; }
     public bool IsUndirected() { return Agisundirected(_ptr) != 0; }
@@ -100,7 +100,7 @@ public class Graph : CGraphThing
         }
     }
 
-    public Graph Parent()
+    public Graph? Parent()
     {
         IntPtr p = Agparent(_ptr);
         if (p == IntPtr.Zero)
@@ -123,7 +123,7 @@ public class Graph : CGraphThing
         return SubGraph.GetOrCreate(this, name);
     }
 
-    public SubGraph GetSubgraph(string name)
+    public SubGraph? GetSubgraph(string? name)
     {
         return SubGraph.Get(this, name);
     }
@@ -133,7 +133,7 @@ public class Graph : CGraphThing
         return Node.GetOrCreate(this, name);
     }
 
-    public Node GetNode(string name)
+    public Node? GetNode(string? name)
     {
         return Node.Get(this, name);
     }
@@ -142,7 +142,7 @@ public class Graph : CGraphThing
     /// Passing null as edge name (the default) will result in a new unique edge without a name.
     /// Passing the empty string has the same effect as passing null.
     /// </param>
-    public Edge GetOrAddEdge(Node tail, Node head, string name = null)
+    public Edge GetOrAddEdge(Node tail, Node head, string? name = null)
     {
         return Edge.GetOrCreate(this, tail, head, name);
     }
@@ -151,7 +151,7 @@ public class Graph : CGraphThing
     /// Passing null as edge name will return any edge between the given endpoints, regardless of their name.
     /// Passing the empty string has the same effect as passing null.
     /// </param>
-    public Edge GetEdge(Node tail, Node head, string name = null)
+    public Edge? GetEdge(Node tail, Node head, string? name = null)
     {
         return Edge.Get(this, tail, head, name);
     }
@@ -161,7 +161,7 @@ public class Graph : CGraphThing
     /// Passing null as edge name will return any edge between the given endpoints, regardless of their name.
     /// Passing the empty string has the same effect as passing null.
     /// </param>
-    public Edge GetEdgeBetween(Node node1, Node node2, string name = null)
+    public Edge? GetEdgeBetween(Node node1, Node node2, string? name = null)
     {
         return Edge.Get(this, node1, node2, name) ?? Edge.Get(this, node2, node1, name);
     }
@@ -181,7 +181,7 @@ public class Graph : CGraphThing
     /// https://gitlab.com/graphviz/graphviz/-/issues/1887
     /// </summary>
     /// <returns>string with unix line endings</returns>
-    public string ToDotString()
+    public string? ToDotString()
     {
         return Rjagmemwrite(_ptr);
     }
@@ -218,6 +218,7 @@ public class Graph : CGraphThing
     /// </summary>
     public SubGraph AddSubgraphFromNodes(string name, IEnumerable<Node> nodes)
     {
+#nullable disable
         // Freeze the list of descendants,
         // since we are going to add subgraphs while iterating over existing subgraphs
         List<SubGraph> descendants = Descendants().ToList();
@@ -265,6 +266,7 @@ public class Graph : CGraphThing
         Debug.Assert(result.Nodes().Count() == nodes.Count());
 
         return result;
+#nullable enable
     }
 
     /// <summary>
@@ -324,6 +326,7 @@ public class Graph : CGraphThing
 
     public void CloneInto(RootGraph target)
     {
+#nullable disable
         // Copy all nodes and edges
         foreach (var node in Nodes())
         {
@@ -391,6 +394,7 @@ public class Graph : CGraphThing
                 _ = node.CopyAttributesTo(newnode);
             }
         }
+#nullable enable
     }
 
     /// <summary>
@@ -464,7 +468,7 @@ public class Graph : CGraphThing
 
     public bool IsCluster()
     {
-        return GetName().StartsWith("cluster");
+        return GetName()?.StartsWith("cluster") ?? false;
     }
 
     /// <summary>
@@ -576,10 +580,10 @@ public class Graph : CGraphThing
     /// </summary>
     internal RectangleD RawBoundingBox()
     {
-        string bb_string = Agget(_ptr, "bb");
+        string? bb_string = Agget(_ptr, "bb");
         if (string.IsNullOrEmpty(bb_string))
             return default;
-        return ParseRect(bb_string);
+        return ParseRect(bb_string!);
     }
 
     internal double RawMaxY()
@@ -614,7 +618,7 @@ public class Graph : CGraphThing
     public void ToPsFile(string filepath, string engine = LayoutEngines.Dot) => ToFile(filepath, "ps", engine);
 
     /// <returns>string with unix line endings</returns>
-    public string ToSvgString(string engine = LayoutEngines.Dot) => GraphvizCommand.ConvertBytesToString(ToBytes("svg", engine));
+    public string ToSvgString(string engine = LayoutEngines.Dot) => GraphvizCommand.ConvertBytesOutputToString(ToBytes("svg", engine));
     public byte[] ToPngBytes(string engine = LayoutEngines.Dot) => ToBytes("png", engine);
     public byte[] ToPdfBytes(string engine = LayoutEngines.Dot) => ToBytes("pdf", engine);
     public byte[] ToPsBytes(string engine = LayoutEngines.Dot) => ToBytes("ps", engine);

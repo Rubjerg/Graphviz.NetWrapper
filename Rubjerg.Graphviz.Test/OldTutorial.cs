@@ -3,6 +3,8 @@ using System.Linq;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 
+#nullable enable
+
 namespace Rubjerg.Graphviz.Test;
 
 /// <summary>
@@ -67,7 +69,7 @@ public class OldTutorial
         root.RenderToFile(TestContext.CurrentContext.TestDirectory + "/dot_out.svg", "svg");
 
         // Or programatically read out the layout attributes
-        Node nodeA = root.GetNode("A");
+        Node nodeA = root.GetNode("A")!;
         PointD position = nodeA.GetPosition();
         Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+}", position.ToString());
 
@@ -76,8 +78,8 @@ public class OldTutorial
         Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+, Width=[\d.]+, Height=[\d.]+}", nodeboundingbox.ToString());
 
         // Or splines between nodes
-        Node nodeB = root.GetNode("B");
-        Edge edge = root.GetEdge(nodeA, nodeB, "Some edge name");
+        Node nodeB = root.GetNode("B")!;
+        Edge edge = root.GetEdge(nodeA, nodeB, "Some edge name")!;
         PointD[] spline = edge.GetFirstSpline();
         string splineString = string.Join(", ", spline.Select(p => p.ToString()));
         string expectedSplinePattern =
@@ -130,7 +132,7 @@ public class OldTutorial
 
         root.ComputeLayout();
 
-        SubGraph cluster = root.GetSubgraph("cluster_1");
+        SubGraph cluster = root.GetSubgraph("cluster_1")!;
         RectangleD clusterbox = cluster.GetBoundingBox();
         RectangleD rootgraphbox = root.GetBoundingBox();
         Utils.AssertPattern(@"{X=[\d.]+, Y=[\d.]+, Width=[\d.]+, Height=[\d.]+}", clusterbox.ToString());
