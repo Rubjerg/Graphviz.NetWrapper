@@ -5,7 +5,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
@@ -36,10 +36,6 @@ extern "C" {
 #undef MAX
 #endif
 #define MAX(a,b)	((a)>(b)?(a):(b))
-
-#define AVG(a,b)	((a + b) / 2)
-#define SGN(a)		(((a)<0)? -1 : 1)
-#define CMP(a,b)	(((a)<(b)) ? -1 : (((a)>(b)) ? 1 : 0))
 
 #ifndef MAXDOUBLE
 #define MAXDOUBLE	1.7976931348623157e+308

@@ -5,12 +5,14 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
 #pragma once
+
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,7 +44,7 @@ extern "C" {
 
     typedef struct Ppoly_t {
 	Ppoint_t *ps;
-	int pn;
+	size_t pn;
     } Ppoly_t;
 
     typedef Ppoly_t Ppolyline_t;

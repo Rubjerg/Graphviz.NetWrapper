@@ -5,7 +5,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
@@ -21,6 +21,7 @@ extern "C" {
 #include "gvcommon.h"
 #include "color.h"
 #include <stdbool.h>
+#include <stddef.h>
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 
@@ -146,8 +147,8 @@ extern "C" {
 
     typedef struct gv_argvlist_s {
 	char **argv;
-	int argc;
-	int alloc;
+	size_t argc;
+	size_t alloc;
     } gv_argvlist_t;
     
     typedef struct gvdevice_callbacks_s {
@@ -246,9 +247,9 @@ extern "C" {
 	pointf *url_map_p;
 
 	/* additional mapped regions for edges */
-	int url_bsplinemap_poly_n;      /* number of polygons in url bspline map
+	size_t url_bsplinemap_poly_n;      /* number of polygons in url bspline map
 					 if GVRENDER_DOES_MAPS && GVRENDER_DOES_MAP_BSPLINES */
-	int *url_bsplinemap_n;          /* array of url_bsplinemap_poly_n ints 
+	size_t *url_bsplinemap_n;          /* array of url_bsplinemap_poly_n ints 
 					 of number of points in each polygon */
 	pointf *url_bsplinemap_p;       /* all the polygon points */
 

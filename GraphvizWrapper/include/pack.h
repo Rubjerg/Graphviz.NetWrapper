@@ -24,7 +24,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
@@ -32,6 +32,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,15 +87,15 @@ typedef unsigned int packval_t;
 #define PACK_API /* nothing */
 #endif
 
-    PACK_API point *putRects(int ng, boxf* bbs, pack_info* pinfo);
-    PACK_API int packRects(int ng, boxf* bbs, pack_info* pinfo);
+    PACK_API point *putRects(size_t ng, boxf *bbs, pack_info *pinfo);
+    PACK_API int packRects(size_t ng, boxf* bbs, pack_info* pinfo);
 
-    PACK_API point *putGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
-    PACK_API int packGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
-    PACK_API int packSubgraphs(int, Agraph_t **, Agraph_t *, pack_info *);
-    PACK_API int pack_graph(int ng, Agraph_t** gs, Agraph_t* root, bool *fixed);
+    PACK_API point *putGraphs(size_t, Agraph_t **, Agraph_t *, pack_info *);
+    PACK_API int packGraphs(size_t, Agraph_t **, Agraph_t *, pack_info *);
+    PACK_API int packSubgraphs(size_t, Agraph_t **, Agraph_t *, pack_info *);
+    PACK_API int pack_graph(size_t ng, Agraph_t **gs, Agraph_t *root, bool *fixed);
 
-    PACK_API int shiftGraphs(int, Agraph_t**, point*, Agraph_t*, bool);
+    PACK_API int shiftGraphs(size_t, Agraph_t**, point*, Agraph_t*, bool);
 
     PACK_API pack_mode getPackMode(Agraph_t * g, pack_mode dflt);
     PACK_API int getPack(Agraph_t *, int not_def, int dflt);
@@ -104,9 +105,9 @@ typedef unsigned int packval_t;
                                          pack_info* pinfo);
 
     PACK_API int isConnected(Agraph_t *);
-    PACK_API Agraph_t **ccomps(Agraph_t *, int *, char *);
-    PACK_API Agraph_t **cccomps(Agraph_t *, int *, char *);
-    PACK_API Agraph_t **pccomps(Agraph_t *, int *, char *, bool *);
+    PACK_API Agraph_t **ccomps(Agraph_t *, size_t *, char *);
+    PACK_API Agraph_t **cccomps(Agraph_t *, size_t *, char *);
+    PACK_API Agraph_t **pccomps(Agraph_t *, size_t *, char *, bool *);
     PACK_API Agraph_t *mapClust(Agraph_t *);
 #undef PACK_API
 #ifdef __cplusplus
