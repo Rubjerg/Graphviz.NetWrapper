@@ -16,7 +16,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
@@ -24,6 +24,7 @@
 #pragma once
 
 #include "pathgeom.h"
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,10 +47,10 @@ extern "C" {
 			     Ppolyline_t * output_route);
 
 /* fit a spline to an input polyline, without touching barrier segments */
-    PATHPLAN_API int Proutespline(Pedge_t * barriers, int n_barriers,
-			    Ppolyline_t input_route,
-			    Pvector_t endpoint_slopes[2],
-			    Ppolyline_t * output_route);
+PATHPLAN_API int Proutespline(Pedge_t *barriers, size_t n_barriers,
+                              Ppolyline_t input_route,
+                              Pvector_t endpoint_slopes[2],
+                              Ppolyline_t *output_route);
 
 /* utility function to convert from a set of polygonal obstacles to barriers */
     PATHPLAN_API int Ppolybarriers(Ppoly_t ** polys, int npolys,
