@@ -59,7 +59,7 @@ jobs:
 
     - name: Run Unittests Without Coverage (.NET 8)
     
-      run: nunit-console-netcore.sh Rubjerg.Graphviz.Test\bin\x64\Release\net8.0\Rubjerg.Graphviz.Test.dll -filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*
+      run: bash nunit-console-netcore.sh Rubjerg.Graphviz.Test\bin\x64\Release\net8.0\Rubjerg.Graphviz.Test.dll -filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*
 
     - name: Upload Coverage data
       run: |
