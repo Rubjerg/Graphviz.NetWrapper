@@ -57,9 +57,9 @@ jobs:
     
       run: packages\opencover\4.7.1221\tools\OpenCover.Console.exe -skipautoprops -returntargetcode -register '-target:bash.exe' -targetargs:'nunit-console.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
 
-    - name: Run Unittests With Coverage Calculation (.NET 6)
+    - name: Run Unittests Without Coverage (.NET 8)
     
-      run: packages\opencover\4.7.1221\tools\OpenCover.Console.exe -skipautoprops -returntargetcode -register '-target:bash.exe' -targetargs:'nunit-console-netcore.sh Rubjerg.Graphviz.Test\bin\x64\Release\net8.0\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
+      run: nunit-console-netcore.sh Rubjerg.Graphviz.Test\bin\x64\Release\net8.0\Rubjerg.Graphviz.Test.dll -filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*
 
     - name: Upload Coverage data
       run: |
@@ -70,7 +70,7 @@ jobs:
     - name: Run Transitive Tests (.NET 4.8)
       run: bash nunit-console.sh Rubjerg.Graphviz.TransitiveTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveTest.dll
 
-    - name: Run Transitive Tests (.NET 6)
+    - name: Run Transitive Tests (.NET 8)
       run: bash nunit-console-netcore.sh Rubjerg.Graphviz.TransitiveTest\bin\x64\Release\net8.0\Rubjerg.Graphviz.TransitiveTest.dll
 
     - name: Restore NuGet Packages for Nuget Tests (from local package source)
@@ -82,12 +82,12 @@ jobs:
     - name: Run Nuget Tests (.NET 4.8)
       run: bash nunit-console.sh Rubjerg.Graphviz.NugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.NugetTest.dll
 
-    - name: Run Nuget Tests (.NET 6)
+    - name: Run Nuget Tests (.NET 8)
       run: bash nunit-console.sh Rubjerg.Graphviz.NugetTest\bin\x64\Release\net8.0\Rubjerg.Graphviz.NugetTest.dll
 
     - name: Run Transitive Nuget Tests (.NET 4.8)
       run: bash nunit-console.sh Rubjerg.Graphviz.TransitiveNugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveNugetTest.dll
 
-    - name: Run Transitive Nuget Tests (.NET 6)
+    - name: Run Transitive Nuget Tests (.NET 8)
       run: bash nunit-console.sh Rubjerg.Graphviz.TransitiveNugetTest\bin\x64\Release\net8.0\Rubjerg.Graphviz.TransitiveNugetTest.dll
 
