@@ -85,7 +85,7 @@ public abstract class CGraphThing : GraphvizThing
             return GetAttribute(name)!;
         return deflt;
     }
-    
+
     /// <summary>
     /// Get the attribute if it was introduced and contains a non-empty value, otherwise return null.
     /// </summary>

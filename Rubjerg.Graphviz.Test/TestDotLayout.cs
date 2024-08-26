@@ -309,14 +309,14 @@ public class TestDotLayout
 
         {
             root.ToXDotFile(testFile);
-            var fileContent = File.ReadAllText(testFile).Replace("\r\n", "\n");;
+            var fileContent = File.ReadAllText(testFile).Replace("\r\n", "\n");
             var stringContent = root.CreateLayout().ToDotString();
             Assert.AreEqual(fileContent, stringContent);
         }
 
         {
             root.ToSvgFile(testFile);
-            var fileContent = File.ReadAllText(testFile).Replace("\r\n", "\n");;
+            var fileContent = File.ReadAllText(testFile).Replace("\r\n", "\n");
             var stringContent = root.ToSvgString();
             Assert.AreEqual(fileContent, stringContent);
         }
