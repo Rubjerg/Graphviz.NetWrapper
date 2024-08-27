@@ -53,11 +53,11 @@ jobs:
     - name: Check if code is formatted
       run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.NugetTests.sln
 
+    - name: Run Unittests Without Coverage (.NET 8)
+      run: dotnet test  -p:Platform=x64 --no-build -c Release -f net8.0 -v d --filter "Category != Flaky & Category != Slow" Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj
+
     - name: Run Unittests With Coverage Calculation (.NET 4.8)
       run: packages\opencover\4.7.1221\tools\OpenCover.Console.exe -skipautoprops -returntargetcode -register '-target:bash.exe' -targetargs:'nunit-console.sh Rubjerg.Graphviz.Test\bin\x64\Release\net48\Rubjerg.Graphviz.Test.dll'  '-filter:+[Rubjerg*]* -[Rubjerg.Graphviz.Test*]*'
-
-    - name: Run Unittests Without Coverage (.NET 8)
-      run: bash nunit-console-netcore.sh Rubjerg.Graphviz.Test\bin\x64\Release\net8.0\Rubjerg.Graphviz.Test.dll
 
     - name: Upload Coverage data
       run: |
