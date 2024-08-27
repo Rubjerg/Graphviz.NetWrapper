@@ -65,11 +65,11 @@ jobs:
         Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
         bash codecov.sh -f "results.xml"
 
+    - name: Run Transitive Tests (.NET 8)
+      run: dotnet test  -p:Platform=x64 --no-build -c Release -f net8.0 -v d --filter "Category != Flaky & Category != Slow" Rubjerg.Graphviz.TransitiveTest\Rubjerg.Graphviz.TransitiveTest.csproj
+
     - name: Run Transitive Tests (.NET 4.8)
       run: bash nunit-console.sh Rubjerg.Graphviz.TransitiveTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveTest.dll
-
-    - name: Run Transitive Tests (.NET 8)
-      run: bash nunit-console-netcore.sh Rubjerg.Graphviz.TransitiveTest\bin\x64\Release\net8.0\Rubjerg.Graphviz.TransitiveTest.dll
 
     - name: Restore NuGet Packages for Nuget Tests (from local package source)
       run: nuget restore Rubjerg.Graphviz.NugetTests.sln
@@ -77,11 +77,11 @@ jobs:
     - name: Build Nuget Test Solution
       run: msbuild Rubjerg.Graphviz.NugetTests.sln /p:Configuration=Release
 
+    - name: Run Nuget Tests (.NET 8)
+      run: dotnet test  -p:Platform=x64 --no-build -c Release -f net8.0 -v d --filter "Category != Flaky & Category != Slow" Rubjerg.Graphviz.NugetTest\Rubjerg.Graphviz.NugetTest.csproj
+
     - name: Run Nuget Tests (.NET 4.8)
       run: bash nunit-console.sh Rubjerg.Graphviz.NugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.NugetTest.dll
-
-    - name: Run Nuget Tests (.NET 8)
-      run: bash nunit-console.sh Rubjerg.Graphviz.NugetTest\bin\x64\Release\net8.0\Rubjerg.Graphviz.NugetTest.dll
 
     - name: Run Transitive Nuget Tests (.NET 4.8)
       run: bash nunit-console.sh Rubjerg.Graphviz.TransitiveNugetTest\bin\x64\Release\net48\Rubjerg.Graphviz.TransitiveNugetTest.dll
