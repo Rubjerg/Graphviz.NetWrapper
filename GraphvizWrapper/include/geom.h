@@ -28,6 +28,11 @@ typedef struct { int x, y; } point;
 
 typedef struct pointf_s { double x, y; } pointf;
 
+typedef struct {
+  pointf p; // arbitrary point on the line
+  double m; // slope of the line
+} linef;
+
 /* tell pathplan/pathgeom.h */
 #define HAVE_POINTF_S
 
