@@ -1,15 +1,20 @@
 - Navigate to https://gitlab.com/groups/graphviz/-/packages/ and click the version you want to upgrade to
-- Download and install `windows_10_cmake_Debug_graphviz-install-<version>-win64.exe` on your system
-- Navigate to `C:\Program Files\Graphviz\bin` and copy all the files in that folder to `Graphviz.NetWrapper\GraphvizWrapper\graphvizfiles\Debug\`.
+
+- Download and extract `windows_10_cmake_Debug_Graphviz-<version>-win64.zip`.
+- Navigate to `bin/` and copy all the files in that folder to `Graphviz.NetWrapper\GraphvizWrapper\graphvizfiles\Debug\`.
   Check that every existing file was overwritten.
-- Navigate to `C:\Program Files\Graphviz\lib` and copy all the .lib files in that folder to `Graphviz.NetWrapper\GraphvizWrapper\lib\`.
+- Navigate to `lib/` and copy all the .lib files in that folder to `Graphviz.NetWrapper\GraphvizWrapper\lib\`.
   Check that every existing file was overwritten.
-- Navigate to `C:\Program Files\Graphviz\include\graphviz` and copy all the lib files in that folder to `Graphviz.NetWrapper\GraphvizWrapper\include\`.
+- Navigate to `include/graphviz/` and copy all the .h files in that folder to `Graphviz.NetWrapper\GraphvizWrapper\include\`.
   Check that every existing file was overwritten.
-- Download and install `windows_10_cmake_Release_graphviz-install-<version>-win64.exe` on your system
-- Navigate to `C:\Program Files\Graphviz\bin` and copy all the files in that folder to `Graphviz.NetWrapper\GraphvizWrapper\graphvizfiles\Release\`.
+
+- Download and extract `windows_10_cmake_Release_Graphviz-<version>-win64.zip`.
+- Navigate to `bin/` and copy all the files in that folder to `Graphviz.NetWrapper\GraphvizWrapper\graphvizfiles\Release\`.
   Check that every existing file was overwritten.
+
 - Make sure that the toolset selected for GraphvizWrapper.dll is compatible with the vcruntime version shipped with graphviz.
 - Remove all DLLs starting with `concrt`, `msvcp` or `vcruntime`. These are part of the Visual C++ redistributable package, and we're not shipping those.
 - Remove all files ending in `.sh`, these are not crossplatform and we don't need them.
 - Check if any other files are new, and investigate if that is expected.
+
+- Compile and run the tests

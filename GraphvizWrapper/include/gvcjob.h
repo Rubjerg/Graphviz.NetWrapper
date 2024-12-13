@@ -39,7 +39,6 @@ extern "C" {
 
 #define PENWIDTH_NORMAL 1.
 #define PENWIDTH_BOLD 2.
-    typedef enum { GVATTR_STRING, GVATTR_BOOL, GVATTR_COLOR } gvattr_t;
 
 /* The -T output formats listed below are examples only, they are not definitive or inclusive,
  other outputs may use the flags now, or in the future 
@@ -144,12 +143,6 @@ extern "C" {
 	int id;
 	const char *type;
     } gvplugin_active_loadimage_t;
-
-    typedef struct gv_argvlist_s {
-	char **argv;
-	size_t argc;
-	size_t alloc;
-    } gv_argvlist_t;
     
     typedef struct gvdevice_callbacks_s {
 	void (*refresh) (GVJ_t * job);
@@ -356,16 +349,12 @@ extern "C" {
 					/* (e.g. button 1 clicked on current obj) */
 	char *active_tooltip;		/* tooltip of active object - or NULL */
 	char *selected_href;		/* href of selected object - or NULL */
-	gv_argvlist_t selected_obj_type_name; /* (e.g. "edge" "node3" "e" "->" "node5" "") */
-	gv_argvlist_t selected_obj_attributes; /* attribute triplets: name, value, type */
-				/* e.g. "color", "red", GVATTR_COLOR,
-					"style", "filled", GVATTR_BOOL, */
 
 	void *window;		/* display-specific data for gvrender plugin */
 
         /* keybindings for keyboard events */
 	gvevent_key_binding_t *keybindings;
-	int numkeys;
+	size_t numkeys;
 	void *keycodes;
     };
 
