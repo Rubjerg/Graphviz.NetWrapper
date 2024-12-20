@@ -1,5 +1,4 @@
 #define _CRT_SECURE_NO_DEPRECATE
-#include <objbase.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -24,14 +23,15 @@ char* echo_string(char* str) {
     // may already be freed when the consumer uses the string.
     // Instead, we have to duplicate the string.
     // Note that the caller has to free the returned string though, because we transfer ownership.
-    return _strdup(str);
+    return STRDUP(str);
 }
 /// <returns>Ownership is not returned to the caller</returns>
-char* return_empty_string() { return ""; }
+const char* return_empty_string() { return ""; }
 /// <returns>Ownership is not returned to the caller</returns>
-char* return_hello() { return "hello"; }
+const char* return_hello() { return "hello"; }
 /// <returns>Ownership is not returned to the caller</returns>
-char* return_copyright() { return u8"©"; }
+const char* return_copyright() { return "\xC2\xA9"; } // UTF-8 encoding for ©
+
 
 char* readFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
@@ -59,44 +59,27 @@ int renderToSvg(char* dotString)
 {
     // NOTE: the gvContext has to be called first
     // See https://gitlab.com/graphviz/graphviz/-/issues/2434
+    cout << "hi" << endl;
     auto gvc = gvContext();
+    cout << "hi" << endl;
     auto graph = agmemread(dotString);
+    cout << "hi" << endl;
     if (graph == nullptr)
         return 1;
+    cout << "hi" << endl;
     gvLayout(gvc, graph, "dot");
+    cout << "hi" << endl;
     gvRenderFilename(gvc, graph, "svg", "test.svg");
+    cout << "hi" << endl;
     gvFreeLayout(gvc, graph);
+    cout << "hi" << endl;
     agclose(graph);
+    cout << "hi" << endl;
     return 0;
 }
-
-// This test fails only the first time. Rerunning it makes it work.
-int missing_label_repro() {
-    const std::string filename = "missing-label-repro.dot";
-    char* dotString = readFile(filename);
-    if (dotString == nullptr)
-        return 1;
-    if (renderToSvg(dotString) > 0) return 2;
-
-    char* svgText = readFile("test.svg");
-    char* expected = ">OpenNode</text>";
-    if (strstr(svgText, expected) == nullptr)
-        return 3;
-    return 0;
-}
-
-int stackoverflow_repro() {
-
-    const std::string filename = "stackoverflow-repro.dot";
-    char* dotString = readFile(filename);
-    if (dotString == nullptr)
-        return 1;
-    return renderToSvg(dotString);
-}
-
 
 int test_agread() {
-    char* filename = "missing-label-repro.dot";
+    const char* filename = "missing-label-repro.dot";
     // Open the file for reading
     FILE* fp = fopen(filename, "r");
     if (fp == nullptr)
@@ -130,3 +113,26 @@ int test_rj_agmemread() {
     return 0;
 }
 
+// This test fails only the first time. Rerunning it makes it work.
+int missing_label_repro() {
+    const std::string filename = "missing-label-repro.dot";
+    char* dotString = readFile(filename);
+    if (dotString == nullptr)
+        return 1;
+    if (renderToSvg(dotString) > 0) return 2;
+
+    char* svgText = readFile("test.svg");
+    const char* expected = ">OpenNode</text>";
+    if (strstr(svgText, expected) == nullptr)
+        return 3;
+    return 0;
+}
+
+int stackoverflow_repro() {
+
+    const std::string filename = "stackoverflow-repro.dot";
+    char* dotString = readFile(filename);
+    if (dotString == nullptr)
+        return 1;
+    return renderToSvg(dotString);
+}

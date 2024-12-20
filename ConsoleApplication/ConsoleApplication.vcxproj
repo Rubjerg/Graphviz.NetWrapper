@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Project Configurations -->
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
+      <OutDir>bin/Debug/</OutDir>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
+      <OutDir>bin/Release/</OutDir>
     </ProjectConfiguration>
   </ItemGroup>
+
+  <!-- Globals -->
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -17,80 +23,24 @@
     <RootNamespace>ConsoleApplication</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Label="Shared">
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>../Rubjerg.Graphviz/</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>../Rubjerg.Graphviz/</OutDir>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\GraphvizWrapper\;..\GraphvizWrapper\include;</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\Rubjerg.Graphviz\GraphvizWrapper.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-    <ProjectReference>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-    </ProjectReference>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\GraphvizWrapper\;..\GraphvizWrapper\include;</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
+
+  <!-- Project Reference -->
   <ItemGroup>
-    <ClCompile Include="ConsoleApplication.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GraphvizWrapper\GraphvizWrapper.vcxproj">
+    <ProjectReference Include="../GraphvizWrapper/GraphvizWrapper.vcxproj">
       <Project>{f9bc5523-352d-469f-8dbb-97eca9d70648}</Project>
     </ProjectReference>
   </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Ensure this project depends on GraphvizWrapper -->
+    <ProjectDependencies>GraphvizWrapper</ProjectDependencies>
+  </PropertyGroup>
+
+  <!-- Source Files -->
+  <ItemGroup>
+    <ClCompile Include="ConsoleApplication.cpp" />
+  </ItemGroup>
+
   <ItemGroup>
     <CopyFileToFolders Include="missing-label-repro.dot">
       <FileType>Document</FileType>
@@ -99,7 +49,76 @@
       <FileType>Document</FileType>
     </CopyFileToFolders>
   </ItemGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+
+  <!-- Build Targets -->
+  <Target Name="Build">
+    <CallTarget Targets="BuildWindows" Condition="'$(OS)' == 'Windows_NT'" />
+    <CallTarget Targets="BuildLinux" Condition="'$(OS)' != 'Windows_NT'" />
+  </Target>
+
+  <!-- Clean Target -->
+  <Target Name="Clean">
+    <Delete Files="$(OutputFile).exe" Condition="'$(OS)' == 'Windows_NT'" />
+    <Delete Files="$(OutputFile)" Condition="'$(OS)' != 'Windows_NT'" />
+  </Target>
+
+
+  <!-- Windows Imports -->
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" Condition="'$(OS)' == 'Windows_NT'" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" Condition="'$(OS)' == 'Windows_NT'" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" Condition="'$(OS)' == 'Windows_NT'" />
+
+  <!-- Windows Debug/Release Configuration  -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+
+  <Target Name="BuildWindows" Condition="'$(OS)' == 'Windows_NT'">
+    <MSBuild Projects="$(MSBuildProjectFile)" />
+  </Target>
+
+
+  <!-- Linux Configuration -->
+  <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
+    <Compiler>clang++</Compiler>
+    <CompilerFlags>-std=c++17 -O2 -lGraphvizWrapper -lcgraph -lgvc -lxdot -Wl,-rpath,'$ORIGIN'</CompilerFlags>
+    <OutputPath>bin/linux/</OutputPath>
+    <OutputFile>ConsoleApplication</OutputFile>
+    <IncludeDirs>../GraphvizWrapper/include</IncludeDirs>
+    <LibDirs>../GraphvizWrapper/bin/linux</LibDirs>
+    <SourceFiles>ConsoleApplication.cpp</SourceFiles>
+  </PropertyGroup>
+
+  <Target Name="GetTargetPath">
+    <PropertyGroup>
+      <TargetPath>$(OutputPath)$(OutputFile)</TargetPath>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="BuildLinux" Condition="'$(OS)' != 'Windows_NT'">
+    <Message Text="Building ConsoleApplication on Linux with clang++:  $(Compiler) $(CompilerFlags) -I $(IncludeDirs) $(SourceFiles) -L $(LibDirs) -o $(OutputPath)$(OutputFile)" Importance="high" />
+    <!-- Ensure the output directory exists -->
+    <Exec Command="mkdir -p $(OutputPath)" />
+    <Exec Command="$(Compiler) $(CompilerFlags) -I $(IncludeDirs) $(SourceFiles) -L $(LibDirs) -o $(OutputPath)$(OutputFile)" />
+  </Target>
+
+  <Target Name="PostBuild" AfterTargets="Build">
+    <Message Text="Copying dependencies:    cp -r ../GraphvizWrapper/bin/linux/* $(OutputPath) " Importance="high" />
+    <Exec Condition="'$(OS)' != 'Windows_NT'" Command=" cp -r ../GraphvizWrapper/bin/linux/* $(OutputPath) " />
+  </Target>
+  
+
+
 </Project>
+

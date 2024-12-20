@@ -50,7 +50,7 @@
     <PropertyGroup>
       <GenerateReadme>generatereadme.bat</GenerateReadme>
     </PropertyGroup>
-    <Exec Command="$(GenerateReadme)" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <Exec Command="$(GenerateReadme)" Condition="'$(TargetFramework)' == 'net8.0' and '$(OS)' == 'Windows_NT'" />
   </Target>
 
 </Project>

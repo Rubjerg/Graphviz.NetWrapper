@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Project Configurations -->
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -10,19 +12,51 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+
+  <!-- Globals -->
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F9BC5523-352D-469F-8DBB-97ECA9D70648}</ProjectGuid>
     <RootNamespace>GraphvizWrapper</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>GraphvizWrapper</ProjectName>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+
+  <!-- Source Files -->
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Test.cpp" />
+    <ClCompile Include="XDot.cpp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="GraphvizWrapper.h" />
+  </ItemGroup>
+
+  <!-- Build Targets -->
+  <Target Name="Build">
+    <CallTarget Targets="BuildWindows" Condition="'$(OS)' == 'Windows_NT'" />
+    <CallTarget Targets="BuildLinux" Condition="'$(OS)' != 'Windows_NT'" />
+  </Target>
+
+  <!-- Clean Targets -->
+  <Target Name="Clean">
+    <Delete Files="..\Rubjerg.Graphviz\GraphvizWrapper.dll" Condition="'$(OS)' == 'Windows_NT'" />
+    <Delete Files="libGraphvizWrapper.so" Condition="'$(OS)' != 'Windows_NT'" />
+  </Target>
+
+  <!-- Windows Imports -->
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" Condition="'$(OS)' == 'Windows_NT'" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" Condition="'$(OS)' == 'Windows_NT'" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" Condition="'$(OS)' == 'Windows_NT'" />
+
+  <!-- Windows Debug/Release Configuration  -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -30,29 +64,8 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Label="Shared">
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\Rubjerg.Graphviz\</OutDir>
-    <IntDir>bin\Intermediate\$(Configuration)\</IntDir>
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\Rubjerg.Graphviz\</OutDir>
-    <IntDir>bin\Intermediate\$(Configuration)\</IntDir>
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64' and '$(OS)' == 'Windows_NT'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
@@ -62,17 +75,11 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <PostBuildEvent>
-      <Command>xcopy /y /d /s /e  "graphvizfiles/$(Configuration)" "$(OutDir)"</Command>
+      <Command>xcopy /y /d /s /e "graphvizfiles/$(Configuration)" "$(OutDir)"</Command>
     </PostBuildEvent>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;cgraph.lib;gvc.lib;xdot.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>lib</AdditionalLibraryDirectories>
-    </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64' and '$(OS)' == 'Windows_NT'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
@@ -85,25 +92,42 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <PostBuildEvent>
-      <Command>xcopy /y /d /s /e  "graphvizfiles/$(Configuration)" "$(OutDir)"</Command>
+      <Command>xcopy /y /d /s /e "graphvizfiles/$(Configuration)" "$(OutDir)"</Command>
     </PostBuildEvent>
-    <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;cgraph.lib;gvc.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>lib</AdditionalLibraryDirectories>
-    </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Test.cpp" />
-    <ClCompile Include="XDot.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GraphvizWrapper.h" />
-  </ItemGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+
+  <Target Name="BuildWindows" Condition="'$(OS)' == 'Windows_NT'">
+    <MSBuild Projects="$(MSBuildProjectFile)" />
+  </Target>
+
+
+  <!-- Linux Configuration  -->
+  <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
+    <Compiler>clang++</Compiler>
+    <CompilerFlags>-std=c++17 -shared -fPIC -O2 -lcgraph -lgvc -lxdot -Wl,-rpath,'$ORIGIN'</CompilerFlags>
+    <OutputPath>bin/linux/</OutputPath>
+    <OutputFile>libGraphvizWrapper.so</OutputFile>
+    <IncludeDirs>include/</IncludeDirs>
+    <LibDirs>graphvizfiles/linux</LibDirs>
+    <SourceFiles>Main.cpp Test.cpp XDot.cpp</SourceFiles>
+  </PropertyGroup>
+
+  <Target Name="GetTargetPath">
+    <PropertyGroup>
+      <TargetPath>$(OutputPath)$(OutputFile)</TargetPath>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="BuildLinux" Condition="'$(OS)' != 'Windows_NT'">
+    <Message Text="Building GraphvizWrapper on Linux with clang++:  $(Compiler) $(CompilerFlags) -I $(IncludeDirs) $(SourceFiles) -L $(LibDirs) -o $(OutputPath)$(OutputFile)" Importance="high" />
+    <!-- Ensure the output directory exists -->
+    <Exec Command="mkdir -p $(OutputPath)" />
+    <Exec Command="$(Compiler) $(CompilerFlags) -I $(IncludeDirs) $(SourceFiles) -L $(LibDirs) -o $(OutputPath)$(OutputFile)" />
+  </Target>
+
+  <Target Name="PostBuild" AfterTargets="Build">
+    <Message Text="Copying dependencies:   cp -r graphvizfiles/linux/* $(OutputPath)" Importance="high" />
+    <Exec Condition="'$(OS)' != 'Windows_NT'" Command="cp -r graphvizfiles/linux/* $(OutputPath)" />
+  </Target>
+
 </Project>
