@@ -25,7 +25,7 @@ jobs:
 
     - name: Check if line endings are CRLF
       run: |
-        bash -c "git grep -rlIP -- ':!GraphvizWrapper/graphvizfiles/*' ':!*.sh'" | xargs unix2dos"
+        bash -c "git grep -rlIP -- ':!GraphvizWrapper/graphvizfiles/*' ':!*.sh' | xargs unix2dos"
         echo test
         git diff --exit-code
 
