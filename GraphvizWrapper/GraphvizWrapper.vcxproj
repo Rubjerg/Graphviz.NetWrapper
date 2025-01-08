@@ -46,10 +46,7 @@
 
   <!-- Windows Imports -->
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" Condition="'$(OS)' == 'Windows_NT'" />
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" Condition="'$(OS)' == 'Windows_NT'" />
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" Condition="'$(OS)' == 'Windows_NT'" />
   
-  <!-- FIXNOW is this needed? -->
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64' and '$(OS)' == 'Windows_NT'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -59,12 +56,12 @@
 
   <!-- Windows Defines -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64' and '$(OS)' == 'Windows_NT'">
-    <OutDir>..\Rubjerg.Graphviz\</OutDir>
+    <OutDir>..\Rubjerg.Graphviz\Resources\</OutDir>
     <IntDir>bin\Intermediate\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64' and '$(OS)' == 'Windows_NT'">
-    <OutDir>..\Rubjerg.Graphviz\</OutDir>
+    <OutDir>..\Rubjerg.Graphviz\Resources\</OutDir>
     <IntDir>bin\Intermediate\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -84,6 +81,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" Condition="'$(OS)' == 'Windows_NT'" />
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64' and '$(OS)' == 'Windows_NT'">
     <ClCompile>
@@ -134,12 +132,12 @@
     <MSBuild Projects="$(MSBuildProjectFile)" />
   </Target>
 
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" Condition="'$(OS)' == 'Windows_NT'" />
 
   <!-- Linux Configuration  -->
   <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
     <Compiler>clang++</Compiler>
     <CompilerFlags>-std=c++17 -shared -fPIC -O2 -lcgraph -lgvc -lxdot -Wl,-rpath,'$ORIGIN'</CompilerFlags>
-    <!-- <OutputPath>bin/linux/</OutputPath> -->
     <OutputPath>../Rubjerg.Graphviz/Resources/</OutputPath>
     <OutputFile>libGraphvizWrapper.so</OutputFile>
     <IncludeDirs>include/</IncludeDirs>
@@ -155,7 +153,6 @@
 
   <Target Name="BuildLinux" Condition="'$(OS)' != 'Windows_NT'">
     <Message Text="Building GraphvizWrapper on Linux with clang++:  $(Compiler) $(CompilerFlags) -I $(IncludeDirs) $(SourceFiles) -L $(LibDirs) -o $(OutputPath)$(OutputFile)" Importance="high" />
-    <!-- Ensure the output directory exists -->
     <Exec Command="mkdir -p $(OutputPath)" />
     <Exec Command="$(Compiler) $(CompilerFlags) -I $(IncludeDirs) $(SourceFiles) -L $(LibDirs) -o $(OutputPath)$(OutputFile)" />
   </Target>
