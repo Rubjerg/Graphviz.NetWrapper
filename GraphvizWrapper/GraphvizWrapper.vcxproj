@@ -140,7 +140,7 @@
     <Compiler>clang++</Compiler>
     <CompilerFlags>-std=c++17 -shared -fPIC -O2 -lcgraph -lgvc -lxdot -Wl,-rpath,'$ORIGIN'</CompilerFlags>
     <!-- <OutputPath>bin/linux/</OutputPath> -->
-    <OutputPath>../Rubjerg.Graphviz/</OutputPath>
+    <OutputPath>../Rubjerg.Graphviz/Resources/</OutputPath>
     <OutputFile>libGraphvizWrapper.so</OutputFile>
     <IncludeDirs>include/</IncludeDirs>
     <LibDirs>graphvizfiles/linux</LibDirs>

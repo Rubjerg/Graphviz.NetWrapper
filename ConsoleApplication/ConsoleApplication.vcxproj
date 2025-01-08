@@ -70,10 +70,10 @@
   
   <!-- Windows Defines  -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64' and '$(OS)' == 'Windows_NT'">
-    <OutDir>../Rubjerg.Graphviz/</OutDir>
+    <OutDir>../Rubjerg.Graphviz/Resources/</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64' and '$(OS)' == 'Windows_NT'">
-    <OutDir>../Rubjerg.Graphviz/</OutDir>
+    <OutDir>../Rubjerg.Graphviz/Resources/</OutDir>
   </PropertyGroup>
 
   <!-- Windows Debug/Release Configuration  -->
