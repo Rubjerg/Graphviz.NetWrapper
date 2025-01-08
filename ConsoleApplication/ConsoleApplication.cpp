@@ -27,16 +27,16 @@ int main() {
     snprintf(gvBinDir, sizeof(gvBinDir), "%s/graphviz", dirPath);
 
     // Set LD_LIBRARY_PATH to the executable's directory
-    if (setenv("LD_LIBRARY_PATH", dirPath, 1) != 0) {
-        perror("Failed to set LD_LIBRARY_PATH");
-        return EXIT_FAILURE;
-    }
+    // if (setenv("LD_LIBRARY_PATH", dirPath, 1) != 0) {
+    //     perror("Failed to set LD_LIBRARY_PATH");
+    //     return EXIT_FAILURE;
+    // }
 
     // Set GVBINDIR to the "graphviz" subdirectory
-    if (setenv("GVBINDIR", gvBinDir, 1) != 0) {
-        perror("Failed to set GVBINDIR");
-        return EXIT_FAILURE;
-    }
+    // if (setenv("GVBINDIR", gvBinDir, 1) != 0) {
+    //     perror("Failed to set GVBINDIR");
+    //     return EXIT_FAILURE;
+    // }
 
     // Verify the environment variables
     printf("Executable Directory: %s\n", dirPath);
