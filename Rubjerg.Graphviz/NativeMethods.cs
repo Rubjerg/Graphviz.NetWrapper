@@ -26,9 +26,9 @@ public static class NativeMethods
 
     // P/Invoke required:
     private const uint StdOutputHandle = 0xFFFFFFF5;
-    [DllImport("kernel32.dll")]
+    [DllImport("kernel32")]
     private static extern IntPtr GetStdHandle(uint nStdHandle);
-    [DllImport("kernel32.dll")]
+    [DllImport("kernel32")]
     private static extern void SetStdHandle(uint nStdHandle, IntPtr handle);
     [DllImport("kernel32")]
     static extern bool AllocConsole();

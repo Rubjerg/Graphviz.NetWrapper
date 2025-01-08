@@ -34,7 +34,7 @@ public class GraphvizCommand
     /// <returns>stderr may contain warnings, stdout is in utf8 encoding</returns>
     public static (byte[] stdout, string stderr) Exec(Graph input, string format = "xdot", string? outputPath = null, string engine = LayoutEngines.Dot)
     {
-        string exeName = "dot.exe";
+        string exeName = "dot";
         string arguments = $"-T{format} -K{engine}";
         if (outputPath != null)
         {
