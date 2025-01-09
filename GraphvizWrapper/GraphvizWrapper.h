@@ -11,6 +11,7 @@
     #define API __declspec(dllexport)
 #else
     #define STRDUP strdup
+    #define API 
 #endif
 
 #include "cgraph.h"
