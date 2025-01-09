@@ -32,16 +32,18 @@
     </ProjectReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="*.dll;*.lib;*.pdb;*.exp;*.exe;config6">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-    </None>
-    <None Include="..\LICENSE">
-      <Pack>true</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+	<Target Name="RunAfterBuildIsDone" AfterTargets="ResolveProjectReferences">
+	  <ItemGroup>
+		<None Include="*.dll;*.lib;*.pdb;*.exp;*.exe;config6">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		  <Pack>true</Pack>
+		  <PackageCopyToOutput>true</PackageCopyToOutput>
+		</None>
+		<None Include="..\LICENSE">
+		  <Pack>true</Pack>
+		  <PackagePath></PackagePath>
+		</None>
+	  </ItemGroup>
+  </Target>
 
 </Project>
