@@ -6,6 +6,7 @@ namespace Rubjerg.Graphviz;
 
 public static class NativeMethods
 {
+#if _WINDOWS
     public static void CreateConsole()
     {
         _ = AllocConsole();
@@ -26,10 +27,11 @@ public static class NativeMethods
 
     // P/Invoke required:
     private const uint StdOutputHandle = 0xFFFFFFF5;
-    [DllImport("kernel32")]
+    [DllImport("kernel32.dll")]
     private static extern IntPtr GetStdHandle(uint nStdHandle);
-    [DllImport("kernel32")]
+    [DllImport("kernel32.dll")]
     private static extern void SetStdHandle(uint nStdHandle, IntPtr handle);
-    [DllImport("kernel32")]
+    [DllImport("kernel32.dll")]
     static extern bool AllocConsole();
+#endif
 }
