@@ -59,22 +59,14 @@ int renderToSvg(char* dotString)
 {
     // NOTE: the gvContext has to be called first
     // See https://gitlab.com/graphviz/graphviz/-/issues/2434
-    cout << "hi" << endl;
     auto gvc = gvContext();
-    cout << "hi" << endl;
     auto graph = agmemread(dotString);
-    cout << "hi" << endl;
     if (graph == nullptr)
         return 1;
-    cout << "hi" << endl;
     gvLayout(gvc, graph, "dot");
-    cout << "hi" << endl;
     gvRenderFilename(gvc, graph, "svg", "test.svg");
-    cout << "hi" << endl;
     gvFreeLayout(gvc, graph);
-    cout << "hi" << endl;
     agclose(graph);
-    cout << "hi" << endl;
     return 0;
 }
 
