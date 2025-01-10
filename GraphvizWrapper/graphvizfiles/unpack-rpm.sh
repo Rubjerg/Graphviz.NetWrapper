@@ -40,3 +40,8 @@ echo "The specified directories have been copied to: $TARGET_DIR"
 echo "Result:"
 ls -R "$TARGET_DIR"
 
+
+echo
+echo "Copying usr/include/graphviz to $TARGET_DIR/../../include/"
+cp "./$EXTRACT_DIR/usr/include/graphviz/"* "$TARGET_DIR/../../include/" && unix2dos "$TARGET_DIR/../../include/"*
+

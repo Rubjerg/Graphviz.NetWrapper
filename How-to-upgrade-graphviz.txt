@@ -22,10 +22,11 @@ First on Windows
 
 Now on linux (e.g. WSL)
 - cd to GraphvizWrapper/graphvizfiles/
-- Download the Fedora rpm into the currently folder, e.g. fedora_41_graphviz-<version>-cmake.rpm
+- Download the Fedora package (e.g. fedora_41_graphviz-<version>-cmake.rpm) into the current working directory 
 - Run `bash unpack-rpm.sh fedora_41_graphviz-<version>-cmake.rpm` to deploy the files to the linux subfolder
 - Run `bash patch-rpath.sh linux/` to patch the RPATH of all binaries so they can find the locally deployed version of graphviz.
+- Make sure none of the include files have changed (as a sanity check this is the same version as on windows)
 
 - Compile and run the tests
-- Update version number in README-src.md
+- Update version number in README-src.md and run `bash generatereadme.sh`
 
