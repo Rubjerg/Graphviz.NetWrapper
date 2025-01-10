@@ -5,8 +5,11 @@ Graphviz.NetWrapper
 
 ## Supported platforms
 
+`Rubjerg.Graphviz` ships with precompiled Graphviz binaries to ensure the exact graphviz version is used that we have tested and to make crossplatform deployment simpler.
+The current version we ship is Graphviz 11.0.0.
+
 ### Windows
-At the moment, `Rubjerg.Graphviz` ships with a bunch of precompiled Graphviz dlls built for 64 bit Windows.
+`Rubjerg.Graphviz` ships with a bunch of precompiled Graphviz dlls built for 64 bit Windows.
 This library is compatible with .NET Standard 2.0.
 The unit tests run against .NET Framework 4.8 and .NET 8.0.
 

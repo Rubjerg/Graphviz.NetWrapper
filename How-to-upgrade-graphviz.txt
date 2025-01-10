@@ -27,4 +27,5 @@ Now on linux (e.g. WSL)
 - Run `bash patch-rpath.sh linux/` to patch the RPATH of all binaries so they can find the locally deployed version of graphviz.
 
 - Compile and run the tests
+- Update version number in README-src.md
 
