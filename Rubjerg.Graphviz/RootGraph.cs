@@ -36,9 +36,10 @@ public class RootGraph : Graph
     }
     ~RootGraph()
     {
-        if (_added_pressure > 0)
-            GC.RemoveMemoryPressure(_added_pressure);
-        _ = Agclose(_ptr);
+        // FIXNOW
+        // if (_added_pressure > 0)
+        //     GC.RemoveMemoryPressure(_added_pressure);
+        // _ = Agclose(_ptr);
     }
 
     /// <summary>

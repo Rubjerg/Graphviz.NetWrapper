@@ -22,11 +22,11 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   
-    <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-      <DefineConstants>_WINDOWS</DefineConstants>
-    </PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <DefineConstants>_WINDOWS</DefineConstants>
+  </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
@@ -37,11 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Exclude the Resources folder and its contents -->
-    <None Remove="Resources/" />
-  </ItemGroup>
-
-  <ItemGroup>
     <!-- Include all files in the Resources folder but copy them directly to the output directory -->
     <None Update="Resources/*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -49,6 +44,7 @@
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
     </None>
+    <!-- The graphviz subfolder is only present and relevant on linux --> 
     <None Update="Resources/graphviz/*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>%(RecursiveDir)/../../graphviz/%(Filename)%(Extension)</Link>
