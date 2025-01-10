@@ -8,6 +8,12 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
+# Check if patchelf is installed
+if ! command -v patchelf &>/dev/null; then
+    echo "Error: patchelf is not installed. Install it using your package manager."
+    exit 1
+fi
+
 TARGET_DIR=$1
 
 echo "Adding RPATH '\$ORIGIN' to all binaries in $TARGET_DIR..."

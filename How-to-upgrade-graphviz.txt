@@ -1,5 +1,6 @@
 - Navigate to https://gitlab.com/groups/graphviz/-/packages/ and click the version you want to upgrade to
 
+First on Windows
 - Download and extract `windows_10_cmake_Debug_Graphviz-<version>-win64.zip`.
 - Navigate to `bin/` and copy all the files in that folder to `Graphviz.NetWrapper\GraphvizWrapper\graphvizfiles\Debug\`.
   Check that every existing file was overwritten.
@@ -13,8 +14,17 @@
   Check that every existing file was overwritten.
 
 - Make sure that the toolset selected for GraphvizWrapper.dll is compatible with the vcruntime version shipped with graphviz.
-- Remove all DLLs starting with `concrt`, `msvcp` or `vcruntime`. These are part of the Visual C++ redistributable package, and we're not shipping those.
-- Remove all files ending in `.sh`, these are not crossplatform and we don't need them.
+- Remove all new DLLs starting with `concrt`, `msvcp` or `vcruntime`. These are part of the Visual C++ redistributable package, and we're not shipping those.
+- Remove all new files ending in `.sh`, these are not windows compatible and we don't need them.
 - Check if any other files are new, and investigate if that is expected.
 
 - Compile and run the tests
+
+Now on linux (e.g. WSL)
+- cd to GraphvizWrapper/graphvizfiles/
+- Download the Fedora rpm into the currently folder, e.g. fedora_41_graphviz-<version>-cmake.rpm
+- Run `bash unpack-rpm.sh fedora_41_graphviz-<version>-cmake.rpm` to deploy the files to the linux subfolder
+- Run `bash patch-rpath.sh linux/` to patch the RPATH of all binaries so they can find the locally deployed version of graphviz.
+
+- Compile and run the tests
+

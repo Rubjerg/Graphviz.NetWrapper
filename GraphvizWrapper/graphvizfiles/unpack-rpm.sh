@@ -7,13 +7,13 @@ if [ $# -ne 1 ]; then
 fi
 
 RPM_FILE=$1
-TARGET_DIR="rpm_output"
+TARGET_DIR="linux"
 EXTRACT_DIR="rpm_extracted"
 
 # Ensure rpm2cpio and cpio tools are installed
 if ! command -v rpm2cpio &>/dev/null || ! command -v cpio &>/dev/null; then
     echo "Error: rpm2cpio and cpio are required but not installed."
-    echo "Install them using: sudo apt-get install rpm2cpio cpio"
+    echo "Install them using: sudo apt-get install rpm2cpio cpio (on Debian or Ubuntu)"
     exit 1
 fi
 
@@ -34,7 +34,7 @@ mkdir -p "$TARGET_DIR/graphviz/"
 cp "./$EXTRACT_DIR/usr/lib64/graphviz/"* "$TARGET_DIR/graphviz/"
 
 # Clean up extraction directory
-#rm -r "$EXTRACT_DIR"
+rm -r "$EXTRACT_DIR"
 
 echo "The specified directories have been copied to: $TARGET_DIR"
 echo "Result:"
