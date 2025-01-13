@@ -176,8 +176,8 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="Build">
-    <Message Text="Copying dependencies:    cp -r ../GraphvizWrapper/bin/linux/* $(OutputPath) " Importance="high" />
-    <Exec Condition="'$(OS)' != 'Windows_NT'" Command=" cp -r ../GraphvizWrapper/bin/linux/* $(OutputPath) " />
+    <Message Text="Copying dependencies:    cp -r ../Rubjerg.Graphviz/Resources/* $(OutputPath) " Importance="high" />
+    <Exec Condition="'$(OS)' != 'Windows_NT'" Command=" cp -r ../Rubjerg.Graphviz/Resources/* $(OutputPath) " />
   </Target>
   
 

@@ -80,6 +80,7 @@ int test_agread() {
     if (graph == nullptr)
         return 2;
     fclose(fp);
+    agclose(graph);
     return 0;
 }
 
@@ -91,6 +92,7 @@ int test_agmemread() {
     auto graph = agmemread(dotString);
     if (graph == nullptr)
         return 1;
+    agclose(graph);
     return 0;
 }
 
@@ -102,6 +104,7 @@ int test_rj_agmemread() {
     auto graph = rj_agmemread(dotString);
     if (graph == nullptr)
         return 2;
+    agclose(graph);
     return 0;
 }
 
@@ -121,7 +124,6 @@ int missing_label_repro() {
 }
 
 int stackoverflow_repro() {
-
     const std::string filename = "stackoverflow-repro.dot";
     char* dotString = readFile(filename);
     if (dotString == nullptr)
