@@ -166,6 +166,7 @@ extern "C" {
     API const char* return_empty_string();
     API const char* return_hello();
     API const char* return_copyright();
+    API int agclose_repro();
     API int stackoverflow_repro();
     API int missing_label_repro();
     API int test_agread();

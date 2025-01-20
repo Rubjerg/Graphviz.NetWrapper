@@ -138,6 +138,7 @@
   <!-- Linux Configuration  -->
   <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
     <Compiler>clang++</Compiler>
+    <!-- <Compiler>g++</Compiler> -->
     <CompilerFlags>-std=c++17 -shared -fPIC -O2 -lcgraph -lgvc -lxdot -Wl,-rpath,'$ORIGIN'</CompilerFlags>
     <OutputPath>../Rubjerg.Graphviz/Resources/</OutputPath>
     <OutputFile>libGraphvizWrapper.so</OutputFile>

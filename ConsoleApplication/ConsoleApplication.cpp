@@ -20,6 +20,7 @@ int main() {
     cout << test_rj_agmemread() << endl;
     cout << missing_label_repro() << endl;
     cout << stackoverflow_repro() << endl;
+    cout << agclose_repro() << endl;
     
     cout << "Press Enter to exit...";
     cin.get(); // Portable replacement for _getch()

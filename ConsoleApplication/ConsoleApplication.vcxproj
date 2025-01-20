@@ -42,12 +42,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <CopyFileToFolders Include="missing-label-repro.dot">
-      <FileType>Document</FileType>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="stackoverflow-repro.dot">
-      <FileType>Document</FileType>
-    </CopyFileToFolders>
+    <None Include="missing-label-repro.dot">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="stackoverflow-repro.dot">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <!-- Build Targets -->
@@ -158,7 +158,7 @@
     <OutputPath>bin/linux/</OutputPath>
     <OutputFile>ConsoleApplication</OutputFile>
     <IncludeDirs>../GraphvizWrapper/include</IncludeDirs>
-    <LibDirs>../GraphvizWrapper/bin/linux</LibDirs>
+    <LibDirs>../Rubjerg.Graphviz/Resources</LibDirs>
     <SourceFiles>ConsoleApplication.cpp</SourceFiles>
   </PropertyGroup>
 
@@ -178,6 +178,8 @@
   <Target Name="PostBuild" AfterTargets="Build">
     <Message Text="Copying dependencies:    cp -r ../Rubjerg.Graphviz/Resources/* $(OutputPath) " Importance="high" />
     <Exec Condition="'$(OS)' != 'Windows_NT'" Command=" cp -r ../Rubjerg.Graphviz/Resources/* $(OutputPath) " />
+    <Message Text="Copying dot resources:    cp -r *.dot $(OutputPath) " Importance="high" />
+    <Exec Condition="'$(OS)' != 'Windows_NT'" Command=" cp -r *.dot $(OutputPath) " />
   </Target>
   
 

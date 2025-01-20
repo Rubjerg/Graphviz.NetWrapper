@@ -130,3 +130,23 @@ int stackoverflow_repro() {
         return 1;
     return renderToSvg(dotString);
 }
+
+int agclose_repro() {
+    auto gvc = gvContext();
+    
+    auto root = rj_agopen(const_cast<char*>("test"), 0); // Cast to avoid warnings
+    agattr(root, 1, const_cast<char*>("label"), const_cast<char*>(""));
+    auto nodeA = agnode(root, const_cast<char*>("A"), 1);
+    agset(nodeA, const_cast<char*>("label"), const_cast<char*>("1"));
+    auto dot = rj_agmemwrite(root);
+    agclose(root);
+
+    root = rj_agmemread(dot);
+    gvLayout(gvc, root, "dot");
+    gvRender(gvc, root, "xdot", 0);
+    agclose(root);
+    root = rj_agopen(const_cast<char*>("test 2"), 0);
+    agclose(root);
+    
+    return 0;
+}
