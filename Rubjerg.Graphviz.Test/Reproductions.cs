@@ -3,6 +3,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz.Test;
 
@@ -19,6 +20,39 @@ public class Reproductions
     {
         // Store the test directory.
         _testDir = TestContext.CurrentContext.TestDirectory;
+    }
+    
+    [Test()]
+    public void TestCloseCrash()
+    {
+        RootGraph root = Utils.CreateUniqueTestGraph();
+        Node.IntroduceAttribute(root, "label", "");
+        Node nodeA = root.GetOrAddNode("A");
+        nodeA.SetAttribute("label", "1");
+        string dot = root.ToDotString();
+        root.Close();
+        
+        root = RootGraph.FromDotString(dot);
+        root.ComputeLayout();
+        root.Close();
+        Utils.CreateUniqueTestGraph().Close();
+    }
+    
+    [Test()]
+    public void TestAgcloseCrash()
+    {
+        var root = Rjagopen("test", 0);
+        Agattr(root, 1, "label", "");
+        var nodeA = Agnode(root, "A", 1);
+        Agset(nodeA, "label", "1");
+        string dot = Rjagmemwrite(root);
+        Agclose(root);
+        root = Rjagmemread(dot);
+        int layout_rc = GvLayout(GVC, root, "dot");
+        int render_rc = GvRender(GVC, root, "xdot", IntPtr.Zero);
+        Agclose(root);
+        root = Rjagopen("test 2", 0);
+        Agclose(root);
     }
 
     [Test()]
