@@ -8,7 +8,7 @@ namespace Rubjerg.Graphviz;
 internal static class Marshaling
 {
     /// <summary>
-    /// Marshal a c-string in utf8 encoding to a 
+    /// Marshal a c-string in utf8 encoding to a .NET string
     /// </summary>
     /// <param name="ptr">Pointer to the native c-string</param>
     /// <param name="free">Whether to free the native c-string after marshaling</param>
@@ -61,7 +61,8 @@ internal static class Marshaling
             {
                 if (free && ptr != IntPtr.Zero)
                 {
-                    Marshal.FreeHGlobal(ptr);
+                    // FIXNOW
+                    // Marshal.FreeHGlobal(ptr);
                 }
             }
         }
@@ -82,11 +83,14 @@ internal static class Marshaling
         Marshal.Copy(ptr, byteArray, 0, len);
         if (free)
         {
-            free_str(ptr);
+            // FIXNOW
+            // free_str(ptr);
         }
         return byteArray;
     }
 
     [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern void free_str(IntPtr ptr);
+    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void agstrfree(IntPtr root, IntPtr str);
 }
