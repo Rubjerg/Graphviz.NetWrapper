@@ -28,6 +28,9 @@ jobs:
     - name: Build App
       run: dotnet build Rubjerg.Graphviz.sln --configuration Release --no-restore
 
+    - name: Debug Build Output
+      run: ls -la /home/runner/work/Graphviz.NetWrapper/Graphviz.NetWrapper/Rubjerg.Graphviz.Test/bin/x64/Release/net8.0/
+
     - name: Run Unittests
       run: bash run-tests-netcore.sh Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
 
