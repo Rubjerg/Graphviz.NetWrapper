@@ -1,5 +1,4 @@
 #define _CRT_SECURE_NO_DEPRECATE
-#include <objbase.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -24,14 +23,15 @@ char* echo_string(char* str) {
     // may already be freed when the consumer uses the string.
     // Instead, we have to duplicate the string.
     // Note that the caller has to free the returned string though, because we transfer ownership.
-    return _strdup(str);
+    return STRDUP(str);
 }
 /// <returns>Ownership is not returned to the caller</returns>
-char* return_empty_string() { return ""; }
+const char* return_empty_string() { return ""; }
 /// <returns>Ownership is not returned to the caller</returns>
-char* return_hello() { return "hello"; }
+const char* return_hello() { return "hello"; }
 /// <returns>Ownership is not returned to the caller</returns>
-char* return_copyright() { return u8"©"; }
+const char* return_copyright() { return "\xC2\xA9"; } // UTF-8 encoding for ©
+
 
 char* readFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
@@ -70,33 +70,8 @@ int renderToSvg(char* dotString)
     return 0;
 }
 
-// This test fails only the first time. Rerunning it makes it work.
-int missing_label_repro() {
-    const std::string filename = "missing-label-repro.dot";
-    char* dotString = readFile(filename);
-    if (dotString == nullptr)
-        return 1;
-    if (renderToSvg(dotString) > 0) return 2;
-
-    char* svgText = readFile("test.svg");
-    char* expected = ">OpenNode</text>";
-    if (strstr(svgText, expected) == nullptr)
-        return 3;
-    return 0;
-}
-
-int stackoverflow_repro() {
-
-    const std::string filename = "stackoverflow-repro.dot";
-    char* dotString = readFile(filename);
-    if (dotString == nullptr)
-        return 1;
-    return renderToSvg(dotString);
-}
-
-
 int test_agread() {
-    char* filename = "missing-label-repro.dot";
+    const char* filename = "missing-label-repro.dot";
     // Open the file for reading
     FILE* fp = fopen(filename, "r");
     if (fp == nullptr)
@@ -105,6 +80,7 @@ int test_agread() {
     if (graph == nullptr)
         return 2;
     fclose(fp);
+    agclose(graph);
     return 0;
 }
 
@@ -116,6 +92,7 @@ int test_agmemread() {
     auto graph = agmemread(dotString);
     if (graph == nullptr)
         return 1;
+    agclose(graph);
     return 0;
 }
 
@@ -127,6 +104,49 @@ int test_rj_agmemread() {
     auto graph = rj_agmemread(dotString);
     if (graph == nullptr)
         return 2;
+    agclose(graph);
     return 0;
 }
 
+// This test fails only the first time. Rerunning it makes it work.
+int missing_label_repro() {
+    const std::string filename = "missing-label-repro.dot";
+    char* dotString = readFile(filename);
+    if (dotString == nullptr)
+        return 1;
+    if (renderToSvg(dotString) > 0) return 2;
+
+    char* svgText = readFile("test.svg");
+    const char* expected = ">OpenNode</text>";
+    if (strstr(svgText, expected) == nullptr)
+        return 3;
+    return 0;
+}
+
+int stackoverflow_repro() {
+    const std::string filename = "stackoverflow-repro.dot";
+    char* dotString = readFile(filename);
+    if (dotString == nullptr)
+        return 1;
+    return renderToSvg(dotString);
+}
+
+int agclose_repro() {
+    auto gvc = gvContext();
+    
+    auto root = rj_agopen(const_cast<char*>("test"), 0); // Cast to avoid warnings
+    agattr(root, 1, const_cast<char*>("label"), const_cast<char*>(""));
+    auto nodeA = agnode(root, const_cast<char*>("A"), 1);
+    agset(nodeA, const_cast<char*>("label"), const_cast<char*>("1"));
+    auto dot = rj_agmemwrite(root);
+    agclose(root);
+
+    root = rj_agmemread(dot);
+    gvLayout(gvc, root, "dot");
+    gvRender(gvc, root, "xdot", 0);
+    agclose(root);
+    root = rj_agopen(const_cast<char*>("test 2"), 0);
+    agclose(root);
+    
+    return 0;
+}

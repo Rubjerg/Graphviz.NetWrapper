@@ -21,6 +21,10 @@
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <DefineConstants>_WINDOWS</DefineConstants>
+  </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -33,11 +37,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="*.dll;*.lib;*.pdb;*.exp;*.exe;config6">
+    <!-- Include all files in the Resources folder but copy them directly to the output directory -->
+    <None Update="Resources/*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>%(RecursiveDir)/../%(Filename)%(Extension)</Link>
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
     </None>
+    <!-- The graphviz subfolder is only present and relevant on linux --> 
+    <None Update="Resources/graphviz/*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>%(RecursiveDir)/../../graphviz/%(Filename)%(Extension)</Link>
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\LICENSE">
       <Pack>true</Pack>
       <PackagePath></PackagePath>

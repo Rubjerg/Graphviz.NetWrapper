@@ -5,10 +5,23 @@ Graphviz.NetWrapper
 
 ## Supported platforms
 
-At the moment, `Rubjerg.Graphviz` ships with a bunch of precompiled Graphviz dlls built for 64 bit Windows.
+`Rubjerg.Graphviz` ships with precompiled Graphviz binaries to ensure the exact graphviz version is used that we have tested and to make crossplatform deployment simpler.
+The current version we ship is Graphviz 11.0.0.
+
+### Windows
+`Rubjerg.Graphviz` ships with a bunch of precompiled Graphviz dlls built for 64 bit Windows.
 This library is compatible with .NET Standard 2.0.
 The unit tests run against .NET Framework 4.8 and .NET 8.0.
-In the future support may be extended to other platforms.
+
+### Linux (Experimental)
+We do have experimental support for Linux.
+In the same vein as our windows build, we ship precompiled binaries to make sure that this library is deployed with the same binaries as we've tested it.
+However, we do not ship graphviz dependencies, you will have to installed those yourself, if you need them.
+[Here is a list of all the graphviz dependencies.](https://packages.fedoraproject.org/pkgs/graphviz/graphviz/fedora-rawhide.html#dependencies)
+In practice you may not need all of those.
+In particular, if you only want to read graphs and e.g. run the DOT algorithm, libc and libz are enough.
+To run our tests successfully you will also need libgts and libpcre2 (for the neato algorithm).
+For more details, check the dependencies of any graphviz binaries with `ldd`.
 
 ## Contributing
 
@@ -27,7 +40,6 @@ To run the code from this library, you must have the Microsoft Visual C++ Redist
 You can download it from the [official Microsoft website](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist).
 
 ### Adding as a Nuget package
-
 Add the [Rubjerg.Graphviz nuget package](https://www.nuget.org/packages/Rubjerg.Graphviz/) to
 your project.
 

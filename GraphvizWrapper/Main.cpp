@@ -1,5 +1,4 @@
 #define _CRT_SECURE_NO_DEPRECATE
-#include <objbase.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -42,8 +41,8 @@ const char* rj_agmemwrite(Agraph_t* g)
     ostringstream os;
     agwrite(g, &os);
     // Note that os and os.str() will go out of scope when this function returns.
-    // Therefore we need to strdup the underlying c string
-    return _strdup(os.str().c_str());
+    // Therefore we need to STRDUP the underlying c string
+    return STRDUP(os.str().c_str());
 }
 
 
