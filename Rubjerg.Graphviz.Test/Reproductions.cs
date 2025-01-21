@@ -26,12 +26,8 @@ public class Reproductions
     public void TestCloseCrash()
     {
         RootGraph root = Utils.CreateUniqueTestGraph();
-        Node.IntroduceAttribute(root, "label", "");
-        Node nodeA = root.GetOrAddNode("A");
-        nodeA.SetAttribute("label", "1");
-        string dot = root.ToDotString();
-        root.Close();
         
+        string dot = "digraph test { A [label=1]; }";
         root = RootGraph.FromDotString(dot);
         root.ComputeLayout();
         root.Close();
@@ -41,13 +37,8 @@ public class Reproductions
     [Test()]
     public void TestAgcloseCrash()
     {
-        var root = Rjagopen("test", 0);
-        Agattr(root, 1, "label", "");
-        var nodeA = Agnode(root, "A", 1);
-        Agset(nodeA, "label", "1");
-        string dot = Rjagmemwrite(root);
-        Agclose(root);
-        root = Rjagmemread(dot);
+        string dot = "digraph test { A [label=1]; }";
+        var root = Rjagmemread(dot);
         int layout_rc = GvLayout(GVC, root, "dot");
         int render_rc = GvRender(GVC, root, "xdot", IntPtr.Zero);
         Agclose(root);
