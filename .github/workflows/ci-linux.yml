@@ -29,6 +29,9 @@ jobs:
       run: dotnet build Rubjerg.Graphviz.sln --configuration Release --no-restore
 
     - name: Debug Build Output
+      run: ls -la /home/runner/work/Graphviz.NetWrapper/Graphviz.NetWrapper/Rubjerg.Graphviz/bin/x64/Release/netstandard2.0/
+
+    - name: Debug Test Build Output
       run: ls -la /home/runner/work/Graphviz.NetWrapper/Graphviz.NetWrapper/Rubjerg.Graphviz.Test/bin/x64/Release/net8.0/
 
     - name: Run Unittests
