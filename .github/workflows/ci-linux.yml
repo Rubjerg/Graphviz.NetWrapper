@@ -31,6 +31,9 @@ jobs:
     - name: Build App
       run: dotnet build Rubjerg.Graphviz.sln --configuration Release --no-restore
 
+    - name: Debug Intermediate Output
+      run: ls -la /home/runner/work/Graphviz.NetWrapper/Graphviz.NetWrapper/Rubjerg.Graphviz/Resources
+
     - name: Debug Build Output
       run: ls -la /home/runner/work/Graphviz.NetWrapper/Graphviz.NetWrapper/Rubjerg.Graphviz/bin/x64/Release/netstandard2.0/
 
