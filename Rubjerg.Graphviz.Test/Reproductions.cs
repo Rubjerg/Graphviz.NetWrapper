@@ -21,29 +21,29 @@ public class Reproductions
         // Store the test directory.
         _testDir = TestContext.CurrentContext.TestDirectory;
     }
-    
+
     [Test()]
     public void TestCloseCrash()
     {
         RootGraph root = Utils.CreateUniqueTestGraph();
-        
+
         string dot = "digraph test { A [label=1]; }";
         root = RootGraph.FromDotString(dot);
         root.ComputeLayout();
         root.Close();
         Utils.CreateUniqueTestGraph().Close();
     }
-    
+
     [Test()]
     public void TestAgcloseCrash()
     {
         string dot = "digraph test { A [label=1]; }";
         var root = Rjagmemread(dot);
-        int layout_rc = GvLayout(GVC, root, "dot");
-        int render_rc = GvRender(GVC, root, "xdot", IntPtr.Zero);
-        Agclose(root);
+        _ = GvLayout(GVC, root, "dot");
+        _ = GvRender(GVC, root, "xdot", IntPtr.Zero);
+        _ = Agclose(root);
         root = Rjagopen("test 2", 0);
-        Agclose(root);
+        _ = Agclose(root);
     }
 
     [Test()]

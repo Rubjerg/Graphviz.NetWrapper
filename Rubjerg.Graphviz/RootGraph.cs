@@ -37,7 +37,7 @@ public sealed class RootGraph : Graph
     {
         CoordinateSystem = coordinateSystem;
     }
-    
+
     ~RootGraph()
     {
         // FIXNOW
