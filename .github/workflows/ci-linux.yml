@@ -1,0 +1,47 @@
+name: CI-Linux
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      name: Checkout Code
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore Tools
+      run: dotnet tool restore
+
+    - name: Restore NuGet Packages
+      run: dotnet restore Rubjerg.Graphviz.sln
+
+    - name: Build App
+      run: dotnet build Rubjerg.Graphviz.sln --configuration Release --no-restore
+
+    - name: Run Unittests
+      run: bash run-tests-netcore.sh Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
+
+    - name: Run Transitive Tests
+      run: bash run-tests-netcore.sh Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
+
+    - name: Restore NuGet Packages for NuGet Tests
+      run: dotnet restore Rubjerg.Graphviz.NugetTests.sln
+
+    - name: Build NuGet Test Solution
+      run: dotnet build Rubjerg.Graphviz.NugetTests.sln --configuration Release --no-restore
+
+    - name: Run NuGet Tests
+      run: bash run-tests-netcore.sh Rubjerg.Graphviz.NugetTest/Rubjerg.Graphviz.NugetTest.csproj
+
+    - name: Run Transitive NuGet Tests
+      run: bash run-tests-netcore.sh Rubjerg.Graphviz.TransitiveNugetTest/Rubjerg.Graphviz.TransitiveNugetTest.csproj
