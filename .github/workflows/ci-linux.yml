@@ -25,6 +25,9 @@ jobs:
     - name: Restore NuGet Packages
       run: dotnet restore Rubjerg.Graphviz.sln
 
+    - name: Print PWD
+      run: pwd
+
     - name: Build App
       run: dotnet build Rubjerg.Graphviz.sln --configuration Release --no-restore
 
