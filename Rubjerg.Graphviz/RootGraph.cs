@@ -41,8 +41,7 @@ public sealed class RootGraph : Graph
     ~RootGraph()
     {
         // FIXNOW
-        // if (!_closed)
-        //     Close();
+        // Close();
     }
 
     /// <summary>
@@ -51,10 +50,13 @@ public sealed class RootGraph : Graph
     /// </summary>
     public void Close()
     {
-        if (_added_pressure > 0)
-            GC.RemoveMemoryPressure(_added_pressure);
-        _closed = true;
-        _ = Agclose(_ptr);
+        if (!_closed)
+        {
+            _closed = true;
+            if (_added_pressure > 0)
+                GC.RemoveMemoryPressure(_added_pressure);
+            _ = Agclose(_ptr);
+        }
     }
 
     /// <summary>
