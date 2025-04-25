@@ -36,6 +36,9 @@ Pull request that fall within the scope of this project are welcome.
 You can either add this library as a nuget package to project, or include the source and add a
 project reference.
 
+To run the code from this library, you must have the Microsoft Visual C++ Redistributable (2015-2022) installed, which provides the required runtime libraries.
+You can download it from the [official Microsoft website](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist).
+
 ### Adding as a Nuget package
 Add the [Rubjerg.Graphviz nuget package](https://www.nuget.org/packages/Rubjerg.Graphviz/) to
 your project.
