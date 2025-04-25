@@ -43,6 +43,9 @@ jobs:
     - name: Debug Test Build Output
       run: ls -la /home/runner/work/Graphviz.NetWrapper/Graphviz.NetWrapper/Rubjerg.Graphviz.Test/bin/x64/Release/net8.0/
 
+    - name: Run LDD on Neato
+      run: ldd /home/runner/work/Graphviz.NetWrapper/Graphviz.NetWrapper/Rubjerg.Graphviz.Test/bin/x64/Release/net8.0/graphviz/libgvplugin_neato_layout.so.6
+
     - name: Run Unittests
       run: bash run-tests-netcore.sh Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
 
