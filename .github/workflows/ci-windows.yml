@@ -90,5 +90,5 @@ jobs:
 
     - name: Check for loose ends
       run: |
-        bash -c "! git grep -q FIXNOW"
+        bash -c "! git grep -q 'FIX''NOW'"
 
