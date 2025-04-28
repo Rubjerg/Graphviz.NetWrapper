@@ -26,7 +26,6 @@ jobs:
     - name: Check if line endings are CRLF
       run: |
         bash -c "git grep -rlIP -- ':!GraphvizWrapper/graphvizfiles/*' ':!*.sh' | xargs unix2dos"
-        echo test
         git diff --exit-code
 
     - name: Add msbuild to PATH
@@ -88,4 +87,8 @@ jobs:
 
     - name: Run Transitive Nuget Tests (.NET 8)
       run: bash nunit-console.sh Rubjerg.Graphviz.TransitiveNugetTest\bin\x64\Release\net8.0\Rubjerg.Graphviz.TransitiveNugetTest.dll
+
+    - name: Check for loose ends
+      run: |
+        bash -c "! git grep -q FIXNOW"
 
