@@ -40,8 +40,7 @@ public sealed class RootGraph : Graph
 
     ~RootGraph()
     {
-        // FIXNOW
-        // Close();
+        Close();
     }
 
     /// <summary>
