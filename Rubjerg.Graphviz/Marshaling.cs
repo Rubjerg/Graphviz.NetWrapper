@@ -61,8 +61,7 @@ internal static class Marshaling
             {
                 if (free && ptr != IntPtr.Zero)
                 {
-                    // FIXNOW
-                    // Marshal.FreeHGlobal(ptr);
+                    Marshal.FreeHGlobal(ptr);
                 }
             }
         }
@@ -83,8 +82,7 @@ internal static class Marshaling
         Marshal.Copy(ptr, byteArray, 0, len);
         if (free)
         {
-            // FIXNOW
-            // free_str(ptr);
+            free_str(ptr);
         }
         return byteArray;
     }
