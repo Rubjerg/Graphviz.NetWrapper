@@ -25,7 +25,7 @@ using namespace std;
 
 static int rj_afread(void* stream, char* buffer, int bufsize)
 {
-    istringstream* is = (istringstream*)stream;
+    istream* is = (istream*)stream;
     is->read(buffer, bufsize);
     int result = (int)is->gcount();
     return result;
@@ -33,14 +33,14 @@ static int rj_afread(void* stream, char* buffer, int bufsize)
 
 static int rj_putstr(void* stream, const char* s)
 {
-    ostringstream* os = (ostringstream*)stream;
+    ostream* os = (ostream*)stream;
     (*os) << s;
     return 0;
 }
 
 static int rj_flush(void* stream)
 {
-    ostringstream* os = (ostringstream*)stream;
+    ostream* os = (ostream*)stream;
     os->flush();
     return 0;
 }
