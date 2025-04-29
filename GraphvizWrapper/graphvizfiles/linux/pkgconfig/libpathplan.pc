@@ -1,0 +1,10 @@
+prefix=/usr/local
+exec_prefix=/usr/local
+libdir=/usr/local/lib64
+includedir=/usr/local/include
+
+Name: libpathplan
+Description: Library for planning polyline and bezier paths around polygon obstacles
+Version: 11.0.0
+Libs: -L${libdir} -lpathplan
+Cflags: -I${includedir} -I${includedir}/graphviz

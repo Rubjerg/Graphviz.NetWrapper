@@ -28,10 +28,10 @@ rpm2cpio "$RPM_FILE" | cpio -idmv -D "$EXTRACT_DIR" || { echo "Failed to extract
 # Copy the desired folders to the target directory
 echo "Copying usr/bin, usr/lib, and usr/lib/graphviz to $TARGET_DIR..."
 
-cp "./$EXTRACT_DIR/usr/bin/"* "$TARGET_DIR"
-cp "./$EXTRACT_DIR/usr/lib64/"* "$TARGET_DIR"
+cp -a "./$EXTRACT_DIR/usr/bin/" "$TARGET_DIR"
+cp -a "./$EXTRACT_DIR/usr/lib64/" "$TARGET_DIR"
 mkdir -p "$TARGET_DIR/graphviz/"
-cp "./$EXTRACT_DIR/usr/lib64/graphviz/"* "$TARGET_DIR/graphviz/"
+cp -a "./$EXTRACT_DIR/usr/lib64/graphviz/"* "$TARGET_DIR/graphviz/"
 
 # Clean up extraction directory
 rm -r "$EXTRACT_DIR"
