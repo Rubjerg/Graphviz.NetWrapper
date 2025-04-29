@@ -53,9 +53,9 @@ public sealed class RootGraph : Graph
         if (!_closed)
         {
             _closed = true;
+            _ = Agclose(_ptr);
             if (_added_pressure > 0)
                 GC.RemoveMemoryPressure(_added_pressure);
-            _ = Agclose(_ptr);
         }
     }
 
