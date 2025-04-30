@@ -160,7 +160,7 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="Build" Condition="'$(OS)' != 'Windows_NT'">
-    <Message Text="Copying dependencies:   cp -r graphvizfiles/linux/* $(OutputPath)" Importance="high" />
+    <Message Text="Copying dependencies:   cp -a graphvizfiles/linux/* $(OutputPath)" Importance="high" />
     <Exec Command="cp -a graphvizfiles/linux/* $(OutputPath)" />
   </Target>
 

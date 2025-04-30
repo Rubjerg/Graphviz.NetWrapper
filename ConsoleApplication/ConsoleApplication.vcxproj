@@ -176,10 +176,10 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="Build">
-    <Message Text="Copying dependencies:    cp -r ../Rubjerg.Graphviz/Resources/* $(OutputPath) " Importance="high" />
-    <Exec Condition="'$(OS)' != 'Windows_NT'" Command=" cp -r ../Rubjerg.Graphviz/Resources/* $(OutputPath) " />
-    <Message Text="Copying dot resources:    cp -r *.dot $(OutputPath) " Importance="high" />
-    <Exec Condition="'$(OS)' != 'Windows_NT'" Command=" cp -r *.dot $(OutputPath) " />
+    <Message Text="Copying dependencies:    cp -a ../Rubjerg.Graphviz/Resources/* $(OutputPath) " Importance="high" />
+    <Exec Condition="'$(OS)' != 'Windows_NT'" Command=" cp -a ../Rubjerg.Graphviz/Resources/* $(OutputPath) " />
+    <Message Text="Copying dot resources:    cp -a *.dot $(OutputPath) " Importance="high" />
+    <Exec Condition="'$(OS)' != 'Windows_NT'" Command=" cp -a *.dot $(OutputPath) " />
   </Target>
   
 
