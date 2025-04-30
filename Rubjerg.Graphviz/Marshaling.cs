@@ -5,6 +5,8 @@ using System.Text;
 
 namespace Rubjerg.Graphviz;
 
+using static Constants;
+
 internal static class Marshaling
 {
     /// <summary>
@@ -87,8 +89,8 @@ internal static class Marshaling
         return byteArray;
     }
 
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern void free_str(IntPtr ptr);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern void agstrfree(IntPtr root, IntPtr str);
 }

@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 namespace Rubjerg.Graphviz;
 
 using static Marshaling;
+using static Constants;
 
 /// <summary>
 /// Graphviz is thread unsafe, so we wrap all function calls inside a lock to make sure we don't run into
@@ -499,144 +500,144 @@ internal static class ForeignFunctionInterface
         }
     }
 
-    [DllImport("gvc", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GvcLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr gvContext();
-    [DllImport("gvc", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GvcLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int gvFreeContext(IntPtr gvc);
-    [DllImport("gvc", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GvcLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int gvLayout(IntPtr gvc, IntPtr graph, IntPtr engine);
-    [DllImport("gvc", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GvcLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int gvFreeLayout(IntPtr gvc, IntPtr graph);
-    [DllImport("gvc", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GvcLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int gvRender(IntPtr gvc, IntPtr graph, IntPtr format, IntPtr @out);
-    [DllImport("gvc", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GvcLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int gvRenderFilename(IntPtr gvc, IntPtr graph, IntPtr format, IntPtr filename);
 
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agnode(IntPtr graph, IntPtr name, int create);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int agdegree(IntPtr graph, IntPtr node, int inset, int outset);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agfstout(IntPtr graph, IntPtr node);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agnxtout(IntPtr graph, IntPtr edge);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agfstin(IntPtr graph, IntPtr node);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agnxtin(IntPtr graph, IntPtr edge);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agfstedge(IntPtr graph, IntPtr node);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agnxtedge(IntPtr graph, IntPtr edge, IntPtr node);
 
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern void agattr(IntPtr graph, int type, IntPtr name, IntPtr deflt);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern void agset(IntPtr obj, IntPtr name, IntPtr value);
-    [DllImport("cgraph", SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agstrdup_html(IntPtr obj, IntPtr html);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern void agsafeset(IntPtr obj, IntPtr name, IntPtr val, IntPtr deflt);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agroot(IntPtr obj);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agnxtattr(IntPtr obj, int kind, IntPtr attribute);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int agcopyattr(IntPtr from, IntPtr to);
 
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-    [return: MarshalAs(UnmanagedType.U1)]
-    private static extern bool rj_ageqedge(IntPtr edge1, IntPtr edge2);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr rj_agtail(IntPtr node);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr rj_aghead(IntPtr node);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr agedge(IntPtr graph, IntPtr tail, IntPtr head, IntPtr name, int create);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr rj_agmkin(IntPtr edge);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr rj_agmkout(IntPtr edge);
-
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agparent(IntPtr obj);
 
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int agclose(IntPtr graph);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int agdelete(IntPtr graph, IntPtr item);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agfstnode(IntPtr graph);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agnxtnode(IntPtr graph, IntPtr node);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int agcontains(IntPtr graph, IntPtr obj);
 
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agsubg(IntPtr graph, IntPtr name, int create);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agfstsubg(IntPtr graph);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agnxtsubg(IntPtr graph);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int agisstrict(IntPtr ptr);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int agisdirected(IntPtr ptr);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern int agisundirected(IntPtr ptr);
 
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agsubedge(IntPtr graph, IntPtr edge, int create);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr agsubnode(IntPtr graph, IntPtr node, int create);
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr agget(IntPtr obj, IntPtr name);
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr agnameof(IntPtr obj);
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr agedge(IntPtr graph, IntPtr tail, IntPtr head, IntPtr name, int create);
 
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    private static extern bool rj_ageqedge(IntPtr edge1, IntPtr edge2);
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr rj_agtail(IntPtr node);
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr rj_aghead(IntPtr node);
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr rj_agmkin(IntPtr edge);
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr rj_agmkout(IntPtr edge);
+
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr edge_label(IntPtr node);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr rj_agmemwrite(IntPtr graph);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr graph_label(IntPtr node);
 
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr agget(IntPtr obj, IntPtr name);
-    [DllImport("cgraph", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr agnameof(IntPtr obj);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern void clone_attribute_declarations(IntPtr graphfrom, IntPtr graphto);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr rj_sym_key(IntPtr sym);
 
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern double label_x(IntPtr label);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern double label_y(IntPtr label);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern double label_width(IntPtr label);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern double label_height(IntPtr label);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr label_text(IntPtr label);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern double label_fontsize(IntPtr label);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr label_fontname(IntPtr label);
 
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern double node_x(IntPtr node);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern double node_y(IntPtr node);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern double node_width(IntPtr node);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern double node_height(IntPtr node);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr node_label(IntPtr node);
 
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern void convert_to_undirected(IntPtr graph);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr rj_agmemread(IntPtr input);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr rj_agopen(IntPtr name, int graphtype);
 
 
@@ -670,42 +671,42 @@ internal static class ForeignFunctionInterface
     #region debugging and testing
 
     // .NET uses UnmanagedType.Bool by default for P/Invoke, but our C++ code uses UnmanagedType.U1
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static extern bool echobool([MarshalAs(UnmanagedType.U1)] bool arg);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static extern bool return_true();
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static extern bool return_false();
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     public static extern int echoint(int arg);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     public static extern int return1();
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     public static extern int return_1();
 
     public enum TestEnum
     {
         Val1, Val2, Val3, Val4, Val5
     }
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     public static extern TestEnum return_enum1();
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     public static extern TestEnum return_enum2();
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     public static extern TestEnum return_enum5();
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     public static extern TestEnum echo_enum(TestEnum e);
 
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr echo_string(IntPtr str);
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr return_empty_string();
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr return_hello();
-    [DllImport("GraphvizWrapper", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr return_copyright();
 
     public static string? EchoString(string? str)

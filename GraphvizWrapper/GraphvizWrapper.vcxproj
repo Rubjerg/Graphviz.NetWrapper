@@ -139,7 +139,7 @@
   <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
     <Compiler>clang++</Compiler>
     <!-- <Compiler>g++</Compiler> -->
-    <CompilerFlags>-std=c++17 -shared -fPIC -O2 -lcgraph -lgvc -lxdot -Wl,-rpath,'$ORIGIN'</CompilerFlags>
+    <CompilerFlags>-std=c++17 -shared -fPIC -O2 graphvizfiles/linux/libcgraph.so.6 graphvizfiles/linux/libgvc.so.6 graphvizfiles/linux/libxdot.so.4 -Wl,-rpath,'$ORIGIN'</CompilerFlags>
     <OutputPath>../Rubjerg.Graphviz/Resources/</OutputPath>
     <OutputFile>libGraphvizWrapper.so</OutputFile>
     <IncludeDirs>include/</IncludeDirs>
@@ -153,6 +153,8 @@
     </PropertyGroup>
   </Target>
 
+
+  
   <Target Name="BuildLinux" Condition="'$(OS)' != 'Windows_NT'">
     <Message Text="Building GraphvizWrapper on Linux with clang++:  $(Compiler) $(CompilerFlags) -I $(IncludeDirs) $(SourceFiles) -L $(LibDirs) -o $(OutputPath)$(OutputFile)" Importance="high" />
     <Exec Command="mkdir -p $(OutputPath)" />
