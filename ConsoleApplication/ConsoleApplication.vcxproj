@@ -154,12 +154,14 @@
   <!-- Linux Configuration -->
   <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
     <Compiler>clang++</Compiler>
-    <CompilerFlags>-std=c++17 -O2 -lGraphvizWrapper -lcgraph -lgvc -lxdot -Wl,-rpath,'$ORIGIN'</CompilerFlags>
+    <CompilerFlags>-std=c++17 -O2 -Wl,-rpath,'$ORIGIN'</CompilerFlags>
     <OutputPath>bin/linux/</OutputPath>
     <OutputFile>ConsoleApplication</OutputFile>
     <IncludeDirs>../GraphvizWrapper/include</IncludeDirs>
     <LibDirs>../Rubjerg.Graphviz/Resources</LibDirs>
     <SourceFiles>ConsoleApplication.cpp</SourceFiles>
+    
+    <LinkedLibraries> $(LibDirs)/libGraphvizWrapper.so $(LibDirs)/libcgraph.so.6 $(LibDirs)/libgvc.so.6 $(LibDirs)/libxdot.so.4 </LinkedLibraries>
   </PropertyGroup>
 
   <Target Name="GetTargetPath">
@@ -169,10 +171,9 @@
   </Target>
 
   <Target Name="BuildLinux" Condition="'$(OS)' != 'Windows_NT'">
-    <Message Text="Building ConsoleApplication on Linux with clang++:  $(Compiler) $(CompilerFlags) -I $(IncludeDirs) $(SourceFiles) -L $(LibDirs) -o $(OutputPath)$(OutputFile)" Importance="high" />
-    <!-- Ensure the output directory exists -->
+    <Message Text="Building ConsoleApplication on Linux with clang++: $(Compiler) $(CompilerFlags) -I $(IncludeDirs) $(SourceFiles) $(LinkedLibraries) -o $(OutputPath)$(OutputFile)" Importance="high" />
     <Exec Command="mkdir -p $(OutputPath)" />
-    <Exec Command="$(Compiler) $(CompilerFlags) -I $(IncludeDirs) $(SourceFiles) -L $(LibDirs) -o $(OutputPath)$(OutputFile)" />
+    <Exec Command="$(Compiler) $(CompilerFlags) -I $(IncludeDirs) $(SourceFiles) $(LinkedLibraries) -o $(OutputPath)$(OutputFile)" />
   </Target>
 
   <Target Name="PostBuild" AfterTargets="Build">
@@ -182,7 +183,5 @@
     <Exec Condition="'$(OS)' != 'Windows_NT'" Command=" cp -a *.dot $(OutputPath) " />
   </Target>
   
-
-
 </Project>
 
