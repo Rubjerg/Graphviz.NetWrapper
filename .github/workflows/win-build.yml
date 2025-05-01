@@ -95,11 +95,9 @@ jobs:
       id: pkg
       shell: pwsh
       run: |
-        # look only in the wrapper project’s output folder and only for files
-        # that start with "Rubjerg.Graphviz."  (skip *.symbols.nupkg too)
-        $pkg = Get-ChildItem Rubjerg.Graphviz\bin\Release -Recurse `
-                 -Filter "Rubjerg.Graphviz.*.nupkg" -File           |
-               Where-Object { $_.Name -notlike "*.symbols.nupkg" }  |
+        # search everywhere under Rubjerg.Graphviz\bin\ for the first package
+        $pkg = Get-ChildItem Rubjerg.Graphviz\bin -Recurse -Filter "Rubjerg.Graphviz.*.nupkg" -File |
+               Where-Object { $_.Name -notlike "*.symbols.nupkg" } |
                Select-Object -First 1
 
         if (-not $pkg) { throw "Rubjerg.Graphviz nupkg not found" }
