@@ -1,0 +1,14 @@
+- uses: actions/download-artifact@v4
+  with: { name: win-bits, path: . }
+- uses: actions/download-artifact@v4
+  with: { name: linux-bits, path: . }
+
+- name: Merge → single package        # unzip win, unzip linux, re-zip
+  shell: pwsh
+  run: |
+    $win   = Get-ChildItem win-bits\*.nupkg | Select -First 1
+    $linux = Get-ChildItem linux-bits\*.nupkg | Select -First 1
+    $version = ([regex]'(\d+\.\d+\.\d+)').Match($win.Name).Value
+    Expand-Archive $win.FullName   -DestinationPath stage -Force
+    Expand-Archive $linux.FullName -DestinationPath stage -Force
+    Compress-Archive stage\* "Graphviz.NetWrapper.$version.nupkg" -Force

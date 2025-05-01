@@ -1,4 +1,3 @@
-# FIXNOW
 git clean -dfx
 dotnet tool restore
 dotnet restore Rubjerg.Graphviz.sln
