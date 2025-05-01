@@ -8,14 +8,14 @@ on:
   workflow_dispatch:                        # lets you run it by hand
 
 jobs:
-  build-win:
-    uses: ./.github/workflows/build-win.yml
+  win-build:
+    uses: ./.github/workflows/win-build.yml
 
-  build-linux:
-    uses: ./.github/workflows/build-linux.yml
+  linux-build:
+    uses: ./.github/workflows/linux-build.yml
 
   pack:
-    needs: [build-win, build-linux]   # ← the two workflow_call jobs
+    needs: [win-build, linux-build]   # ← the two workflow_call jobs
     runs-on: windows-latest
 
     steps:
@@ -27,13 +27,13 @@ jobs:
       - name: Download Windows nupkg
         uses: actions/download-artifact@v4
         with:
-          name: win-bits          # <── matches upload name in build-win.yml
+          name: win-bits          # <── matches upload name in win-build.yml
           path: artifacts/win
 
       - name: Download Linux nupkg
         uses: actions/download-artifact@v4
         with:
-          name: linux-bits        # <── matches upload name in build-linux.yml
+          name: linux-bits        # <── matches upload name in linux-build.yml
           path: artifacts/linux
 
       # ------------------------------------------------------------------
