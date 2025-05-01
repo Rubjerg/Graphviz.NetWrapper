@@ -1,14 +1,86 @@
-- uses: actions/download-artifact@v4
-  with: { name: win-bits, path: . }
-- uses: actions/download-artifact@v4
-  with: { name: linux-bits, path: . }
+# .github/workflows/ci-pack.yml
+name: CI-Pack
 
-- name: Merge → single package        # unzip win, unzip linux, re-zip
-  shell: pwsh
-  run: |
-    $win   = Get-ChildItem win-bits\*.nupkg | Select -First 1
-    $linux = Get-ChildItem linux-bits\*.nupkg | Select -First 1
-    $version = ([regex]'(\d+\.\d+\.\d+)').Match($win.Name).Value
-    Expand-Archive $win.FullName   -DestinationPath stage -Force
-    Expand-Archive $linux.FullName -DestinationPath stage -Force
-    Compress-Archive stage\* "Graphviz.NetWrapper.$version.nupkg" -Force
+on:
+  push:         { branches: [ master ] }
+  pull_request: { branches: [ master ] }
+  release:      { types: [published] }      # runs on “Publish release” button
+  workflow_dispatch:                        # lets you run it by hand
+
+jobs:
+  build-win:
+    uses: ./.github/workflows/build-win.yml
+
+  build-linux:
+    uses: ./.github/workflows/build-linux.yml
+
+  pack:
+    needs: [build-win, build-linux]   # ← the two workflow_call jobs
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ------------------------------------------------------------------
+      # 1) Download the two packages that the reusable builds uploaded
+      # ------------------------------------------------------------------
+      - name: Download Windows nupkg
+        uses: actions/download-artifact@v4
+        with:
+          name: win-bits          # <── matches upload name in build-win.yml
+          path: artifacts/win
+
+      - name: Download Linux nupkg
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-bits        # <── matches upload name in build-linux.yml
+          path: artifacts/linux
+
+      # ------------------------------------------------------------------
+      # 2) Merge → one multi-RID package
+      # ------------------------------------------------------------------
+      - name: Merge NuGet packages
+        shell: pwsh
+        run: |
+          # Locate the packages we just downloaded
+          $winPkg   = Get-ChildItem artifacts/win   -Filter *.nupkg | Select -First 1
+          $linuxPkg = Get-ChildItem artifacts/linux -Filter *.nupkg | Select -First 1
+
+          if (-not $winPkg)   { throw "Windows package not found" }
+          if (-not $linuxPkg) { throw "Linux package not found" }
+
+          # Extract the semantic version from the Windows package name
+          if ($winPkg.Name -notmatch '\.(\d+\.\d+\.\d+(-[A-Za-z0-9\.-]+)?)\.nupkg$') {
+            throw "Could not parse version from $($winPkg.Name)"
+          }
+          $version = $Matches[1]
+          $outFile = "Graphviz.NetWrapper.$version.nupkg"
+
+          Write-Host "Merging packages into $outFile"
+
+          # Clean staging folder
+          $stage = "stage"
+          Remove-Item $stage -Force -Recurse -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Path $stage | Out-Null
+
+          # Unzip both packages; identical files (nuspec, [Content_Types]) are OK
+          Expand-Archive -Path $winPkg.FullName   -DestinationPath $stage -Force
+          Expand-Archive -Path $linuxPkg.FullName -DestinationPath $stage -Force
+
+          # Re-zip into the final x-plat package
+          Compress-Archive -Path "$stage\*" -DestinationPath $outFile -Force
+
+          Write-Host "Created $outFile"
+
+      # ------------------------------------------------------------------
+      # 3) Push to NuGet (only when the workflow is triggered by a Release)
+      # ------------------------------------------------------------------
+      # FIXNOW
+      # - name: Push to NuGet.org
+      #   if: github.event_name == 'release'
+      #   env:
+      #     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      #   run: |
+      #     nuget push "Graphviz.NetWrapper.*.nupkg" `
+      #                -Source https://api.nuget.org/v3/index.json `
+      #                -ApiKey $env:NUGET_API_KEY
