@@ -95,7 +95,15 @@ jobs:
       id: pkg
       shell: pwsh
       run: |
-        $pkg = Get-ChildItem -Recurse -Filter "*.nupkg" | Select-Object -First 1
+        # look only in the wrapper project’s output folder and only for files
+        # that start with "Rubjerg.Graphviz."  (skip *.symbols.nupkg too)
+        $pkg = Get-ChildItem Rubjerg.Graphviz\bin\Release -Recurse `
+                 -Filter "Rubjerg.Graphviz.*.nupkg" -File           |
+               Where-Object { $_.Name -notlike "*.symbols.nupkg" }  |
+               Select-Object -First 1
+
+        if (-not $pkg) { throw "Rubjerg.Graphviz nupkg not found" }
+
         "package=$($pkg.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
     # Upload that single file
