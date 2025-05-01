@@ -21,66 +21,57 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ------------------------------------------------------------------
-      # 1) Download the two packages that the reusable builds uploaded
-      # ------------------------------------------------------------------
-      - name: Download Windows nupkg
-        uses: actions/download-artifact@v4
-        with:
-          name: win-bits          # <── matches upload name in win-build.yml
-          path: artifacts/win
+              # 1) bring the two per-OS packages into this job --------------------
+      - uses: actions/download-artifact@v4
+        with: { name: win-bits,   path: artifacts/win }
+      - uses: actions/download-artifact@v4
+        with: { name: linux-bits, path: artifacts/linux }
 
-      - name: Download Linux nupkg
-        uses: actions/download-artifact@v4
-        with:
-          name: linux-bits        # <── matches upload name in linux-build.yml
-          path: artifacts/linux
-
-      # ------------------------------------------------------------------
-      # 2) Merge → one multi-RID package
-      # ------------------------------------------------------------------
+      # 2) unzip → merge → zip  ------------------------------------------
       - name: Merge NuGet packages
+        id: merge
         shell: pwsh
         run: |
-          # Locate the packages we just downloaded
+          # locate both nupkgs (Rubjerg.Graphviz.<ver>.nupkg)
           $winPkg   = Get-ChildItem artifacts/win   -Filter *.nupkg | Select -First 1
           $linuxPkg = Get-ChildItem artifacts/linux -Filter *.nupkg | Select -First 1
+          if (-not $winPkg  -or -not $linuxPkg) { throw "Packages missing" }
 
-          if (-not $winPkg)   { throw "Windows package not found" }
-          if (-not $linuxPkg) { throw "Linux package not found" }
-
-          # Extract the semantic version from the Windows package name
-          if ($winPkg.Name -notmatch '\.(\d+\.\d+\.\d+(-[A-Za-z0-9\.-]+)?)\.nupkg$') {
-            throw "Could not parse version from $($winPkg.Name)"
+          # extract <id> and <version> from the file name
+          if ($winPkg.Name -notmatch '^(.+?)\.(\d+\.\d+\.\d+(?:-[A-Za-z0-9\.-]+)?)\.nupkg$') {
+            throw "Unexpected package file name $($winPkg.Name)"
           }
-          $version = $Matches[1]
-          $outFile = "Graphviz.NetWrapper.$version.nupkg"
+          $id      = $Matches[1]    # Rubjerg.Graphviz
+          $version = $Matches[2]    # 2.0.2   (or 2.0.2-beta etc.)
 
-          Write-Host "Merging packages into $outFile"
-
-          # Clean staging folder
-          $stage = "stage"
-          Remove-Item $stage -Force -Recurse -ErrorAction SilentlyContinue
+          $stage   = "stage"
+          Remove-Item $stage -Recurse -Force -ErrorAction SilentlyContinue
           New-Item -ItemType Directory -Path $stage | Out-Null
 
-          # Unzip both packages; identical files (nuspec, [Content_Types]) are OK
-          Expand-Archive -Path $winPkg.FullName   -DestinationPath $stage -Force
-          Expand-Archive -Path $linuxPkg.FullName -DestinationPath $stage -Force
+          Expand-Archive $winPkg.FullName   -DestinationPath $stage -Force
+          Expand-Archive $linuxPkg.FullName -DestinationPath $stage -Force
 
-          # Re-zip into the final x-plat package
-          Compress-Archive -Path "$stage\*" -DestinationPath $outFile -Force
+          $outFile = "$id.$version.nupkg"
+          Compress-Archive "$stage\*" $outFile -Force
 
-          Write-Host "Created $outFile"
+          # expose the path for later steps
+          "outfile=$outFile" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
-      # ------------------------------------------------------------------
-      # 3) Push to NuGet (only when the workflow is triggered by a Release)
-      # ------------------------------------------------------------------
-      # FIXNOW
+      # 3) upload the merged package as a build artefact ------------------
+      - name: Upload final package as artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-nupkg
+          path: ${{ steps.merge.outputs.outfile }}
+          retention-days: 30
+
+      # 4) push to NuGet only on a GitHub Release -------------------------
       # - name: Push to NuGet.org
       #   if: github.event_name == 'release'
       #   env:
       #     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       #   run: |
-      #     nuget push "Graphviz.NetWrapper.*.nupkg" `
+      #     nuget push "${{ steps.merge.outputs.outfile }}" `
       #                -Source https://api.nuget.org/v3/index.json `
       #                -ApiKey $env:NUGET_API_KEY
+
