@@ -25,6 +25,10 @@ digraph test {
             var B = root.GetNode("B");
             _ = root.GetOrAddEdge(A, B, "");
             Assert.AreEqual(4, A.EdgesOut().Count());
+
+            root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/dot_out.svg");
+
+            root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/neato_out.svg", LayoutEngines.Neato);
         }
     }
 }

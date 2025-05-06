@@ -1,32 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <!-- Library targets -->
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
+
+    <!-- Build & pack for these RIDs; the build matrix selects one per job -->
+    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+
+    <!-- Misc project metadata -->
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>latest</LangVersion>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Nullable>Enable</Nullable>
+    <Nullable>enable</Nullable>
     <NoWarn>1701;1702;NU5100</NoWarn>
+
+    <!-- NuGet info -->
     <Version>2.0.2</Version>
     <Authors>Chiel ten Brinke</Authors>
     <Company>Rubjerg</Company>
     <Description>Lean wrapper around Graphviz for building graphs, reading/writing dot files, exporting images, or reading out layout parameters.</Description>
-    <Copyright>Copyright 2020</Copyright>
+    <Copyright>Copyright 2020</Copyright>
     <PackageTags>graphviz dotnet graphdrawing</PackageTags>
     <RepositoryUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</PackageProjectUrl>
-    <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
-  
+
+  <!-- Platform‑specific compilation constant for Windows code paths -->
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
     <DefineConstants>_WINDOWS</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
@@ -36,23 +44,30 @@
     </ProjectReference>
   </ItemGroup>
 
+  <!--
+       *****  Native assets *****
+       All files under Resources/ are copied to bin/ at build time *and* packed into
+       runtimes/<rid>/native so consumers only get the bits for their platform.
+  -->
+
   <ItemGroup>
-    <!-- Include all files in the Resources folder but copy them directly to the output directory -->
-    <None Update="Resources/*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Link>%(RecursiveDir)/../%(Filename)%(Extension)</Link>
+    <!-- Top‑level executables / libraries -->
+    <None Include="Resources/*" Exclude="Resources/graphviz/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(RecursiveDir)/%(Filename)%(Extension)</Link>
       <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <PackagePath>runtimes/linux-x64/native/</PackagePath>
     </None>
-    <!-- The graphviz subfolder is only present and relevant on linux --> 
-    <None Update="Resources/graphviz/*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Link>%(RecursiveDir)/../../graphviz/%(Filename)%(Extension)</Link>
+    <!-- Graphviz plug‑ins & sub‑folder -->
+    <None Include="Resources/graphviz/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(RecursiveDir)/graphviz/%(Filename)%(Extension)</Link>
       <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <PackagePath>runtimes/linux-x64/native/graphviz/%(RecursiveDir)</PackagePath>
     </None>
   </ItemGroup>
 
+  <!-- Shared assets such as the licence file -->
   <ItemGroup>
     <None Include="..\LICENSE">
       <Pack>true</Pack>
