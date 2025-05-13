@@ -27,12 +27,17 @@
     <RepositoryUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    
+    <Rid Condition=" '$(OS)' == 'Windows_NT' ">win-x64</Rid>
+    <Rid Condition=" '$(OS)' != 'Windows_NT' ">linux-x64</Rid>
   </PropertyGroup>
 
-  <!-- Platform‑specific compilation constant for Windows code paths -->
-  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-    <DefineConstants>_WINDOWS</DefineConstants>
-  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>true</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -44,34 +49,23 @@
     </ProjectReference>
   </ItemGroup>
 
-  <!--
-       *****  Native assets *****
-       All files under Resources/ are copied to bin/ at build time *and* packed into
-       runtimes/<rid>/native so consumers only get the bits for their platform.
-  -->
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <DefineConstants>_WINDOWS</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup>
-    <!-- Top‑level executables / libraries -->
     <None Include="Resources/*" Exclude="Resources/graphviz/**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>%(RecursiveDir)/%(Filename)%(Extension)</Link>
+      <TargetPath>runtimes/$(Rid)/native/%(Filename)%(Extension)</TargetPath>
       <Pack>true</Pack>
-      <PackagePath>runtimes/linux-x64/native/</PackagePath>
+      <PackagePath>runtimes/$(Rid)/native/</PackagePath>
     </None>
-    <!-- Graphviz plug‑ins & sub‑folder -->
+
     <None Include="Resources/graphviz/**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>%(RecursiveDir)/graphviz/%(Filename)%(Extension)</Link>
+      <TargetPath>runtimes/$(Rid)/native/graphviz/%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
       <Pack>true</Pack>
-      <PackagePath>runtimes/linux-x64/native/graphviz/%(RecursiveDir)</PackagePath>
-    </None>
-  </ItemGroup>
-
-  <!-- Shared assets such as the licence file -->
-  <ItemGroup>
-    <None Include="..\LICENSE">
-      <Pack>true</Pack>
-      <PackagePath></PackagePath>
+      <PackagePath>runtimes/$(Rid)/native/graphviz/%(RecursiveDir)</PackagePath>
     </None>
   </ItemGroup>
 

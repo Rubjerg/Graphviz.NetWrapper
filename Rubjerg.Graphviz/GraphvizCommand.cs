@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace Rubjerg.Graphviz;
 
@@ -11,6 +12,27 @@ namespace Rubjerg.Graphviz;
 /// </summary>
 public class GraphvizCommand
 {
+    internal static string Rid
+    {
+        get
+        {
+            var os = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win"
+                   : RuntimeInformation.IsOSPlatform(OSPlatform.OSX)     ? "osx"
+                   : "linux";   // default
+
+            var arch = RuntimeInformation.ProcessArchitecture switch
+            {
+                Architecture.X64   => "x64",
+                Architecture.Arm64 => "arm64",
+                Architecture.X86   => "x86",
+                Architecture.Arm   => "arm",
+                _                  => "unknown"
+            };
+
+            return $"{os}-{arch}";
+        }
+    }
+
     public static RootGraph CreateLayout(Graph input, string engine = LayoutEngines.Dot, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
         var (stdout, stderr) = Exec(input, engine: engine);
@@ -34,7 +56,7 @@ public class GraphvizCommand
     /// <returns>stderr may contain warnings, stdout is in utf8 encoding</returns>
     public static (byte[] stdout, string stderr) Exec(Graph input, string format = "xdot", string? outputPath = null, string engine = LayoutEngines.Dot)
     {
-        string exeName = "dot";
+        var exeName  = Path.Combine(AppContext.BaseDirectory, "runtimes", Rid, "native", "dot");
         string arguments = $"-T{format} -K{engine}";
         if (outputPath != null)
         {
