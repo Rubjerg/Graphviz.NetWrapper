@@ -58,7 +58,7 @@ jobs:
       run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.sln
       
     - name: Check if code is formatted
-      run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.NugetOrgTests.sln
+      run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.Tests.sln
 
     - name: Check for loose ends
       run: |
