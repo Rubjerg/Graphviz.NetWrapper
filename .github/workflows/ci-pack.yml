@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-              # 1) bring the two per-OS packages into this job --------------------
+      # 1) bring the two per-OS packages into this job --------------------
       - uses: actions/download-artifact@v4
         with: { name: win-bits,   path: artifacts/win }
       - uses: actions/download-artifact@v4
