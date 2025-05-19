@@ -54,8 +54,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Rubjerg.Graphviz.targets" Pack="true" PackagePath="build/" />
-    
     <None Include="Resources/*" Exclude="Resources/graphviz/**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/$(Rid)/native/%(Filename)%(Extension)</TargetPath>
