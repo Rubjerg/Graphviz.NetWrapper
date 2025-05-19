@@ -17,16 +17,16 @@ public class GraphvizCommand
         get
         {
             var os = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win"
-                   : RuntimeInformation.IsOSPlatform(OSPlatform.OSX)     ? "osx"
+                   : RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "osx"
                    : "linux";   // default
 
             var arch = RuntimeInformation.ProcessArchitecture switch
             {
-                Architecture.X64   => "x64",
+                Architecture.X64 => "x64",
                 Architecture.Arm64 => "arm64",
-                Architecture.X86   => "x86",
-                Architecture.Arm   => "arm",
-                _                  => "unknown"
+                Architecture.X86 => "x86",
+                Architecture.Arm => "arm",
+                _ => "unknown"
             };
 
             return $"{os}-{arch}";
@@ -56,7 +56,7 @@ public class GraphvizCommand
     /// <returns>stderr may contain warnings, stdout is in utf8 encoding</returns>
     public static (byte[] stdout, string stderr) Exec(Graph input, string format = "xdot", string? outputPath = null, string engine = LayoutEngines.Dot)
     {
-        var exeName  = Path.Combine(AppContext.BaseDirectory, "runtimes", Rid, "native", "dot");
+        var exeName = Path.Combine(AppContext.BaseDirectory, "runtimes", Rid, "native", "dot");
         string arguments = $"-T{format} -K{engine}";
         if (outputPath != null)
         {
