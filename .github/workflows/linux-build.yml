@@ -63,7 +63,7 @@ jobs:
     - name: Locate nupkg
       id: pkg
       run: |
-        pkg=$(ls -1t Rubjerg.Graphviz.*.nupkg | head -1)
+        pkg=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)
         echo "package=$pkg" >> "$GITHUB_OUTPUT"
 
     - uses: actions/upload-artifact@v4
