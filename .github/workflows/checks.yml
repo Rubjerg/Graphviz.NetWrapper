@@ -1,0 +1,35 @@
+name: Static checks
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      name: Checkout Code
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore Tools
+      run: dotnet tool restore
+
+    - name: Check if line endings are CRLF
+      run: |
+        bash -c "git grep -rlIP -- ':!GraphvizWrapper/graphvizfiles/*' ':!*.sh' | xargs unix2dos"
+        git diff --exit-code
+
+    - name: Check if README is up-to-date
+      run: git diff --exit-code -- README.md
+
+    - name: Check if code is formatted
+      run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.sln
+      
+    - name: Check if code is formatted
+      run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.Tests.sln
+
+    - name: Check for loose ends
+      run: |
+        bash -c "! git grep 'FIX''NOW'"

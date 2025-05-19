@@ -19,11 +19,6 @@ jobs:
     - uses: actions/checkout@v1
       name: Checkout Code
 
-    - name: Check if line endings are CRLF
-      run: |
-        bash -c "git grep -rlIP -- ':!GraphvizWrapper/graphvizfiles/*' ':!*.sh' | xargs unix2dos"
-        git diff --exit-code
-
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
 
@@ -45,24 +40,11 @@ jobs:
     - name: Build Tests
       run: msbuild Rubjerg.Graphviz.Tests.sln /p:Configuration=Release
 
-    - name: Run Unittests Without Coverage (.NET 8)
+    - name: Run Unittests (.NET 8)
       run: bash run-tests-netcore.sh Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj
 
     - name: Run Transitive Tests (.NET 8)
       run: bash run-tests-netcore.sh Rubjerg.Graphviz.TransitiveTest\Rubjerg.Graphviz.TransitiveTest.csproj
-
-    - name: Check if README is up-to-date
-      run: git diff --exit-code -- README.md
-
-    - name: Check if code is formatted
-      run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.sln
-      
-    - name: Check if code is formatted
-      run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.Tests.sln
-
-    - name: Check for loose ends
-      run: |
-        bash -c "! git grep 'FIX''NOW'"
 
 
     # Locate the package that GeneratePackageOnBuild just produced
