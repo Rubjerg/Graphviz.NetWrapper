@@ -8,7 +8,6 @@
     <!-- Build & pack for these RIDs; the build matrix selects one per job -->
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
 
-    <!-- Misc project metadata -->
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>latest</LangVersion>

@@ -30,4 +30,8 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj" />
+  </ItemGroup>
+
 </Project>
