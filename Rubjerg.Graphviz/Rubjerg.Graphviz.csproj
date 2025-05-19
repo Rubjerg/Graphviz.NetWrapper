@@ -18,7 +18,7 @@
     <NoWarn>1701;1702;NU5100</NoWarn>
 
     <!-- NuGet info -->
-    <Version>2.0.2</Version>
+    <Version>2.0.2-dev.$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</Version>
     <Authors>Chiel ten Brinke</Authors>
     <Company>Rubjerg</Company>
     <Description>Lean wrapper around Graphviz for building graphs, reading/writing dot files, exporting images, or reading out layout parameters.</Description>
@@ -54,6 +54,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Rubjerg.Graphviz.targets" Pack="true" PackagePath="build/" />
+    
     <None Include="Resources/*" Exclude="Resources/graphviz/**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/$(Rid)/native/%(Filename)%(Extension)</TargetPath>
