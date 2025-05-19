@@ -20,36 +20,24 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubjerg.Graphviz", "Rubjerg
 		{F9BC5523-352D-469F-8DBB-97ECA9D70648} = {F9BC5523-352D-469F-8DBB-97ECA9D70648}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubjerg.Graphviz.Test", "Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj", "{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubjerg.Graphviz.TransitiveTest", "Rubjerg.Graphviz.TransitiveTest\Rubjerg.Graphviz.TransitiveTest.csproj", "{FAB37EA6-101F-4B84-816F-7A98D571BAE7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{66D83B79-08D5-4590-90E3-8F6CDF108D5E}.Debug|x64.ActiveCfg = Debug|x64
-		{66D83B79-08D5-4590-90E3-8F6CDF108D5E}.Debug|x64.Build.0 = Debug|x64
-		{66D83B79-08D5-4590-90E3-8F6CDF108D5E}.Release|x64.ActiveCfg = Release|x64
-		{66D83B79-08D5-4590-90E3-8F6CDF108D5E}.Release|x64.Build.0 = Release|x64
 		{F9BC5523-352D-469F-8DBB-97ECA9D70648}.Debug|x64.ActiveCfg = Debug|x64
 		{F9BC5523-352D-469F-8DBB-97ECA9D70648}.Debug|x64.Build.0 = Debug|x64
 		{F9BC5523-352D-469F-8DBB-97ECA9D70648}.Release|x64.ActiveCfg = Release|x64
 		{F9BC5523-352D-469F-8DBB-97ECA9D70648}.Release|x64.Build.0 = Release|x64
-		{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}.Debug|x64.ActiveCfg = Debug|x64
-		{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}.Debug|x64.Build.0 = Debug|x64
-		{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}.Release|x64.ActiveCfg = Release|x64
-		{3E7CBBC1-A6AE-42A9-950C-54433B6F0E7C}.Release|x64.Build.0 = Release|x64
-		{FAB37EA6-101F-4B84-816F-7A98D571BAE7}.Debug|x64.ActiveCfg = Debug|x64
-		{FAB37EA6-101F-4B84-816F-7A98D571BAE7}.Debug|x64.Build.0 = Debug|x64
-		{FAB37EA6-101F-4B84-816F-7A98D571BAE7}.Release|x64.ActiveCfg = Release|x64
-		{FAB37EA6-101F-4B84-816F-7A98D571BAE7}.Release|x64.Build.0 = Release|x64
 		{27A1D045-B8C9-4785-A2DA-ECAC48158725}.Debug|x64.ActiveCfg = Debug|x64
 		{27A1D045-B8C9-4785-A2DA-ECAC48158725}.Debug|x64.Build.0 = Debug|x64
 		{27A1D045-B8C9-4785-A2DA-ECAC48158725}.Release|x64.ActiveCfg = Release|x64
 		{27A1D045-B8C9-4785-A2DA-ECAC48158725}.Release|x64.Build.0 = Release|x64
+		{66D83B79-08D5-4590-90E3-8F6CDF108D5E}.Debug|x64.ActiveCfg = Debug|x64
+		{66D83B79-08D5-4590-90E3-8F6CDF108D5E}.Debug|x64.Build.0 = Debug|x64
+		{66D83B79-08D5-4590-90E3-8F6CDF108D5E}.Release|x64.ActiveCfg = Release|x64
+		{66D83B79-08D5-4590-90E3-8F6CDF108D5E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -43,12 +43,6 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\GraphvizWrapper\GraphvizWrapper.vcxproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>
-
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
     <DefineConstants>_WINDOWS</DefineConstants>
   </PropertyGroup>
