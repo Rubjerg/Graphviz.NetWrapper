@@ -39,14 +39,11 @@ jobs:
     - name: Build App
       run: msbuild Rubjerg.Graphviz.sln /p:Configuration=Release
 
-    - name: Check if README is up-to-date
-      run: git diff --exit-code -- README.md
+    - name: Restore (just built) NuGet Packages for Tests
+      run: nuget restore Rubjerg.Graphviz.Tests.sln
 
-    - name: Check if code is formatted
-      run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.sln
-      
-    - name: Check if code is formatted
-      run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.NugetOrgTests.sln
+    - name: Build Tests
+      run: msbuild Rubjerg.Graphviz.Tests.sln /p:Configuration=Release
 
     - name: Run Unittests Without Coverage (.NET 8)
       run: bash run-tests-netcore.sh Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj
@@ -65,6 +62,15 @@ jobs:
 
     - name: Run Transitive Nuget Tests (.NET 8)
       run: bash nunit-console.sh Rubjerg.Graphviz.NugetOrgTransitiveTest\bin\x64\Release\net8.0\Rubjerg.Graphviz.NugetOrgTransitiveTest.dll
+
+    - name: Check if README is up-to-date
+      run: git diff --exit-code -- README.md
+
+    - name: Check if code is formatted
+      run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.sln
+      
+    - name: Check if code is formatted
+      run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.NugetOrgTests.sln
 
     - name: Check for loose ends
       run: |
