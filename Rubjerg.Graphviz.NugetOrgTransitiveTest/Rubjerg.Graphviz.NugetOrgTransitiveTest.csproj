@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <ProjectReference Include="..\Rubjerg.Graphviz.NugetTest\Rubjerg.Graphviz.NugetTest.csproj" />
+      <ProjectReference Include="..\Rubjerg.Graphviz.NugetOrgTest\Rubjerg.Graphviz.NugetOrgTest.csproj" />
   </ItemGroup>
 
   <ItemGroup>

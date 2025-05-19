@@ -1,7 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace Rubjerg.Graphviz.NugetTest
+namespace Rubjerg.Graphviz.NugetOrgTest
 {
     [TestFixture()]
     public class TestNugetPackage

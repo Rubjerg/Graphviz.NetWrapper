@@ -46,7 +46,7 @@ jobs:
       run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.sln
       
     - name: Check if code is formatted
-      run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.NugetTests.sln
+      run: dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.NugetOrgTests.sln
 
     - name: Run Unittests Without Coverage (.NET 8)
       run: bash run-tests-netcore.sh Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj
@@ -55,16 +55,16 @@ jobs:
       run: bash run-tests-netcore.sh Rubjerg.Graphviz.TransitiveTest\Rubjerg.Graphviz.TransitiveTest.csproj
 
     - name: Restore NuGet Packages for Nuget Tests (from local package source)
-      run: nuget restore Rubjerg.Graphviz.NugetTests.sln
+      run: nuget restore Rubjerg.Graphviz.NugetOrgTests.sln
 
     - name: Build Nuget Test Solution
-      run: msbuild Rubjerg.Graphviz.NugetTests.sln /p:Configuration=Release
+      run: msbuild Rubjerg.Graphviz.NugetOrgTests.sln /p:Configuration=Release
 
     - name: Run Nuget Tests (.NET 8)
-      run: bash run-tests-netcore.sh Rubjerg.Graphviz.NugetTest\Rubjerg.Graphviz.NugetTest.csproj
+      run: bash run-tests-netcore.sh Rubjerg.Graphviz.NugetOrgTest\Rubjerg.Graphviz.NugetOrgTest.csproj
 
     - name: Run Transitive Nuget Tests (.NET 8)
-      run: bash nunit-console.sh Rubjerg.Graphviz.TransitiveNugetTest\bin\x64\Release\net8.0\Rubjerg.Graphviz.TransitiveNugetTest.dll
+      run: bash nunit-console.sh Rubjerg.Graphviz.NugetOrgTransitiveTest\bin\x64\Release\net8.0\Rubjerg.Graphviz.NugetOrgTransitiveTest.dll
 
     - name: Check for loose ends
       run: |

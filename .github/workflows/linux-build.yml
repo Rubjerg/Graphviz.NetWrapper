@@ -55,16 +55,16 @@ jobs:
       run: bash run-tests-netcore.sh Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
 
     - name: Restore NuGet Packages for NuGet Tests
-      run: dotnet restore Rubjerg.Graphviz.NugetTests.sln
+      run: dotnet restore Rubjerg.Graphviz.NugetOrgTests.sln
 
     - name: Build NuGet Test Solution
-      run: dotnet build Rubjerg.Graphviz.NugetTests.sln --configuration Release --no-restore
+      run: dotnet build Rubjerg.Graphviz.NugetOrgTests.sln --configuration Release --no-restore
 
     - name: Run NuGet Tests
-      run: bash run-tests-netcore.sh Rubjerg.Graphviz.NugetTest/Rubjerg.Graphviz.NugetTest.csproj
+      run: bash run-tests-netcore.sh Rubjerg.Graphviz.NugetOrgTest/Rubjerg.Graphviz.NugetOrgTest.csproj
 
     - name: Run Transitive NuGet Tests
-      run: bash run-tests-netcore.sh Rubjerg.Graphviz.TransitiveNugetTest/Rubjerg.Graphviz.TransitiveNugetTest.csproj
+      run: bash run-tests-netcore.sh Rubjerg.Graphviz.NugetOrgTransitiveTest/Rubjerg.Graphviz.NugetOrgTransitiveTest.csproj
 
     - name: Locate nupkg
       id: pkg
