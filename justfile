@@ -51,8 +51,7 @@ test-all: build-tests
     just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
 
 locate-nupkg GITHUB_OUTPUT: test-all
-    pkg=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)
-    echo "package=$pkg" >> {{GITHUB_OUTPUT}}
+    echo "package=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)" >> {{GITHUB_OUTPUT}}
 
 # Check for CRLF line endings (only reports changes)
 check-line-endings:
