@@ -53,6 +53,13 @@ test-all: build-tests
 locate-nupkg GITHUB_OUTPUT:
     echo "package=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)" >> "{{GITHUB_OUTPUT}}"
 
+generate-readme:
+    echo Generating README.md
+    cat README-src.md > README.md
+    printf '```cs \r\n' >> README.md
+    cat Rubjerg.Graphviz.Test/Tutorial.cs >> README.md
+    printf '```\r\n' >> README.md
+
 # Strip trailing spaces and normalize line endings to crlf
 normalize:
     bash -c "git ls-files -- ':!GraphvizWrapper/*' | xargs sed -i -b 's/[ \t]*$//' "
@@ -71,5 +78,5 @@ check-diff:
 check-fixme:
     bash -c "! git grep 'FIX''NOW'"
 
-check-all: normalize format check-diff check-fixme
+check-all: generate-readme normalize format check-diff check-fixme
 
