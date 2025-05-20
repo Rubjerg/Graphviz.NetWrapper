@@ -1,8 +1,8 @@
 set shell := ["sh", "-cu"]
 is-windows := `uname -s | grep -qi 'mingw\|msys' && echo true || echo false`
 
-# Full pipeline
-default: restore-tools test-all
+# Complete build and test
+default: test-all
 
 find-msbuild:
     powershell -NoProfile -Command '& { & "${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\\**\\Bin\\MSBuild.exe }'
@@ -12,7 +12,7 @@ restore-tools:
     dotnet tool restore
 
 # Restore main solution packages
-restore:
+restore: restore-tools
     dotnet restore Rubjerg.Graphviz.sln
 
 # Build main app
@@ -50,10 +50,10 @@ test-all: build-tests
     just test Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
     just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
 
-locate-nupkg GITHUB_OUTPUT: test-all
-    echo "package=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)" >> {{GITHUB_OUTPUT}}
+locate-nupkg GITHUB_OUTPUT:
+    echo "package=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)" >> "{{GITHUB_OUTPUT}}"
 
-# Check for CRLF line endings (only reports changes)
+# Check for CRLF line endings
 check-line-endings:
     bash -c "git ls-files -- ':!GraphvizWrapper/graphvizfiles/*' ':!*.sh' | xargs unix2dos"
     git diff --exit-code
@@ -63,14 +63,14 @@ check-readme:
     git diff --exit-code -- README.md
 
 # Check formatting in main solution
-check-format-main: restore-tools
+check-format-main:
     dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.sln
 
 # Check formatting in test solution
-check-format-tests: restore-tools
+check-format-tests:
     dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.Tests.sln
 
-# Check for leftover tags like FIX'NOW
+# Check for unfinished work
 check-fixme:
     bash -c "! git grep 'FIX''NOW'"
 

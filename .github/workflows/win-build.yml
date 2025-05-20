@@ -28,33 +28,12 @@ jobs:
     - name: Setup Just
       uses: extractions/setup-just@v3
 
-    - name: Restore tools
-      run: just restore-tools
-
-    - name: Restore NuGet packages
-      run: just restore
-
-    - name: Build app
-      run: just build-package
-
-    - name: Restore NuGet packages for tests
-      run: just restore-tests
-
-    - name: Build tests
-      run: just build-tests
-
-    - name: Run unit tests (.NET 8)
-      shell: bash
-      run: just test Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
-
-    - name: Run transitive tests (.NET 8)
-      shell: bash
-      run: just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
+    - name: Build and test
+      run: just
 
     - name: Locate nupkg
-      shell: bash
       id: pkg
-      run: just locate-nupkg "$GITHUB_OUTPUT"
+      run: just locate-nupkg $env:GITHUB_OUTPUT
 
     - uses: actions/upload-artifact@v4
       with:
