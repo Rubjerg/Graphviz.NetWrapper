@@ -6,7 +6,7 @@ default: test-all
 
 find-msbuild:
     powershell -NoProfile -Command '& { & "${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\\**\\Bin\\MSBuild.exe }'
-    
+
 # Restore .NET tools
 restore-tools:
     dotnet tool restore
@@ -53,12 +53,13 @@ test-all: build-tests
 locate-nupkg GITHUB_OUTPUT:
     echo "package=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)" >> "{{GITHUB_OUTPUT}}"
 
-# Normalize line endings to crlf
-crlf:
+# Strip trailing spaces and normalize line endings to crlf
+normalize:
+    bash -c "git ls-files -- ':!GraphvizWrapper/*' | xargs sed -i -b 's/[ \t]*$//' "
     bash -c "git ls-files -- ':!GraphvizWrapper/graphvizfiles/*' ':!*.sh' | xargs unix2dos"
 
 # Format the code
-format:
+format:   
     dotnet format whitespace -v diag Rubjerg.Graphviz.sln
     dotnet format whitespace -v diag Rubjerg.Graphviz.Tests.sln
 
@@ -70,5 +71,5 @@ check-diff:
 check-fixme:
     bash -c "! git grep 'FIX''NOW'"
 
-check-all: crlf format check-diff check-fixme
+check-all: normalize format check-diff check-fixme
 
