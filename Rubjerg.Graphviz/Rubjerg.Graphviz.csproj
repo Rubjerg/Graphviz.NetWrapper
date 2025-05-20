@@ -15,6 +15,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Nullable>enable</Nullable>
     <NoWarn>1701;1702;NU5100</NoWarn>
+    <DebugType>embedded</DebugType>
 
     <!-- NuGet info -->
     <Version>2.0.2-dev.$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</Version>
