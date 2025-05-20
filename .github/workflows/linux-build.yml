@@ -43,17 +43,14 @@ jobs:
       run: just build-tests
 
     - name: Run unit tests (.NET 8)
-      shell: bash
       run: just test Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
 
     - name: Run transitive tests (.NET 8)
-      shell: bash
       run: just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
 
     - name: Locate nupkg
       id: pkg
-      run: |
-        just locate-nupkg "$GITHUB_OUTPUT"
+      run: just locate-nupkg "$GITHUB_OUTPUT"
 
     - uses: actions/upload-artifact@v4
       with:
