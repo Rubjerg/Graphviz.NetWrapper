@@ -52,21 +52,12 @@ jobs:
       run: just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
 
 
-    # Locate the package that GeneratePackageOnBuild just produced
     - name: Locate nupkg
       id: pkg
-      shell: pwsh
       run: |
-        # search everywhere under Rubjerg.Graphviz\bin\ for the first package
-        $pkg = Get-ChildItem Rubjerg.Graphviz\bin -Recurse -Filter "Rubjerg.Graphviz.*.nupkg" -File |
-               Where-Object { $_.Name -notlike "*.symbols.nupkg" } |
-               Select-Object -First 1
+        pkg=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)
+        echo "package=$pkg" >> "$GITHUB_OUTPUT"
 
-        if (-not $pkg) { throw "Rubjerg.Graphviz nupkg not found" }
-
-        "package=$($pkg.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-
-    # Upload that single file
     - uses: actions/upload-artifact@v4
       with:
         name: win-bits
