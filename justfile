@@ -53,26 +53,22 @@ test-all: build-tests
 locate-nupkg GITHUB_OUTPUT:
     echo "package=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)" >> "{{GITHUB_OUTPUT}}"
 
-# Check for CRLF line endings
-check-line-endings:
+# Normalize line endings to crlf
+crlf:
     bash -c "git ls-files -- ':!GraphvizWrapper/graphvizfiles/*' ':!*.sh' | xargs unix2dos"
+
+# Format the code
+format:
+    dotnet format whitespace -v diag Rubjerg.Graphviz.sln
+    dotnet format whitespace -v diag Rubjerg.Graphviz.Tests.sln
+
+# Check that none of the actions generated a diff
+check-diff:
     git diff --exit-code
-
-# Check if README.md is up to date
-check-readme:
-    git diff --exit-code -- README.md
-
-# Check formatting in main solution
-check-format-main:
-    dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.sln
-
-# Check formatting in test solution
-check-format-tests:
-    dotnet format whitespace --verify-no-changes -v diag Rubjerg.Graphviz.Tests.sln
 
 # Check for unfinished work
 check-fixme:
     bash -c "! git grep 'FIX''NOW'"
 
-check-all: check-line-endings check-readme check-format-main check-format-tests check-fixme
+check-all: crlf format check-diff check-fixme
 

@@ -31,6 +31,9 @@ jobs:
     - name: Build and test
       run: just
 
+    - name: Check diff
+      run: just check-diff
+
     - name: Locate nupkg
       id: pkg
       run: just locate-nupkg $env:GITHUB_OUTPUT
