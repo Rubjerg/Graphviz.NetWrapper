@@ -16,7 +16,7 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
       name: Checkout Code
 
     - name: Add msbuild to PATH
@@ -24,27 +24,32 @@ jobs:
 
     - name: Setup NuGet.exe for use with actions
       uses: NuGet/setup-nuget@v1.0.5
+        
+    - name: Setup Just
+      uses: extractions/setup-just@v3
 
-    - name: Restore Tools
-      run: dotnet tool restore
+    - name: Restore tools
+      run: just restore-tools
 
-    - name: Restore NuGet Packages
-      run: nuget restore Rubjerg.Graphviz.sln
+    - name: Restore NuGet packages
+      run: just restore
 
-    - name: Build App
-      run: msbuild Rubjerg.Graphviz.sln /p:Configuration=Release
+    - name: Build app
+      run: just build-package
 
-    - name: Restore (just built) NuGet Packages for Tests
-      run: nuget restore Rubjerg.Graphviz.Tests.sln
+    - name: Restore NuGet packages for tests
+      run: just restore-tests
 
-    - name: Build Tests
-      run: msbuild Rubjerg.Graphviz.Tests.sln /p:Configuration=Release
+    - name: Build tests
+      run: just build-tests
 
-    - name: Run Unittests (.NET 8)
-      run: bash run-tests-netcore.sh Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj
+    - name: Run unit tests (.NET 8)
+      shell: bash
+      run: just test Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
 
-    - name: Run Transitive Tests (.NET 8)
-      run: bash run-tests-netcore.sh Rubjerg.Graphviz.TransitiveTest\Rubjerg.Graphviz.TransitiveTest.csproj
+    - name: Run transitive tests (.NET 8)
+      shell: bash
+      run: just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
 
 
     # Locate the package that GeneratePackageOnBuild just produced

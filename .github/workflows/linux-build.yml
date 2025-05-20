@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
       name: Checkout Code
 
     # Necessary for running neato
@@ -23,39 +23,32 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
+        
+    - name: Setup Just
+      uses: extractions/setup-just@v3
 
-    - name: Restore Tools
-      run: dotnet tool restore
+    - name: Restore tools
+      run: just restore-tools
 
-    - name: Restore NuGet Packages
-      run: dotnet restore Rubjerg.Graphviz.sln
+    - name: Restore NuGet packages
+      run: just restore
 
-    - name: Print PWD
-      run: pwd
+    - name: Build app
+      run: just build-package
 
-    - name: Build App
-      run: dotnet build Rubjerg.Graphviz.sln --configuration Release --no-restore
+    - name: Restore NuGet packages for tests
+      run: just restore-tests
 
-    - name: Build App Another Time because dot net sucks and cannot see the native dependencies the first time
-      run: dotnet build Rubjerg.Graphviz.sln --configuration Release --no-restore
+    - name: Build tests
+      run: just build-tests
 
-    - name: Debug Intermediate Output
-      run: ls -la /home/runner/work/Graphviz.NetWrapper/Graphviz.NetWrapper/Rubjerg.Graphviz/Resources
+    - name: Run unit tests (.NET 8)
+      shell: bash
+      run: just test Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
 
-    - name: Debug Build Output
-      run: ls -la /home/runner/work/Graphviz.NetWrapper/Graphviz.NetWrapper/Rubjerg.Graphviz/bin/x64/Release/netstandard2.0/
-
-    - name: Restore (just built) NuGet Packages for Tests
-      run: dotnet restore Rubjerg.Graphviz.Tests.sln
-
-    - name: Build Tests
-      run: dotnet build Rubjerg.Graphviz.Tests.sln --configuration Release --no-restore
-
-    - name: Run Unittests
-      run: bash run-tests-netcore.sh Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
-
-    - name: Run Transitive Tests
-      run: bash run-tests-netcore.sh Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
+    - name: Run transitive tests (.NET 8)
+      shell: bash
+      run: just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
 
     - name: Locate nupkg
       id: pkg
