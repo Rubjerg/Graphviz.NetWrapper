@@ -97,7 +97,7 @@
     </ReadLinesFromFile>
 
     <!-- 4. Is working tree dirty? -->
-    <Exec Command="git diff --quiet HEAD || echo dirty > &quot;$(_GitTmpFile)&quot;" />
+    <Exec Command="git diff --quiet HEAD &amp;&amp; echo yes || echo no > &quot;$(_GitTmpFile)&quot;" />
     <ReadLinesFromFile File="$(_GitTmpFile)">
       <Output TaskParameter="Lines" PropertyName="IsDirty"/>
     </ReadLinesFromFile>
@@ -113,12 +113,12 @@
       <BaseVersion>$([System.Text.RegularExpressions.Regex]::Replace($(LatestTag), '^v', ''))</BaseVersion>
 
       <!-- Case 1: On exact tag, clean -->
-      <_ResolvedVersion Condition="'$(ExactTag)' != '' and '$(IsDirty)' == ''">
+      <_ResolvedVersion Condition="'$(ExactTag)' != '' and '$(IsDirty)' == 'no'">
         $(BaseVersion)
       </_ResolvedVersion>
 
       <!-- Case 2: master is descendant of HEAD and clean -->
-      <_ResolvedVersion Condition="'$(_ResolvedVersion)' == '' and '$(IsDirty)' == '' and '$(MasterDescendant)' == 'yes'">
+      <_ResolvedVersion Condition="'$(_ResolvedVersion)' == '' and '$(IsDirty)' == 'no' and '$(MasterDescendant)' == 'yes'">
         $(BaseVersion)-alpha-$(CommitHash)
       </_ResolvedVersion>
 
