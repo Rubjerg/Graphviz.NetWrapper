@@ -1,0 +1,47 @@
+# This is a basic workflow to help you get started with Actions
+
+name: win-build
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+
+on:
+  workflow_call:
+    outputs:
+      artifact-name:
+        description: "Windows bits"
+        value: win-bits
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      name: Checkout Code
+      with:
+        fetch-depth: 0
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Setup NuGet.exe for use with actions
+      uses: NuGet/setup-nuget@v1.0.5
+        
+    - name: Setup Just
+      uses: extractions/setup-just@v3
+
+    - name: Build and test
+      run: just
+
+    - name: Check diff
+      run: just check-diff
+
+    - name: Locate nupkg
+      id: pkg
+      run: just locate-nupkg $env:GITHUB_OUTPUT
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: win-bits
+        path: ${{ steps.pkg.outputs.package }}
+        retention-days: 3

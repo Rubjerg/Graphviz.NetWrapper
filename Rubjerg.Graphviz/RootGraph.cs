@@ -19,10 +19,13 @@ public enum GraphType
 /// <summary>
 /// Wraps a cgraph root graph.
 /// NB: If there is no .net wrapper left that points to any part of a root graph, the root graph is destroyed.
+/// This can also be done manually through the Close function, 
+/// but this is generally unnecessary unless the graphs are really big.
 /// </summary>
-public class RootGraph : Graph
+public sealed class RootGraph : Graph
 {
     private long _added_pressure = 0;
+    private bool _closed = false;
 
     public CoordinateSystem CoordinateSystem { get; }
     /// <summary>
@@ -30,15 +33,29 @@ public class RootGraph : Graph
     /// </summary>
     public string? Warnings { get; internal set; }
 
-    protected RootGraph(IntPtr ptr, CoordinateSystem coordinateSystem) : base(ptr, null)
+    private RootGraph(IntPtr ptr, CoordinateSystem coordinateSystem) : base(ptr, null)
     {
         CoordinateSystem = coordinateSystem;
     }
+
     ~RootGraph()
     {
-        if (_added_pressure > 0)
-            GC.RemoveMemoryPressure(_added_pressure);
-        _ = Agclose(_ptr);
+        Close();
+    }
+
+    /// <summary>
+    /// Manually destroy the graph. All subsequent method calls will likely crash.
+    /// Not recommended to call manually, as it is generally unnecessary, unless the graph is really big.
+    /// </summary>
+    public void Close()
+    {
+        if (!_closed)
+        {
+            _closed = true;
+            _ = Agclose(_ptr);
+            if (_added_pressure > 0)
+                GC.RemoveMemoryPressure(_added_pressure);
+        }
     }
 
     /// <summary>
@@ -83,8 +100,7 @@ public class RootGraph : Graph
         return FromDotString(input);
     }
 
-    protected static T FromDotString<T>(string graph, Func<IntPtr, T> constructor)
-        where T : RootGraph
+    public static RootGraph FromDotString(string graph, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
         // Just to be safe, make sure the input has unix line endings. Graphviz does not properly support
         // windows line endings passed to stdin when it comes to attribute line continuations.
@@ -94,14 +110,9 @@ public class RootGraph : Graph
         {
             throw new InvalidOperationException("Could not create graph");
         }
-        var result = constructor(ptr);
+        var result = new RootGraph(ptr, coordinateSystem);
         result.UpdateMemoryPressure();
         return result;
-    }
-
-    public static RootGraph FromDotString(string graph, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
-    {
-        return FromDotString(graph, ptr => new RootGraph(ptr, coordinateSystem));
     }
 
     public void ConvertToUndirectedGraph()

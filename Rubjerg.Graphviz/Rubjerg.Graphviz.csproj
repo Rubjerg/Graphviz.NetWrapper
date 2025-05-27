@@ -1,47 +1,148 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <!-- Library targets -->
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
+
+    <!-- Build & pack for these RIDs; the build matrix selects one per job -->
+    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>latest</LangVersion>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Nullable>Enable</Nullable>
+    <Nullable>enable</Nullable>
     <NoWarn>1701;1702;NU5100</NoWarn>
-    <Version>2.0.2</Version>
-    <Authors>Chiel ten Brinke</Authors>
-    <Company>Rubjerg</Company>
-    <Description>Lean wrapper around Graphviz for building graphs, reading/writing dot files, exporting images, or reading out layout parameters.</Description>
-    <Copyright>Copyright 2020</Copyright>
-    <PackageTags>graphviz dotnet graphdrawing</PackageTags>
-    <RepositoryUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</PackageProjectUrl>
-    <PackageLicenseExpression></PackageLicenseExpression>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>embedded</DebugType>
+    
+    <Rid Condition=" '$(OS)' == 'Windows_NT' ">win-x64</Rid>
+    <Rid Condition=" '$(OS)' != 'Windows_NT' ">linux-x64</Rid>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GraphvizWrapper\GraphvizWrapper.vcxproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="*.dll;*.lib;*.pdb;*.exp;*.exe;config6">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-    </None>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
     <None Include="..\LICENSE">
       <Pack>true</Pack>
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <DefineConstants>_WINDOWS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Resources/*" Exclude="Resources/graphviz/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/$(Rid)/native/%(Filename)%(Extension)</TargetPath>
+      <Pack>true</Pack>
+      <PackagePath>runtimes/$(Rid)/native/</PackagePath>
+    </None>
+
+    <None Include="Resources/graphviz/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/$(Rid)/native/graphviz/%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+      <Pack>true</Pack>
+      <PackagePath>runtimes/$(Rid)/native/graphviz/%(RecursiveDir)</PackagePath>
+    </None>
+  </ItemGroup>
+
+
+  <!-- NuGet info -->
+  <PropertyGroup>
+    <Authors>Chiel ten Brinke</Authors>
+    <Company>Rubjerg</Company>
+    <Description>Lean wrapper around Graphviz for building graphs, reading/writing dot files, exporting images, or reading out layout parameters.</Description>
+    <Copyright>Copyright 2020</Copyright>
+    <PackageTags>graphviz dotnet graphdrawing</PackageTags>
+    <RepositoryUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <!--
+  The package version logic:
+    - If the worktree is clean and on a version tag: 2.0.2
+    - If the worktree is clean and ancestor of the master branch: 2.0.2-alpha-<commit>
+    - Otherwise: 2.0.2-dev-<timestamp>
+  -->
+
+  <Target Name="ComputeVersion" BeforeTargets="GenerateNuspec">
+    <PropertyGroup>
+      <_GitTmpFile>$([System.String]::Copy('$(IntermediateOutputPath)git-info.txt').Replace('\', '/'))</_GitTmpFile>
+      <Timestamp>$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</Timestamp>
+    </PropertyGroup>
+
+    <!-- 1. Get latest reachable tag -->
+    <Exec Command="git describe --tags --abbrev=0 > &quot;$(_GitTmpFile)&quot;" />
+    <ReadLinesFromFile File="$(_GitTmpFile)">
+      <Output TaskParameter="Lines" PropertyName="LatestTag"/>
+    </ReadLinesFromFile>
+
+    <!-- 2. Get exact tag at HEAD (may be blank) -->
+    <Exec Command="(git describe --exact-match --tags HEAD || exit 0) > &quot;$(_GitTmpFile)&quot;" />
+    <ReadLinesFromFile File="$(_GitTmpFile)">
+      <Output TaskParameter="Lines" PropertyName="ExactTag"/>
+    </ReadLinesFromFile>
+
+    <!-- 3. Get short commit hash -->
+    <Exec Command="git rev-parse --short HEAD > &quot;$(_GitTmpFile)&quot;" />
+    <ReadLinesFromFile File="$(_GitTmpFile)">
+      <Output TaskParameter="Lines" PropertyName="CommitHash"/>
+    </ReadLinesFromFile>
+
+    <!-- 4. Is working tree dirty? -->
+    <Exec Command="(git diff --quiet HEAD &amp;&amp; echo no || exit 0) > &quot;$(_GitTmpFile)&quot;" />
+    <ReadLinesFromFile File="$(_GitTmpFile)">
+      <Output TaskParameter="Lines" PropertyName="IsDirty"/>
+    </ReadLinesFromFile>
+
+    <!-- 5. Is master a descendant of HEAD? -->
+    <Exec Command="(git merge-base --is-ancestor HEAD master &amp;&amp; echo yes || exit 0) > &quot;$(_GitTmpFile)&quot;" />
+    <ReadLinesFromFile File="$(_GitTmpFile)">
+      <Output TaskParameter="Lines" PropertyName="MasterDescendant"/>
+    </ReadLinesFromFile>
+
+    <!-- 6. Version logic -->
+    <PropertyGroup>
+      <BaseVersion>$([System.Text.RegularExpressions.Regex]::Replace($(LatestTag), '^v', ''))</BaseVersion>
+
+      <!-- Case 1: On exact tag, clean -->
+      <_ResolvedVersion Condition="'$(ExactTag)' != '' and '$(IsDirty)' == 'no'">
+        $(BaseVersion)
+      </_ResolvedVersion>
+
+      <!-- Case 2: master is descendant of HEAD and clean -->
+      <_ResolvedVersion Condition="'$(_ResolvedVersion)' == '' and '$(IsDirty)' == 'no' and '$(MasterDescendant)' == 'yes'">
+        $(BaseVersion)-alpha-$(CommitHash)
+      </_ResolvedVersion>
+
+      <!-- Case 3: anything else -->
+      <_ResolvedVersion Condition="'$(_ResolvedVersion)' == ''">
+        $(BaseVersion)-dev-$(Timestamp)
+      </_ResolvedVersion>
+
+      <PackageVersion>$([System.String]::Copy($(_ResolvedVersion)).Trim())</PackageVersion>
+    </PropertyGroup>
+
+    <Message Importance="High" Text="--- Git Version Debug Info ---" />
+    <Message Importance="High" Text="LatestTag        : $(LatestTag)" />
+    <Message Importance="High" Text="ExactTag         : $(ExactTag)" />
+    <Message Importance="High" Text="CommitHash       : $(CommitHash)" />
+    <Message Importance="High" Text="IsDirty          : $(IsDirty)" />
+    <Message Importance="High" Text="MasterDescendant : $(MasterDescendant)" />
+    <Message Importance="High" Text="BaseVersion      : $(BaseVersion)" />
+    <Message Importance="High" Text="_ResolvedVersion : $(_ResolvedVersion)" />
+    <Message Importance="High" Text="Final Version    : $(PackageVersion)" />
+    <Message Importance="High" Text="----------------------------------" />
+
+  </Target>
 
 </Project>

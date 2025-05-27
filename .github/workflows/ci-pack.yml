@@ -1,0 +1,75 @@
+# .github/workflows/ci-pack.yml
+name: CI-Pack
+
+on:
+  push:         { branches: [ master ] }
+  pull_request: { branches: [ master ] }
+  release:      { types: [published] }      # runs on “Publish release” button
+  workflow_dispatch:                        # lets you run it by hand
+
+jobs:
+  win-build:
+    uses: ./.github/workflows/win-build.yml
+
+  linux-build:
+    uses: ./.github/workflows/linux-build.yml
+
+  pack:
+    needs: [win-build, linux-build]   # ← the two workflow_call jobs
+    runs-on: windows-latest
+
+    steps:
+      # 1) bring the two per-OS packages into this job --------------------
+      - uses: actions/download-artifact@v4
+        with: { name: win-bits,   path: artifacts/win }
+      - uses: actions/download-artifact@v4
+        with: { name: linux-bits, path: artifacts/linux }
+
+      # 2) unzip → merge → zip  ------------------------------------------
+      - name: Merge NuGet packages
+        id: merge
+        shell: pwsh
+        run: |
+          # locate both nupkgs (Rubjerg.Graphviz.<ver>.nupkg)
+          $winPkg   = Get-ChildItem artifacts/win   -Filter *.nupkg | Select -First 1
+          $linuxPkg = Get-ChildItem artifacts/linux -Filter *.nupkg | Select -First 1
+          if (-not $winPkg  -or -not $linuxPkg) { throw "Packages missing" }
+
+          # extract <id> and <version> from the file name
+          if ($winPkg.Name -notmatch '^(.+?)\.(\d+\.\d+\.\d+(?:-[A-Za-z0-9\.-]+)?)\.nupkg$') {
+            throw "Unexpected package file name $($winPkg.Name)"
+          }
+          $id      = $Matches[1]    # Rubjerg.Graphviz
+          $version = $Matches[2]    # 2.0.2   (or 2.0.2-beta etc.)
+
+          $stage   = "stage"
+          Remove-Item $stage -Recurse -Force -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Path $stage | Out-Null
+
+          Expand-Archive $winPkg.FullName   -DestinationPath $stage -Force
+          Expand-Archive $linuxPkg.FullName -DestinationPath $stage -Force
+
+          $outFile = "$id.$version.nupkg"
+          Compress-Archive "$stage\*" $outFile -Force
+
+          # expose the path for later steps
+          "outfile=$outFile" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      # 3) upload the merged package as a build artefact ------------------
+      - name: Upload final package as artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-nupkg
+          path: ${{ steps.merge.outputs.outfile }}
+          retention-days: 30
+
+      # 4) push to NuGet only on a GitHub Release -------------------------
+      # - name: Push to NuGet.org
+      #   if: github.event_name == 'release'
+      #   env:
+      #     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      #   run: |
+      #     nuget push "${{ steps.merge.outputs.outfile }}" `
+      #                -Source https://api.nuget.org/v3/index.json `
+      #                -ApiKey $env:NUGET_API_KEY
+

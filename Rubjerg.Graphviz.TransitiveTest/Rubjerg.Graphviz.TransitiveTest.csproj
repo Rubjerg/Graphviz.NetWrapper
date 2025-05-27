@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>net48;net8.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
     <Authors>Chiel ten Brinke</Authors>
@@ -10,11 +10,8 @@
     <RestorePackagesPath>..\packages</RestorePackagesPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <LangVersion>latest</LangVersion>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="NUnit.ConsoleRunner">
@@ -32,6 +29,10 @@
     <!--We need both packages below to run the tests in VS https://github.com/microsoft/vstest/issues/1870-->
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Rubjerg.Graphviz.Test\Rubjerg.Graphviz.Test.csproj" />
   </ItemGroup>
 
 </Project>

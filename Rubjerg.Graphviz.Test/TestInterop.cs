@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.IO;
+using System;
 using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz.Test;
@@ -7,6 +8,14 @@ namespace Rubjerg.Graphviz.Test;
 [TestFixture()]
 public class TestInterop
 {
+    [Test()]
+    public void TestAgclose()
+    {
+        IntPtr root = Rjagopen("test", 0);
+        _ = Agnode(root, "node1", 1);
+        Agclose(root);
+    }
+
     [Test()]
     public void TestMarshaling()
     {

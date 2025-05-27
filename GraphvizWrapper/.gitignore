@@ -1,2 +1,4 @@
 bin
 *.vcxproj.user
+*.rpm
+*.deb

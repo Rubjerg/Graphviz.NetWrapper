@@ -1,0 +1,28 @@
+name: Static checks
+
+on:
+  push:         { branches: [ master ] }
+  pull_request: { branches: [ master ] }
+  release:      { types: [published] }      # runs on “Publish release” button
+  workflow_dispatch:                        # lets you run it by hand
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      name: Checkout Code
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Setup Just
+      uses: extractions/setup-just@v3
+      
+    - name: Run static checks
+      shell: bash
+      run: just check-all

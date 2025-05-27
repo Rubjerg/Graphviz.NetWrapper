@@ -4,7 +4,7 @@ using static Rubjerg.Graphviz.ForeignFunctionInterface;
 
 namespace Rubjerg.Graphviz;
 
-public class SubGraph : Graph
+public sealed class SubGraph : Graph
 {
     /// <summary>
     /// rootgraph must not be null

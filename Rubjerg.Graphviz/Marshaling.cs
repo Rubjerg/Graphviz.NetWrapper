@@ -5,10 +5,12 @@ using System.Text;
 
 namespace Rubjerg.Graphviz;
 
+using static Constants;
+
 internal static class Marshaling
 {
     /// <summary>
-    /// Marshal a c-string in utf8 encoding to a 
+    /// Marshal a c-string in utf8 encoding to a .NET string
     /// </summary>
     /// <param name="ptr">Pointer to the native c-string</param>
     /// <param name="free">Whether to free the native c-string after marshaling</param>
@@ -87,6 +89,8 @@ internal static class Marshaling
         return byteArray;
     }
 
-    [DllImport("GraphvizWrapper.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern void free_str(IntPtr ptr);
+    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void agstrfree(IntPtr root, IntPtr str);
 }
