@@ -16,17 +16,6 @@
     <Nullable>enable</Nullable>
     <NoWarn>1701;1702;NU5100</NoWarn>
     <DebugType>embedded</DebugType>
-
-    <!-- NuGet info -->
-    <Version>2.0.2-dev.$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</Version>
-    <Authors>Chiel ten Brinke</Authors>
-    <Company>Rubjerg</Company>
-    <Description>Lean wrapper around Graphviz for building graphs, reading/writing dot files, exporting images, or reading out layout parameters.</Description>
-    <Copyright>Copyright 2020</Copyright>
-    <PackageTags>graphviz dotnet graphdrawing</PackageTags>
-    <RepositoryUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</PackageProjectUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     
     <Rid Condition=" '$(OS)' == 'Windows_NT' ">win-x64</Rid>
     <Rid Condition=" '$(OS)' != 'Windows_NT' ">linux-x64</Rid>
@@ -62,5 +51,86 @@
       <PackagePath>runtimes/$(Rid)/native/graphviz/%(RecursiveDir)</PackagePath>
     </None>
   </ItemGroup>
+
+
+  <!-- NuGet info -->
+  <PropertyGroup>
+    <Authors>Chiel ten Brinke</Authors>
+    <Company>Rubjerg</Company>
+    <Description>Lean wrapper around Graphviz for building graphs, reading/writing dot files, exporting images, or reading out layout parameters.</Description>
+    <Copyright>Copyright 2020</Copyright>
+    <PackageTags>graphviz dotnet graphdrawing</PackageTags>
+    <RepositoryUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+
+  <!--
+  The package version logic:
+    - If the worktree is clean and on a version tag: 2.0.2
+    - If the worktree is clean and ancestor of the master branch: 2.0.2-alpha-<commit>
+    - Otherwise: 2.0.2-dev-<timestamp>
+  -->
+
+  <Target Name="ComputeVersion" BeforeTargets="GenerateNuspec">
+    <PropertyGroup>
+      <_GitTmpFile>$(IntermediateOutputPath)git-info.txt</_GitTmpFile>
+      <Timestamp>$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</Timestamp>
+    </PropertyGroup>
+
+    <!-- 1. Get latest reachable tag -->
+    <Exec Command="git describe --tags --abbrev=0 > &quot;$(_GitTmpFile)&quot;" />
+    <ReadLinesFromFile File="$(_GitTmpFile)">
+      <Output TaskParameter="Lines" PropertyName="LatestTag"/>
+    </ReadLinesFromFile>
+
+    <!-- 2. Get exact tag at HEAD (may be blank) -->
+    <Exec Command="(git describe --exact-match --tags HEAD || echo) > &quot;$(_GitTmpFile)&quot;" />
+    <ReadLinesFromFile File="$(_GitTmpFile)">
+      <Output TaskParameter="Lines" PropertyName="ExactTag"/>
+    </ReadLinesFromFile>
+
+    <!-- 3. Get short commit hash -->
+    <Exec Command="git rev-parse --short HEAD > &quot;$(_GitTmpFile)&quot;" />
+    <ReadLinesFromFile File="$(_GitTmpFile)">
+      <Output TaskParameter="Lines" PropertyName="CommitHash"/>
+    </ReadLinesFromFile>
+
+    <!-- 4. Is working tree dirty? -->
+    <Exec Command="git diff --quiet HEAD || echo dirty > &quot;$(_GitTmpFile)&quot;" />
+    <ReadLinesFromFile File="$(_GitTmpFile)">
+      <Output TaskParameter="Lines" PropertyName="DirtyOutput"/>
+    </ReadLinesFromFile>
+
+    <!-- 5. Is master a descendant of HEAD? -->
+    <Exec Command="git merge-base --is-ancestor HEAD master &amp;&amp; echo yes || echo no > &quot;$(_GitTmpFile)&quot;" />
+    <ReadLinesFromFile File="$(_GitTmpFile)">
+      <Output TaskParameter="Lines" PropertyName="MasterDescendant"/>
+    </ReadLinesFromFile>
+
+    <!-- 6. Version logic -->
+    <PropertyGroup>
+      <BaseVersion>$([System.Text.RegularExpressions.Regex]::Replace($(LatestTag), '^v', ''))</BaseVersion>
+
+      <!-- Case 1: On exact tag, clean -->
+      <_ResolvedVersion Condition="'$(ExactTag)' != '' and '$(DirtyOutput)' == ''">
+        $(BaseVersion)
+      </_ResolvedVersion>
+
+      <!-- Case 2: master is descendant of HEAD and clean -->
+      <_ResolvedVersion Condition="'$(_ResolvedVersion)' == '' and '$(DirtyOutput)' == '' and '$(MasterDescendant)' == 'yes'">
+        $(BaseVersion)-alpha-$(CommitHash)
+      </_ResolvedVersion>
+
+      <!-- Case 3: anything else -->
+      <_ResolvedVersion Condition="'$(_ResolvedVersion)' == ''">
+        $(BaseVersion)-dev-$(Timestamp)
+      </_ResolvedVersion>
+
+      <Version>$(_ResolvedVersion)</Version>
+    </PropertyGroup>
+
+    <Message Text="Computed NuGet version: $(Version)" Importance="High"/>
+  </Target>
 
 </Project>
