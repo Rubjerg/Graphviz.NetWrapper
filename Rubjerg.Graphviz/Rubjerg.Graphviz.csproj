@@ -99,7 +99,7 @@
     <!-- 4. Is working tree dirty? -->
     <Exec Command="git diff --quiet HEAD || echo dirty > &quot;$(_GitTmpFile)&quot;" />
     <ReadLinesFromFile File="$(_GitTmpFile)">
-      <Output TaskParameter="Lines" PropertyName="DirtyOutput"/>
+      <Output TaskParameter="Lines" PropertyName="IsDirty"/>
     </ReadLinesFromFile>
 
     <!-- 5. Is master a descendant of HEAD? -->
@@ -113,12 +113,12 @@
       <BaseVersion>$([System.Text.RegularExpressions.Regex]::Replace($(LatestTag), '^v', ''))</BaseVersion>
 
       <!-- Case 1: On exact tag, clean -->
-      <_ResolvedVersion Condition="'$(ExactTag)' != '' and '$(DirtyOutput)' == ''">
+      <_ResolvedVersion Condition="'$(ExactTag)' != '' and '$(IsDirty)' == ''">
         $(BaseVersion)
       </_ResolvedVersion>
 
       <!-- Case 2: master is descendant of HEAD and clean -->
-      <_ResolvedVersion Condition="'$(_ResolvedVersion)' == '' and '$(DirtyOutput)' == '' and '$(MasterDescendant)' == 'yes'">
+      <_ResolvedVersion Condition="'$(_ResolvedVersion)' == '' and '$(IsDirty)' == '' and '$(MasterDescendant)' == 'yes'">
         $(BaseVersion)-alpha-$(CommitHash)
       </_ResolvedVersion>
 
@@ -130,7 +130,17 @@
       <Version>$(_ResolvedVersion)</Version>
     </PropertyGroup>
 
-    <Message Text="Computed NuGet version: $(Version)" Importance="High"/>
+    <Message Importance="High" Text="--- Git Version Debug Info ---" />
+    <Message Importance="High" Text="LatestTag        : $(LatestTag)" />
+    <Message Importance="High" Text="ExactTag         : $(ExactTag)" />
+    <Message Importance="High" Text="CommitHash       : $(CommitHash)" />
+    <Message Importance="High" Text="IsDirty          : $(IsDirty)" />
+    <Message Importance="High" Text="MasterDescendant : $(MasterDescendant)" />
+    <Message Importance="High" Text="BaseVersion      : $(BaseVersion)" />
+    <Message Importance="High" Text="_ResolvedVersion : $(_ResolvedVersion)" />
+    <Message Importance="High" Text="Final Version    : $(Version)" />
+    <Message Importance="High" Text="----------------------------------" />
+
   </Target>
 
 </Project>
