@@ -2,7 +2,7 @@
 - Grab the nuget package from the CI artifacts.
 - Upload the .nupkg file to nuget.org.
   - Upload to https://www.nuget.org/packages/manage/upload
-  - Mark as unlised
+  - Mark as unlisted
 - Make a cup of coffee
 - Update the version of the referenced Nuget package in the NugetOrgTest project to the package that was just uploaded and run the test.
   - dotnet add NugetOrgTests/Rubjerg.Graphviz.NugetOrgTest/Rubjerg.Graphviz.NugetOrgTest.csproj package Rubjerg.Graphviz

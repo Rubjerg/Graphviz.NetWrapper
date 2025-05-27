@@ -7,12 +7,9 @@ default: test-all
 find-msbuild:
     powershell -NoProfile -Command '& { & "${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\\**\\Bin\\MSBuild.exe }'
 
-# Restore .NET tools
-restore-tools:
+# Restore .NET tools and main solution packages
+restore:
     dotnet tool restore
-
-# Restore main solution packages
-restore: restore-tools
     dotnet restore Rubjerg.Graphviz.sln
 
 build SOLUTION:
