@@ -1,8 +1,10 @@
-- Make a release on github (and add a new tag there). This will trigger the CI.
+- Make a prerelease on github (and add a new tag there). This will trigger the CI.
 - Grab the nuget package from the CI artifacts.
 - Upload the .nupkg file to nuget.org.
   - Upload to https://www.nuget.org/packages/manage/upload
+  - Mark as unlised
 - Make a cup of coffee
 - Update the version of the referenced Nuget package in the NugetOrgTest project to the package that was just uploaded and run the test.
   - dotnet add NugetOrgTests/Rubjerg.Graphviz.NugetOrgTest/Rubjerg.Graphviz.NugetOrgTest.csproj package Rubjerg.Graphviz
   - Make a PR for this and merge when this succeeds.
+- Mark prerelease as latest release on github and nuget.org

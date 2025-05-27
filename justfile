@@ -15,13 +15,16 @@ restore-tools:
 restore: restore-tools
     dotnet restore Rubjerg.Graphviz.sln
 
-# Build main app
-build-package: restore
+build SOLUTION:
     if {{is-windows}}; then \
-        MSBuild.exe Rubjerg.Graphviz.sln //p:Configuration=Release; \
+        MSBuild.exe {{SOLUTION}} //p:Configuration=Release; \
     else \
-        dotnet build Rubjerg.Graphviz.sln --configuration Release --no-restore; \
+        dotnet build {{SOLUTION}} --configuration Release --no-restore; \
     fi
+
+# Build nuget package
+build-package: restore
+    just build Rubjerg.Graphviz.sln
 
 # Restore test project packages
 restore-tests: build-package
@@ -29,11 +32,7 @@ restore-tests: build-package
 
 # Build test projects
 build-tests: restore-tests
-    if {{is-windows}}; then \
-        MSBuild.exe Rubjerg.Graphviz.Tests.sln //p:Configuration=Release; \
-    else \
-        dotnet build Rubjerg.Graphviz.Tests.sln --configuration Release --no-restore; \
-    fi
+    just build Rubjerg.Graphviz.Tests.sln
 
 # Run unit tests for a project
 test PROJECT:
@@ -47,6 +46,13 @@ test PROJECT:
 
 # Run both test projects
 test-all: build-tests
+    just test Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
+    just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
+
+# Run the nuget.org tests
+test-nugetorg: build-tests
+    dotnet restore NugetOrgTests/Rubjerg.Graphviz.NugetOrgTests.sln
+    just build NugetOrgTests/Rubjerg.Graphviz.NugetOrgTests.sln
     just test Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
     just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
 
