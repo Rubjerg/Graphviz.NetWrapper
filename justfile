@@ -50,7 +50,7 @@ test-all: build-tests
     just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
 
 # Run the nuget.org tests
-test-nugetorg: build-tests
+test-nugetorg:
     dotnet tool restore
     dotnet restore NugetOrgTests/Rubjerg.Graphviz.NugetOrgTests.sln
     just build NugetOrgTests/Rubjerg.Graphviz.NugetOrgTests.sln
