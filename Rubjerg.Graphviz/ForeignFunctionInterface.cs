@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Rubjerg.Graphviz;
 
 using static Marshaling;
-using static NativeLibraryNames;
+using static Constants;
 
 /// <summary>
 /// Graphviz is thread unsafe, so we wrap all function calls inside a lock to make sure we don't run into
