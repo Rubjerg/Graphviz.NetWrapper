@@ -127,7 +127,7 @@
         $(BaseVersion)-dev-$(Timestamp)
       </_ResolvedVersion>
 
-      <Version>$(_ResolvedVersion)</Version>
+      <PackageVersion>$(_ResolvedVersion)</PackageVersion>
     </PropertyGroup>
 
     <Message Importance="High" Text="--- Git Version Debug Info ---" />
