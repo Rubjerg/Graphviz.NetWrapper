@@ -22,6 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
     <None Include="..\LICENSE">
       <Pack>true</Pack>
       <PackagePath></PackagePath>
@@ -63,6 +64,7 @@
     <RepositoryUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Rubjerg/Graphviz.NetWrapper</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <!--
