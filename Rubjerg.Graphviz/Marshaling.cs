@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Rubjerg.Graphviz;
 
-using static Constants;
+using static NativeLibraryNames;
 
 internal static class Marshaling
 {

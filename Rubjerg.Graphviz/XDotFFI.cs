@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Rubjerg.Graphviz;
 
 using static Marshaling;
-using static Constants;
+using static NativeLibraryNames;
 
 /// <summary>
 /// See https://graphviz.org/docs/outputs/canon/#xdot
