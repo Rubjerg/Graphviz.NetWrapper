@@ -127,7 +127,7 @@
         $(BaseVersion)-dev-$(Timestamp)
       </_ResolvedVersion>
 
-      <PackageVersion>$(_ResolvedVersion)</PackageVersion>
+      <PackageVersion>$([System.String]::Copy($(_ResolvedVersion)).Trim())</PackageVersion>
     </PropertyGroup>
 
     <Message Importance="High" Text="--- Git Version Debug Info ---" />
