@@ -74,7 +74,7 @@
 
   <Target Name="ComputeVersion" BeforeTargets="GenerateNuspec">
     <PropertyGroup>
-      <_GitTmpFile>$(IntermediateOutputPath)git-info.txt</_GitTmpFile>
+      <_GitTmpFile>$([System.String]::Copy('$(IntermediateOutputPath)git-info.txt').Replace('\', '/'))</_GitTmpFile>
       <Timestamp>$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</Timestamp>
     </PropertyGroup>
 
@@ -85,7 +85,7 @@
     </ReadLinesFromFile>
 
     <!-- 2. Get exact tag at HEAD (may be blank) -->
-    <Exec Command="(git describe --exact-match --tags HEAD || echo) > &quot;$(_GitTmpFile)&quot;" />
+    <Exec Command="(git describe --exact-match --tags HEAD || exit 0) > &quot;$(_GitTmpFile)&quot;" />
     <ReadLinesFromFile File="$(_GitTmpFile)">
       <Output TaskParameter="Lines" PropertyName="ExactTag"/>
     </ReadLinesFromFile>
@@ -97,13 +97,13 @@
     </ReadLinesFromFile>
 
     <!-- 4. Is working tree dirty? -->
-    <Exec Command="(git diff --quiet HEAD &amp;&amp; echo no || echo yes) > &quot;$(_GitTmpFile)&quot;" />
+    <Exec Command="(git diff --quiet HEAD &amp;&amp; echo no || exit 0) > &quot;$(_GitTmpFile)&quot;" />
     <ReadLinesFromFile File="$(_GitTmpFile)">
       <Output TaskParameter="Lines" PropertyName="IsDirty"/>
     </ReadLinesFromFile>
 
     <!-- 5. Is master a descendant of HEAD? -->
-    <Exec Command="(git merge-base --is-ancestor HEAD master &amp;&amp; echo yes || echo no) > &quot;$(_GitTmpFile)&quot;" />
+    <Exec Command="(git merge-base --is-ancestor HEAD master &amp;&amp; echo yes || exit 0) > &quot;$(_GitTmpFile)&quot;" />
     <ReadLinesFromFile File="$(_GitTmpFile)">
       <Output TaskParameter="Lines" PropertyName="MasterDescendant"/>
     </ReadLinesFromFile>
@@ -138,7 +138,7 @@
     <Message Importance="High" Text="MasterDescendant : $(MasterDescendant)" />
     <Message Importance="High" Text="BaseVersion      : $(BaseVersion)" />
     <Message Importance="High" Text="_ResolvedVersion : $(_ResolvedVersion)" />
-    <Message Importance="High" Text="Final Version    : $(Version)" />
+    <Message Importance="High" Text="Final Version    : $(PackageVersion)" />
     <Message Importance="High" Text="----------------------------------" />
 
   </Target>
