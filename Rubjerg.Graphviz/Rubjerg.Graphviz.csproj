@@ -97,13 +97,13 @@
     </ReadLinesFromFile>
 
     <!-- 4. Is working tree dirty? -->
-    <Exec Command="git diff --quiet HEAD &amp;&amp; echo no || echo yes > &quot;$(_GitTmpFile)&quot;" />
+    <Exec Command="(git diff --quiet HEAD &amp;&amp; echo no || echo yes) > &quot;$(_GitTmpFile)&quot;" />
     <ReadLinesFromFile File="$(_GitTmpFile)">
       <Output TaskParameter="Lines" PropertyName="IsDirty"/>
     </ReadLinesFromFile>
 
     <!-- 5. Is master a descendant of HEAD? -->
-    <Exec Command="git merge-base --is-ancestor HEAD master &amp;&amp; echo yes || echo no > &quot;$(_GitTmpFile)&quot;" />
+    <Exec Command="(git merge-base --is-ancestor HEAD master &amp;&amp; echo yes || echo no) > &quot;$(_GitTmpFile)&quot;" />
     <ReadLinesFromFile File="$(_GitTmpFile)">
       <Output TaskParameter="Lines" PropertyName="MasterDescendant"/>
     </ReadLinesFromFile>
