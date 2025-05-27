@@ -54,8 +54,8 @@ test-nugetorg: build-tests
     dotnet tool restore
     dotnet restore NugetOrgTests/Rubjerg.Graphviz.NugetOrgTests.sln
     just build NugetOrgTests/Rubjerg.Graphviz.NugetOrgTests.sln
-    just test Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
-    just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
+    just test NugetOrgTests/Rubjerg.Graphviz.NugetOrgTest/Rubjerg.Graphviz.NugetOrgTest.csproj
+    just test NugetOrgTests/Rubjerg.Graphviz.NugetOrgTransitiveTest/Rubjerg.Graphviz.NugetOrgTransitiveTest.csproj
 
 locate-nupkg GITHUB_OUTPUT:
     echo "package=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)" >> "{{GITHUB_OUTPUT}}"
