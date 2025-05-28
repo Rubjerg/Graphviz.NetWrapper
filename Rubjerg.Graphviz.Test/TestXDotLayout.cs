@@ -4,6 +4,8 @@ using NUnit.Framework;
 
 namespace Rubjerg.Graphviz.Test;
 
+using FFI;
+
 [TestFixture()]
 public class TestXDotLayout
 {
