@@ -7,21 +7,21 @@ default: test-all
 find-msbuild:
     powershell -NoProfile -Command '& { & "${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\\**\\Bin\\MSBuild.exe }'
 
-# Restore .NET tools
-restore-tools:
+# Restore .NET tools and main solution packages
+restore:
     dotnet tool restore
-
-# Restore main solution packages
-restore: restore-tools
     dotnet restore Rubjerg.Graphviz.sln
 
-# Build main app
-build-package: restore
+build SOLUTION:
     if {{is-windows}}; then \
-        MSBuild.exe Rubjerg.Graphviz.sln //p:Configuration=Release; \
+        MSBuild.exe {{SOLUTION}} //p:Configuration=Release; \
     else \
-        dotnet build Rubjerg.Graphviz.sln --configuration Release --no-restore; \
+        dotnet build {{SOLUTION}} --configuration Release --no-restore; \
     fi
+
+# Build nuget package
+build-package: restore
+    just build Rubjerg.Graphviz.sln
 
 # Restore test project packages
 restore-tests: build-package
@@ -29,11 +29,7 @@ restore-tests: build-package
 
 # Build test projects
 build-tests: restore-tests
-    if {{is-windows}}; then \
-        MSBuild.exe Rubjerg.Graphviz.Tests.sln //p:Configuration=Release; \
-    else \
-        dotnet build Rubjerg.Graphviz.Tests.sln --configuration Release --no-restore; \
-    fi
+    just build Rubjerg.Graphviz.Tests.sln
 
 # Run unit tests for a project
 test PROJECT:
@@ -49,6 +45,14 @@ test PROJECT:
 test-all: build-tests
     just test Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
     just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
+
+# Run the nuget.org tests
+test-nugetorg:
+    dotnet tool restore
+    dotnet restore NugetOrgTests/Rubjerg.Graphviz.NugetOrgTests.sln
+    just build NugetOrgTests/Rubjerg.Graphviz.NugetOrgTests.sln
+    just test NugetOrgTests/Rubjerg.Graphviz.NugetOrgTest/Rubjerg.Graphviz.NugetOrgTest.csproj
+    just test NugetOrgTests/Rubjerg.Graphviz.NugetOrgTransitiveTest/Rubjerg.Graphviz.NugetOrgTransitiveTest.csproj
 
 locate-nupkg GITHUB_OUTPUT:
     echo "package=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)" >> "{{GITHUB_OUTPUT}}"

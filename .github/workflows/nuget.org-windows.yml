@@ -1,0 +1,30 @@
+# This is a basic workflow to help you get started with Actions
+
+name: nuget.org-windows
+
+on:
+  push:         { branches: [ master ] }
+  pull_request: { branches: [ master ] }
+  release:      { types: [published] }      # runs on “Publish release” button
+  workflow_dispatch:                        # lets you run it by hand
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      name: Checkout Code
+      with:
+        fetch-depth: 0
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Setup NuGet.exe for use with actions
+      uses: NuGet/setup-nuget@v1.0.5
+        
+    - name: Setup Just
+      uses: extractions/setup-just@v3
+
+    - name: Build and test
+      run: just test-nugetorg

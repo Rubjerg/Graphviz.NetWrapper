@@ -1,7 +1,8 @@
 using NUnit.Framework;
 using System.IO;
 using System;
-using static Rubjerg.Graphviz.ForeignFunctionInterface;
+using static Rubjerg.Graphviz.FFI.GraphvizFFI;
+using static Rubjerg.Graphviz.FFI.TestLib;
 
 namespace Rubjerg.Graphviz.Test;
 

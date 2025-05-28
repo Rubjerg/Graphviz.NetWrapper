@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\README.md" Pack="true" PackagePath="\"/>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\LICENSE">
       <Pack>true</Pack>
       <PackagePath></PackagePath>
@@ -81,33 +81,33 @@
     </PropertyGroup>
 
     <!-- 1. Get latest reachable tag -->
-    <Exec Command="git describe --tags --abbrev=0 > &quot;$(_GitTmpFile)&quot;" />
+    <Exec Command="git describe --tags --abbrev=0 &gt; &quot;$(_GitTmpFile)&quot;" />
     <ReadLinesFromFile File="$(_GitTmpFile)">
-      <Output TaskParameter="Lines" PropertyName="LatestTag"/>
+      <Output TaskParameter="Lines" PropertyName="LatestTag" />
     </ReadLinesFromFile>
 
     <!-- 2. Get exact tag at HEAD (may be blank) -->
-    <Exec Command="(git describe --exact-match --tags HEAD || exit 0) > &quot;$(_GitTmpFile)&quot;" />
+    <Exec Command="(git describe --exact-match --tags HEAD || exit 0) &gt; &quot;$(_GitTmpFile)&quot;" />
     <ReadLinesFromFile File="$(_GitTmpFile)">
-      <Output TaskParameter="Lines" PropertyName="ExactTag"/>
+      <Output TaskParameter="Lines" PropertyName="ExactTag" />
     </ReadLinesFromFile>
 
     <!-- 3. Get short commit hash -->
-    <Exec Command="git rev-parse --short HEAD > &quot;$(_GitTmpFile)&quot;" />
+    <Exec Command="git rev-parse --short HEAD &gt; &quot;$(_GitTmpFile)&quot;" />
     <ReadLinesFromFile File="$(_GitTmpFile)">
-      <Output TaskParameter="Lines" PropertyName="CommitHash"/>
+      <Output TaskParameter="Lines" PropertyName="CommitHash" />
     </ReadLinesFromFile>
 
     <!-- 4. Is working tree dirty? -->
-    <Exec Command="(git diff --quiet HEAD &amp;&amp; echo no || exit 0) > &quot;$(_GitTmpFile)&quot;" />
+    <Exec Command="(git diff --quiet HEAD &amp;&amp; echo no || exit 0) &gt; &quot;$(_GitTmpFile)&quot;" />
     <ReadLinesFromFile File="$(_GitTmpFile)">
-      <Output TaskParameter="Lines" PropertyName="IsDirty"/>
+      <Output TaskParameter="Lines" PropertyName="IsDirty" />
     </ReadLinesFromFile>
 
     <!-- 5. Is master a descendant of HEAD? -->
-    <Exec Command="(git merge-base --is-ancestor HEAD master &amp;&amp; echo yes || exit 0) > &quot;$(_GitTmpFile)&quot;" />
+    <Exec Command="(git merge-base --is-ancestor HEAD master &amp;&amp; echo yes || exit 0) &gt; &quot;$(_GitTmpFile)&quot;" />
     <ReadLinesFromFile File="$(_GitTmpFile)">
-      <Output TaskParameter="Lines" PropertyName="MasterDescendant"/>
+      <Output TaskParameter="Lines" PropertyName="MasterDescendant" />
     </ReadLinesFromFile>
 
     <!-- 6. Version logic -->

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Rubjerg.Graphviz;
+namespace Rubjerg.Graphviz.FFI;
 
 public static class NativeMethods
 {

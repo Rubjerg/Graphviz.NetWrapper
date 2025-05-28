@@ -5,16 +5,20 @@
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
-    <Authors>Chiel ten Brinke</Authors>
-    <Company>Rubjerg</Company>
     <RestorePackagesPath>..\packages</RestorePackagesPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <LangVersion>latest</LangVersion>
     <DebugType>embedded</DebugType>
+    <!-- <RuntimeIdentifier>win-x64</RuntimeIdentifier> -->
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Rubjerg.Graphviz">
-      <Version>2.0.2</Version>
+      <Version>3.0.0</Version>
     </PackageReference>
     <PackageReference Include="NUnit.ConsoleRunner">
       <Version>3.18.3</Version>

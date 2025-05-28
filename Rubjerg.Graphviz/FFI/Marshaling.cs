@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Rubjerg.Graphviz;
+namespace Rubjerg.Graphviz.FFI;
 
 using static Constants;
 
@@ -89,8 +89,6 @@ internal static class Marshaling
         return byteArray;
     }
 
-    [DllImport(GraphvizWrapperLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(GraphvizWrapperLibName, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     private static extern void free_str(IntPtr ptr);
-    [DllImport(CGraphLib, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void agstrfree(IntPtr root, IntPtr str);
 }

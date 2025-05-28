@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using Rubjerg.Graphviz.Test;
 
 namespace Rubjerg.Graphviz.NugetOrgTest
 {
