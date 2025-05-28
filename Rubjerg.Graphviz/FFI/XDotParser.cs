@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rubjerg.Graphviz;
+namespace Rubjerg.Graphviz.FFI;
 
 // These internal types are only used for marshaling
 // We replace them with more idiomatic types
@@ -43,7 +43,7 @@ internal static class XDotParser
         {
             if (xdot != IntPtr.Zero)
             {
-                XDotFFI.freeXDot(xdot);
+                XDotFFI.FreeXDot(xdot);
             }
         }
     }
@@ -55,78 +55,78 @@ internal static class XDotParser
 
         XDot xdot = new XDot
         {
-            Count = (int)XDotFFI.get_cnt(xdotPtr)
+            Count = (int)GraphvizWrapperLib.get_cnt(xdotPtr)
         };
 
         // Translate the array of XDotOps
         int count = xdot.Count;
         xdot.Ops = new XDotOp[count];
-        var opsPtr = XDotFFI.get_ops(xdotPtr);
+        var opsPtr = GraphvizWrapperLib.get_ops(xdotPtr);
 
         var activeFont = Font.Default;
         var activeFontChar = FontChar.None;
         for (int i = 0; i < count; ++i)
         {
-            IntPtr xdotOpPtr = XDotFFI.get_op_at_index(opsPtr, i);
-            var kind = XDotFFI.get_kind(xdotOpPtr);
+            IntPtr xdotOpPtr = GraphvizWrapperLib.get_op_at_index(opsPtr, i);
+            var kind = GraphvizWrapperLib.get_kind(xdotOpPtr);
             switch (kind)
             {
                 case XDotKind.FilledEllipse:
-                    xdot.Ops[i] = new XDotOp.FilledEllipse(TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr))
+                    xdot.Ops[i] = new XDotOp.FilledEllipse(TranslateEllipse(GraphvizWrapperLib.get_ellipse(xdotOpPtr))
                         .ForCoordSystem(coordinateSystem, maxY));
                     break;
                 case XDotKind.UnfilledEllipse:
-                    xdot.Ops[i] = new XDotOp.UnfilledEllipse(TranslateEllipse(XDotFFI.get_ellipse(xdotOpPtr))
+                    xdot.Ops[i] = new XDotOp.UnfilledEllipse(TranslateEllipse(GraphvizWrapperLib.get_ellipse(xdotOpPtr))
                         .ForCoordSystem(coordinateSystem, maxY));
                     break;
                 case XDotKind.FilledPolygon:
-                    xdot.Ops[i] = new XDotOp.FilledPolygon(TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                    xdot.Ops[i] = new XDotOp.FilledPolygon(TranslatePolyline(GraphvizWrapperLib.get_polyline(xdotOpPtr))
                         .ForCoordSystem(coordinateSystem, maxY));
                     break;
                 case XDotKind.UnfilledPolygon:
-                    xdot.Ops[i] = new XDotOp.FilledPolygon(TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                    xdot.Ops[i] = new XDotOp.FilledPolygon(TranslatePolyline(GraphvizWrapperLib.get_polyline(xdotOpPtr))
                         .ForCoordSystem(coordinateSystem, maxY));
                     break;
                 case XDotKind.FilledBezier:
-                    xdot.Ops[i] = new XDotOp.FilledBezier(TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                    xdot.Ops[i] = new XDotOp.FilledBezier(TranslatePolyline(GraphvizWrapperLib.get_polyline(xdotOpPtr))
                         .ForCoordSystem(coordinateSystem, maxY));
                     break;
                 case XDotKind.UnfilledBezier:
-                    xdot.Ops[i] = new XDotOp.UnfilledBezier(TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                    xdot.Ops[i] = new XDotOp.UnfilledBezier(TranslatePolyline(GraphvizWrapperLib.get_polyline(xdotOpPtr))
                         .ForCoordSystem(coordinateSystem, maxY));
                     break;
                 case XDotKind.Polyline:
-                    xdot.Ops[i] = new XDotOp.PolyLine(TranslatePolyline(XDotFFI.get_polyline(xdotOpPtr))
+                    xdot.Ops[i] = new XDotOp.PolyLine(TranslatePolyline(GraphvizWrapperLib.get_polyline(xdotOpPtr))
                         .ForCoordSystem(coordinateSystem, maxY));
                     break;
                 case XDotKind.Text:
-                    xdot.Ops[i] = new XDotOp.Text(TranslateText(XDotFFI.get_text(xdotOpPtr), activeFont, activeFontChar)
+                    xdot.Ops[i] = new XDotOp.Text(TranslateText(GraphvizWrapperLib.get_text(xdotOpPtr), activeFont, activeFontChar)
                         .ForCoordSystem(coordinateSystem, maxY));
                     break;
                 case XDotKind.FillColor:
-                    xdot.Ops[i] = new XDotOp.FillColor(new Color.Uniform(XDotFFI.GetColor(xdotOpPtr)!));
+                    xdot.Ops[i] = new XDotOp.FillColor(new Color.Uniform(GraphvizWrapperLib.GetColor(xdotOpPtr)!));
                     break;
                 case XDotKind.PenColor:
-                    xdot.Ops[i] = new XDotOp.PenColor(new Color.Uniform(XDotFFI.GetColor(xdotOpPtr)!));
+                    xdot.Ops[i] = new XDotOp.PenColor(new Color.Uniform(GraphvizWrapperLib.GetColor(xdotOpPtr)!));
                     break;
                 case XDotKind.GradFillColor:
-                    xdot.Ops[i] = new XDotOp.FillColor(TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr)));
+                    xdot.Ops[i] = new XDotOp.FillColor(TranslateGradColor(GraphvizWrapperLib.get_grad_color(xdotOpPtr)));
                     break;
                 case XDotKind.GradPenColor:
-                    xdot.Ops[i] = new XDotOp.PenColor(TranslateGradColor(XDotFFI.get_grad_color(xdotOpPtr)));
+                    xdot.Ops[i] = new XDotOp.PenColor(TranslateGradColor(GraphvizWrapperLib.get_grad_color(xdotOpPtr)));
                     break;
                 case XDotKind.Font:
-                    activeFont = TranslateFont(XDotFFI.get_font(xdotOpPtr));
+                    activeFont = TranslateFont(GraphvizWrapperLib.get_font(xdotOpPtr));
                     break;
                 case XDotKind.Style:
-                    xdot.Ops[i] = new XDotOp.Style(XDotFFI.GetStyle(xdotOpPtr)!);
+                    xdot.Ops[i] = new XDotOp.Style(GraphvizWrapperLib.GetStyle(xdotOpPtr)!);
                     break;
                 case XDotKind.Image:
-                    xdot.Ops[i] = new XDotOp.Image(TranslateImage(XDotFFI.get_image(xdotOpPtr))
+                    xdot.Ops[i] = new XDotOp.Image(TranslateImage(GraphvizWrapperLib.get_image(xdotOpPtr))
                         .ForCoordSystem(coordinateSystem, maxY));
                     break;
                 case XDotKind.FontChar:
-                    activeFontChar = TranslateFontChar(XDotFFI.get_fontchar(xdotOpPtr));
+                    activeFontChar = TranslateFontChar(GraphvizWrapperLib.get_fontchar(xdotOpPtr));
                     break;
                 default:
                     throw new ArgumentException($"Unexpected XDotOp.Kind: {kind}");
@@ -145,8 +145,8 @@ internal static class XDotParser
     {
         ImageInfo image = new ImageInfo
         (
-            Position: TranslateRect(XDotFFI.get_pos(imagePtr)),
-            Name: XDotFFI.GetNameImage(imagePtr)
+            Position: TranslateRect(GraphvizWrapperLib.get_pos(imagePtr)),
+            Name: GraphvizWrapperLib.GetNameImage(imagePtr)
         );
 
         return image;
@@ -156,8 +156,8 @@ internal static class XDotParser
     {
         Font font = new Font
         (
-            Size: XDotFFI.get_size(fontPtr),
-            Name: XDotFFI.GetNameFont(fontPtr)!
+            Size: GraphvizWrapperLib.get_size(fontPtr),
+            Name: GraphvizWrapperLib.GetNameFont(fontPtr)!
         );
 
         return font;
@@ -167,10 +167,10 @@ internal static class XDotParser
     {
         RectangleD ellipse = RectangleD.Create
         (
-            XDotFFI.get_x_rect(ellipsePtr),
-            XDotFFI.get_y_rect(ellipsePtr),
-            XDotFFI.get_w_rect(ellipsePtr),
-            XDotFFI.get_h_rect(ellipsePtr)
+            GraphvizWrapperLib.get_x_rect(ellipsePtr),
+            GraphvizWrapperLib.get_y_rect(ellipsePtr),
+            GraphvizWrapperLib.get_w_rect(ellipsePtr),
+            GraphvizWrapperLib.get_h_rect(ellipsePtr)
         );
 
         return ellipse;
@@ -178,15 +178,15 @@ internal static class XDotParser
 
     private static Color TranslateGradColor(IntPtr colorPtr)
     {
-        var type = XDotFFI.get_type(colorPtr);
+        var type = GraphvizWrapperLib.get_type(colorPtr);
         switch (type)
         {
             case XDotGradType.None:
-                return new Color.Uniform(XDotFFI.GetClr(colorPtr)!);
+                return new Color.Uniform(GraphvizWrapperLib.GetClr(colorPtr)!);
             case XDotGradType.Linear:
-                return new Color.Linear(TranslateLinearGrad(XDotFFI.get_ling(colorPtr)));
+                return new Color.Linear(TranslateLinearGrad(GraphvizWrapperLib.get_ling(colorPtr)));
             case XDotGradType.Radial:
-                return new Color.Radial(TranslateRadialGrad(XDotFFI.get_ring(colorPtr)));
+                return new Color.Radial(TranslateRadialGrad(GraphvizWrapperLib.get_ring(colorPtr)));
             default:
                 throw new ArgumentException($"Unexpected XDotColor.Type: {type}");
         }
@@ -194,19 +194,19 @@ internal static class XDotParser
 
     private static LinearGradient TranslateLinearGrad(IntPtr lingPtr)
     {
-        int count = XDotFFI.get_n_stops_ling(lingPtr);
+        int count = GraphvizWrapperLib.get_n_stops_ling(lingPtr);
         LinearGradient linearGrad = new LinearGradient
         (
-            Point0: new PointD(XDotFFI.get_x0_ling(lingPtr), XDotFFI.get_y0_ling(lingPtr)),
-            Point1: new PointD(XDotFFI.get_x1_ling(lingPtr), XDotFFI.get_y1_ling(lingPtr)),
+            Point0: new PointD(GraphvizWrapperLib.get_x0_ling(lingPtr), GraphvizWrapperLib.get_y0_ling(lingPtr)),
+            Point1: new PointD(GraphvizWrapperLib.get_x1_ling(lingPtr), GraphvizWrapperLib.get_y1_ling(lingPtr)),
             Stops: new ColorStop[count]
         );
 
         // Translate the array of ColorStops
-        var stopsPtr = XDotFFI.get_stops_ling(lingPtr);
+        var stopsPtr = GraphvizWrapperLib.get_stops_ling(lingPtr);
         for (int i = 0; i < count; ++i)
         {
-            IntPtr colorStopPtr = XDotFFI.get_color_stop_at_index(stopsPtr, i);
+            IntPtr colorStopPtr = GraphvizWrapperLib.get_color_stop_at_index(stopsPtr, i);
             linearGrad.Stops[i] = TranslateColorStop(colorStopPtr);
         }
 
@@ -215,21 +215,21 @@ internal static class XDotParser
 
     private static RadialGradient TranslateRadialGrad(IntPtr ringPtr)
     {
-        int count = XDotFFI.get_n_stops_ring(ringPtr);
+        int count = GraphvizWrapperLib.get_n_stops_ring(ringPtr);
         RadialGradient radialGrad = new RadialGradient
         (
-            Point0: new PointD(XDotFFI.get_x0_ring(ringPtr), XDotFFI.get_y0_ring(ringPtr)),
-            Point1: new PointD(XDotFFI.get_x1_ring(ringPtr), XDotFFI.get_y1_ring(ringPtr)),
-            Radius0: XDotFFI.get_r0_ring(ringPtr),
-            Radius1: XDotFFI.get_r1_ring(ringPtr),
+            Point0: new PointD(GraphvizWrapperLib.get_x0_ring(ringPtr), GraphvizWrapperLib.get_y0_ring(ringPtr)),
+            Point1: new PointD(GraphvizWrapperLib.get_x1_ring(ringPtr), GraphvizWrapperLib.get_y1_ring(ringPtr)),
+            Radius0: GraphvizWrapperLib.get_r0_ring(ringPtr),
+            Radius1: GraphvizWrapperLib.get_r1_ring(ringPtr),
             Stops: new ColorStop[count]
         );
 
         // Translate the array of ColorStops
-        var stopsPtr = XDotFFI.get_stops_ring(ringPtr);
+        var stopsPtr = GraphvizWrapperLib.get_stops_ring(ringPtr);
         for (int i = 0; i < count; ++i)
         {
-            IntPtr colorStopPtr = XDotFFI.get_color_stop_at_index(stopsPtr, i);
+            IntPtr colorStopPtr = GraphvizWrapperLib.get_color_stop_at_index(stopsPtr, i);
             radialGrad.Stops[i] = TranslateColorStop(colorStopPtr);
         }
 
@@ -240,8 +240,8 @@ internal static class XDotParser
     {
         ColorStop colorStop = new ColorStop
         (
-            Frac: XDotFFI.get_frac(stopPtr),
-            HtmlColor: XDotFFI.GetColorStop(stopPtr)!
+            Frac: GraphvizWrapperLib.get_frac(stopPtr),
+            HtmlColor: GraphvizWrapperLib.GetColorStop(stopPtr)!
         );
 
         return colorStop;
@@ -249,14 +249,14 @@ internal static class XDotParser
 
     private static PointD[] TranslatePolyline(IntPtr polylinePtr)
     {
-        int count = (int)XDotFFI.get_cnt_polyline(polylinePtr);
+        int count = (int)GraphvizWrapperLib.get_cnt_polyline(polylinePtr);
         var points = new PointD[count];
 
         // Translate the array of Points
-        var pointsPtr = XDotFFI.get_pts_polyline(polylinePtr);
+        var pointsPtr = GraphvizWrapperLib.get_pts_polyline(polylinePtr);
         for (int i = 0; i < count; ++i)
         {
-            IntPtr pointPtr = XDotFFI.get_pt_at_index(pointsPtr, i);
+            IntPtr pointPtr = GraphvizWrapperLib.get_pt_at_index(pointsPtr, i);
             points[i] = TranslatePoint(pointPtr);
         }
 
@@ -267,8 +267,8 @@ internal static class XDotParser
     {
         var point = new PointD
         (
-            X: XDotFFI.get_x_point(pointPtr),
-            Y: XDotFFI.get_y_point(pointPtr)
+            X: GraphvizWrapperLib.get_x_point(pointPtr),
+            Y: GraphvizWrapperLib.get_y_point(pointPtr)
         );
 
         return point;
@@ -278,10 +278,10 @@ internal static class XDotParser
     {
         var rect = RectangleD.Create
         (
-            x: XDotFFI.get_x_rect(rectPtr),
-            y: XDotFFI.get_y_rect(rectPtr),
-            width: XDotFFI.get_w_rect(rectPtr),
-            height: XDotFFI.get_h_rect(rectPtr)
+            x: GraphvizWrapperLib.get_x_rect(rectPtr),
+            y: GraphvizWrapperLib.get_y_rect(rectPtr),
+            width: GraphvizWrapperLib.get_w_rect(rectPtr),
+            height: GraphvizWrapperLib.get_h_rect(rectPtr)
         );
 
         return rect;
@@ -291,10 +291,10 @@ internal static class XDotParser
     {
         TextInfo text = new TextInfo
         (
-            new PointD(XDotFFI.get_x_text(txtPtr), XDotFFI.get_y_text(txtPtr)),
-            XDotFFI.get_align(txtPtr),
-            XDotFFI.get_width(txtPtr),
-            XDotFFI.GetTextStr(txtPtr)!,
+            new PointD(GraphvizWrapperLib.get_x_text(txtPtr), GraphvizWrapperLib.get_y_text(txtPtr)),
+            GraphvizWrapperLib.get_align(txtPtr),
+            GraphvizWrapperLib.get_width(txtPtr),
+            GraphvizWrapperLib.GetTextStr(txtPtr)!,
             activeFont,
             activeFontChar,
             CoordinateSystem.BottomLeft

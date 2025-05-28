@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using static Rubjerg.Graphviz.ForeignFunctionInterface;
+using static Rubjerg.Graphviz.FFI.GraphvizFFI;
 
 namespace Rubjerg.Graphviz;
 
