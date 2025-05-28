@@ -62,10 +62,10 @@ internal static class GraphvizWrapperLib
     internal static extern IntPtr rj_agtail(IntPtr node);
     [DllImport(GraphvizWrapperLibName, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     internal static extern IntPtr rj_sym_key(IntPtr sym);
-    
+
     [DllImport(GraphvizWrapperLibName, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     internal static extern IntPtr rj_agopen(IntPtr name, int graphtype);
-    
+
     // Accessors for xdot
     [DllImport(GraphvizWrapperLibName, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
     public static extern UIntPtr get_cnt(IntPtr xdot);
