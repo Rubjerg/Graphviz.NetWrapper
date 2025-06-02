@@ -85,5 +85,5 @@ check-fixme:
 check-tutorial-width:
     awk 'length($0) > 100 { print FILENAME ":" NR ": " $0; found=1 } END { exit found }' Rubjerg.Graphviz.Test/Tutorial.cs
 
-check-all: generate-readme normalize format check-diff check-fixme
+check-all: generate-readme normalize format check-diff check-fixme check-tutorial-width
 
