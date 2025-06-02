@@ -17,6 +17,11 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
 

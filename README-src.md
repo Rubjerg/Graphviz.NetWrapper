@@ -5,18 +5,19 @@ Graphviz.NetWrapper
 
 `Rubjerg.Graphviz` ships with precompiled Graphviz binaries to ensure the exact graphviz version is used that we have tested and to make deployment more predictable.
 The current version we ship is Graphviz 11.0.0.
-
-### Windows
-`Rubjerg.Graphviz` ships with a bunch of precompiled Graphviz dlls built for 64 bit Windows.
 This library is compatible with .NET Standard 2.0, but the nuget package only supports .NET5.0 and higher.
 The unit tests run on windows and linux against .NET Framework .NET 8.0.
 
+### Windows
+`Rubjerg.Graphviz` ships with the necessary Graphviz binaries and dependencies built for 64 bit Windows.
+
 ### Linux
-In the same vein as our windows build, we ship precompiled binaries to make sure that this library is deployed with the same binaries as we've tested it.
-However, we do not ship graphviz dependencies, you will have to installed those yourself, if you need them.
+In the same vein as our windows build, we ship Graphviz binaries to make sure that this library is deployed with the same binaries as we've tested it.
+However, we do not ship all the dependencies of Graphviz.
+You will have to make sure these are available on your system, if you need them.
 [Here is a list of all the graphviz dependencies.](https://packages.fedoraproject.org/pkgs/graphviz/graphviz/fedora-rawhide.html#dependencies)
 In practice you may not need all of those.
-In particular, if you only want to read graphs and e.g. run the DOT algorithm, libc and libz are enough.
+In particular, if you only want to read graphs and run the DOT layout algorithm, libc and libz are enough.
 To run our tests successfully you will also need libgts and libpcre2 (for the neato algorithm).
 For more details, check the dependencies of any graphviz binaries with `ldd`.
 
