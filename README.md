@@ -64,17 +64,17 @@ public class Tutorial
     [Test, Order(1)]
     public void GraphConstruction()
     {
-        // You can programmatically construct graphs as follows
+        // You can programmatically construct graphs as follows.
         RootGraph root = RootGraph.CreateNew(GraphType.Directed, "Some Unique Identifier");
         // The graph name is optional, and can be omitted. The name is not interpreted by Graphviz,
         // except it is recorded and preserved when the graph is written as a file.
 
-        // The node names are unique identifiers within a graph in Graphviz
+        // The node names are unique identifiers within a graph in Graphviz.
         Node nodeA = root.GetOrAddNode("A");
         Node nodeB = root.GetOrAddNode("B");
         Node nodeC = root.GetOrAddNode("C");
 
-        // The edge name is only unique between two nodes
+        // The edge name is only unique between two nodes.
         Edge edgeAB = root.GetOrAddEdge(nodeA, nodeB, "Some edge name");
         Edge edgeBC = root.GetOrAddEdge(nodeB, nodeC, "Some edge name");
         Edge anotherEdgeBC = root.GetOrAddEdge(nodeB, nodeC, "Another edge name");
@@ -87,8 +87,8 @@ public class Tutorial
 
         // We can attach attributes to nodes, edges and graphs to store information and instruct
         // Graphviz by specifying layout parameters. At the moment we only support string
-        // attributes. Cgraph assumes that all objects of a given kind (graphs/subgraphs, nodes,
-        // or edges) have the same attributes. An attribute has to be introduced with a default value
+        // attributes. Cgraph assumes that all objects of a given kind (graphs/subgraphs, nodes, or
+        // edges) have the same attributes. An attribute has to be introduced with a default value
         // first for a certain kind, before we can use it.
         Node.IntroduceAttribute(root, "my attribute", "defaultvalue");
         nodeA.SetAttribute("my attribute", "othervalue");
@@ -98,17 +98,18 @@ public class Tutorial
         Edge.IntroduceAttribute(root, "my attribute", "defaultvalue");
         edgeAB.SetAttribute("my attribute", "othervalue");
 
-        // To introduce and set an attribute at the same time, there are convenience wrappers
+        // To introduce and set an attribute at the same time, there are convenience wrappers.
         edgeBC.SafeSetAttribute("arrowsize", "2.0", "1.0");
-        // If we set an unintroduced attribute, the attribute will be introduced with an empty default value.
+        // If we set an unintroduced attribute, the attribute will be introduced with an empty
+        // default value.
         edgeBC.SetAttribute("new attr", "value");
 
-        // Some attributes - like "label" - accept HTML strings as value
-        // To tell Graphviz that a string should be interpreted as HTML use the designated methods
+        // Some attributes - like "label" - accept HTML strings as value.
+        // To tell Graphviz that a string should be interpreted as HTML use the designated methods.
         Node.IntroduceAttribute(root, "label", "defaultlabel");
         nodeB.SetAttributeHtml("label", "<b>Some HTML string</b>");
 
-        // We can simply export this graph to a text file in dot format
+        // We can simply export this graph to a text file in dot format.
         root.ToDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
 
         // A word of advice, Graphviz doesn't play very well with empty strings.
@@ -118,20 +119,21 @@ public class Tutorial
     [Test, Order(2)]
     public void Layouting()
     {
-        // If we have a given dot file (in this case the one we generated above), we can also read it back in
+        // If we have a given dot file (in this case the one we generated above), we can also read
+        // it back in.
         RootGraph root = RootGraph.FromDotFile(TestContext.CurrentContext.TestDirectory + "/out.dot");
 
-        // We can ask Graphviz to compute a layout and render it to svg
+        // We can ask Graphviz to compute a layout and render it to svg.
         root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/dot_out.svg");
 
-        // We can use layout engines other than dot by explicitly passing the engine we want
+        // We can use layout engines other than dot by explicitly passing the engine we want.
         root.ToSvgFile(TestContext.CurrentContext.TestDirectory + "/neato_out.svg", LayoutEngines.Neato);
 
-        // Or we can ask Graphviz to compute the layout and programatically read out the layout attributes
-        // This will create a copy of our original graph with layout information attached to it in the form
-        // of attributes. Graphviz outputs coordinates in a bottom-left originated coordinate system.
-        // But since many applications require rendering in a top-left originated coordinate system,
-        // we provide a way to translate the coordinates.
+        // Or we can ask Graphviz to compute the layout and programatically read out the layout
+        // attributes This will create a copy of our original graph with layout information attached
+        // to it in the form of attributes. Graphviz outputs coordinates in a bottom-left originated
+        // coordinate system. But since many applications require rendering in a top-left originated
+        // coordinate system, we provide a way to translate the coordinates.
         RootGraph layout = root.CreateLayout(coordinateSystem: CoordinateSystem.TopLeft);
 
         // There are convenience methods available that parse these attributes for us and give
@@ -143,7 +145,7 @@ public class Tutorial
         RectangleD nodeboundingbox = nodeA.GetBoundingBox();
         Utils.AssertPattern(RectPattern, nodeboundingbox.ToString());
 
-        // Or splines between nodes
+        // Or splines between nodes.
         Node nodeB = layout.GetNode("B")!;
         Edge edge = layout.GetEdge(nodeA, nodeB, "Some edge name")!;
         PointD[] spline = edge.GetFirstSpline();
@@ -202,10 +204,10 @@ public class Tutorial
 
         // COMPOUND EDGES
         // Graphviz does not really support edges from and to clusters. However, by adding an
-        // invisible dummynode and setting the ltail or lhead attributes of an edge this
-        // behavior can be faked. Graphviz will then draw an edge to the dummy node but clip it
-        // at the border of the cluster. We provide convenience methods for this.
-        // To enable this feature, Graphviz requires us to set the "compound" attribute to "true".
+        // invisible dummynode and setting the ltail or lhead attributes of an edge this behavior
+        // can be faked. Graphviz will then draw an edge to the dummy node but clip it at the border
+        // of the cluster. We provide convenience methods for this. To enable this feature, Graphviz
+        // requires us to set the "compound" attribute to "true".
         Graph.IntroduceAttribute(root, "compound", "true"); // Allow lhead/ltail
         // The boolean indicates whether the dummy node should take up any space. When you pass
         // false and you have a lot of edges, the edges may start to overlap a lot.
@@ -228,12 +230,13 @@ public class Tutorial
         RootGraph root = RootGraph.CreateNew(GraphType.Directed, "Graph with records");
         Node nodeA = root.GetOrAddNode("A");
         nodeA.SetAttribute("shape", "record");
-        // New line characters are not supported by record labels, and will be ignored by Graphviz
+        // New line characters are not supported by record labels, and will be ignored by Graphviz.
         nodeA.SetAttribute("label", "1|2|3|{4|5}|6|{7|8|9}");
 
         var layout = root.CreateLayout();
 
-        // The order of the list matches the order in which the labels occur in the label string above.
+        // The order of the list matches the order in which the labels occur in the label string
+        // above.
         var rects = layout.GetNode("A")!.GetRecordRectangles().ToList();
         var rectLabels = layout.GetNode("A")!.GetRecordRectangleLabels().Select(l => l.Text).ToList();
         Assert.AreEqual(9, rects.Count);
@@ -248,19 +251,21 @@ public class Tutorial
         Node nodeA = root.GetOrAddNode("A");
 
         // Several characters and character sequences can have special meanings in labels, like \N.
-        // When you want to have a literal string in a label, we provide a convenience function for you to do just that.
+        // When you want to have a literal string in a label, we provide a convenience function for
+        // you to do just that.
         nodeA.SetAttribute("label", CGraphThing.EscapeLabel("Some string literal \\N \\n |}>"));
 
-        // When defining portnames, some characters, like ':' and '|', are not allowed and they can't be escaped either.
-        // This can be troubling if you have an externally defined ID for such a port.
-        // We provide a function that maps strings to valid portnames.
+        // When defining portnames, some characters, like ':' and '|', are not allowed and they
+        // can't be escaped either. This can be troubling if you have an externally defined ID for
+        // such a port. We provide a function that maps strings to valid portnames.
         var somePortId = "port id with :| special characters";
         var validPortName = Edge.ConvertUidToPortName(somePortId);
         Node nodeB = root.GetOrAddNode("B");
         nodeB.SetAttribute("shape", "record");
         nodeB.SetAttribute("label", $"<{validPortName}>1|2");
 
-        // The conversion function makes sure different strings don't accidentally map onto the same portname
+        // The conversion function makes sure different strings don't accidentally map onto the same
+        // portname.
         Assert.AreNotEqual(Edge.ConvertUidToPortName(":"), Edge.ConvertUidToPortName("|"));
     }
 }
