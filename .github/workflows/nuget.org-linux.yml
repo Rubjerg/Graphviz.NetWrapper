@@ -22,10 +22,10 @@ jobs:
     - name: Install libgts
       run: sudo apt-get update && sudo apt-get install -y libgts-0.7-5
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: '8.0.x'
         
     - name: Setup Just
       uses: extractions/setup-just@v3
