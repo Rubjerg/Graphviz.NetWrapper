@@ -12,8 +12,8 @@ This library is compatible with .NET Standard 2.0, but the nuget package only su
 The unit tests run on windows and linux against .NET Framework .NET 8.0.
 
 ### Linux
-In the same vein as our windows build, we ship precompiled binaries to make sure that this library is deployed with the same binaries as we've tested it.
-However, we do not ship graphviz dependencies, you will have to installed those yourself, if you need them.
+In the same vein as our windows build, we ship Graphviz binaries to make sure that this library is deployed with the same binaries as we've tested it.
+However, we do not ship all the dependencies of Graphviz, you will have to make sure these are available on your system, if you need them.
 [Here is a list of all the graphviz dependencies.](https://packages.fedoraproject.org/pkgs/graphviz/graphviz/fedora-rawhide.html#dependencies)
 In practice you may not need all of those.
 In particular, if you only want to read graphs and e.g. run the DOT algorithm, libc and libz are enough.
