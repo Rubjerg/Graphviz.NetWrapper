@@ -1,0 +1,36 @@
+name: win-build-nonportable
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+
+on:
+  push:         { branches: [ master ] }
+  pull_request: { branches: [ master ] }
+  release:      { types: [published] }      # runs on “Publish release” button
+  workflow_dispatch:                        # lets you run it by hand
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      name: Checkout Code
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Setup NuGet.exe for use with actions
+      uses: NuGet/setup-nuget@v1.0.5
+        
+    - name: Setup Just
+      uses: extractions/setup-just@v3
+
+    - name: Build and test
+      run: just test-win-x64

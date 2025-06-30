@@ -19,6 +19,9 @@ build SOLUTION:
         dotnet build {{SOLUTION}} --configuration Release --no-restore; \
     fi
 
+build-rid SOLUTION RID:
+    dotnet build {{SOLUTION}} --configuration Release --no-restore -r {{RID}};
+
 # Build nuget package
 build-package: restore
     just build Rubjerg.Graphviz.sln
@@ -53,6 +56,13 @@ test-nugetorg:
     just build NugetOrgTests/Rubjerg.Graphviz.NugetOrgTests.sln
     just test NugetOrgTests/Rubjerg.Graphviz.NugetOrgTest/Rubjerg.Graphviz.NugetOrgTest.csproj
     just test NugetOrgTests/Rubjerg.Graphviz.NugetOrgTransitiveTest/Rubjerg.Graphviz.NugetOrgTransitiveTest.csproj
+
+# Build and test nonportable win-x64 deployment
+test-win-x64: restore-tests
+    dotnet build Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj --configuration Release --no-restore -r win-x64;
+    dotnet build Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj --configuration Release --no-restore -r win-x64;
+    just test Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
+    just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
 
 locate-nupkg GITHUB_OUTPUT:
     echo "package=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)" >> "{{GITHUB_OUTPUT}}"
