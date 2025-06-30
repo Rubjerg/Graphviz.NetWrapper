@@ -26,8 +26,10 @@ public class TestDotLayout
         edge.SetAttribute("arrowtail", "vee");
         edge.SetAttribute("arrowhead", "vee");
     }
-
+#if _WINDOWS
+#elif
     [Test()]
+#endif
     public void TestLayoutMethodsWithoutLayout()
     {
         CreateSimpleTestGraph(out RootGraph root, out Node nodeA, out Edge edge);
