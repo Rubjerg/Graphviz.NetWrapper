@@ -21,6 +21,9 @@ In particular, if you only want to read graphs and run the DOT layout algorithm,
 To run our tests successfully you will also need libgts and libpcre2 (for the neato algorithm).
 For more details, check the dependencies of any graphviz binaries with `ldd`.
 
+It is currently not possible to use this package on linux in a non-portable application, i.e. an application that targets linux-x64.
+The reason for this is that [dotnet flattens the directory structure of native dependencies when targetting a single runtime](https://github.com/dotnet/sdk/issues/9643), and this breaks graphviz.
+
 ## Installation
 
 Add the [Rubjerg.Graphviz nuget package](https://www.nuget.org/packages/Rubjerg.Graphviz/) to your project.
