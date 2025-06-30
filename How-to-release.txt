@@ -1,5 +1,5 @@
-- Make a prerelease on github (and add a new tag there). This will trigger the CI.
-- Grab the nuget package from the CI artifacts.
+- Publish a prerelease on github (and add a new tag there). This will trigger the CI.
+- Go to Actions on github and grab the nuget package from the CI artifacts.
 - Upload the .nupkg file to nuget.org.
   - Upload to https://www.nuget.org/packages/manage/upload
   - Mark as unlisted
