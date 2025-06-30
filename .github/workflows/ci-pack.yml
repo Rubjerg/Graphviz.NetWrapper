@@ -1,4 +1,3 @@
-# .github/workflows/ci-pack.yml
 name: CI-Pack
 
 on:
