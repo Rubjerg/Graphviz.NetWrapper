@@ -26,10 +26,9 @@ public class TestDotLayout
         edge.SetAttribute("arrowtail", "vee");
         edge.SetAttribute("arrowhead", "vee");
     }
-#if _WINDOWS
-#elif
+
     [Test()]
-#endif
+    [Platform(Exclude = "Win", Reason = "Flaky on Windows")]
     public void TestLayoutMethodsWithoutLayout()
     {
         CreateSimpleTestGraph(out RootGraph root, out Node nodeA, out Edge edge);
