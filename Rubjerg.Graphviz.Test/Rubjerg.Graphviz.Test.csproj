@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Rubjerg.Graphviz">
-      <Version>2.0.*-*</Version>
+      <Version>*-*</Version>
     </PackageReference>
     <PackageReference Include="NUnit.ConsoleRunner">
       <Version>3.18.3</Version>
