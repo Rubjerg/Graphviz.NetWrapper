@@ -57,6 +57,10 @@ public class GraphvizCommand
     public static (byte[] stdout, string stderr) Exec(Graph input, string format = "xdot", string? outputPath = null, string engine = LayoutEngines.Dot)
     {
         var exeName = Path.Combine(AppContext.BaseDirectory, "runtimes", Rid, "native", "dot");
+        
+        // If graphviz is not found in the runtimes folder, look in the current directory for compatibility with nonportable windows builds.
+        exeName = File.Exists(exeName) ? exeName : "dot";
+        
         string arguments = $"-T{format} -K{engine}";
         if (outputPath != null)
         {
