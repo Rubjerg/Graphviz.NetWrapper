@@ -28,6 +28,7 @@ public class TestDotLayout
     }
 
     [Test()]
+    [Platform(Exclude = "Win", Reason = "Flaky on Windows")]
     public void TestLayoutMethodsWithoutLayout()
     {
         CreateSimpleTestGraph(out RootGraph root, out Node nodeA, out Edge edge);

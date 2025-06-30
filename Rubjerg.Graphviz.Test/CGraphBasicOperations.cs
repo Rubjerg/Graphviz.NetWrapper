@@ -101,7 +101,6 @@ public class CGraphBasicOperations
     [Test()]
     public void TestEdgeContraction()
     {
-        //NativeMethods.AllocConsole();
         RootGraph root = Utils.CreateUniqueTestGraph();
         Node tail = root.GetOrAddNode("x");
         Node head = root.GetOrAddNode("xx");
