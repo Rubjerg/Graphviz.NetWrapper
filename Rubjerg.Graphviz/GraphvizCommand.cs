@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace Rubjerg.Graphviz;
 
@@ -33,6 +34,16 @@ public class GraphvizCommand
         }
     }
 
+    internal static Lazy<string> _DotExePath = new Lazy<string>(() =>
+        // If graphviz is not found in the runtimes folder, look in the current directory for compatibility with nonportable windows builds.
+        new string[] {
+            Path.Combine(AppContext.BaseDirectory, "runtimes", Rid, "native", "dot"),
+            Path.Combine(AppContext.BaseDirectory, "runtimes", Rid, "native", "dot.exe"),
+            "dot",
+            "dot.exe"
+        }.FirstOrDefault(File.Exists));
+    internal static string DotExePath => _DotExePath.Value;
+
     public static RootGraph CreateLayout(Graph input, string engine = LayoutEngines.Dot, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
     {
         var (stdout, stderr) = Exec(input, engine: engine);
@@ -56,7 +67,6 @@ public class GraphvizCommand
     /// <returns>stderr may contain warnings, stdout is in utf8 encoding</returns>
     public static (byte[] stdout, string stderr) Exec(Graph input, string format = "xdot", string? outputPath = null, string engine = LayoutEngines.Dot)
     {
-        var exeName = Path.Combine(AppContext.BaseDirectory, "runtimes", Rid, "native", "dot");
         string arguments = $"-T{format} -K{engine}";
         if (outputPath != null)
         {
@@ -71,7 +81,7 @@ public class GraphvizCommand
             ?? Path.GetDirectoryName(System.AppContext.BaseDirectory);
 
         // Construct the path to the executable
-        string exePath = Path.Combine(exeDirectory, exeName);
+        string exePath = Path.Combine(exeDirectory, DotExePath);
 
         Process process = new Process();
 
