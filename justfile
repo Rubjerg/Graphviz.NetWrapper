@@ -35,9 +35,9 @@ build-tests: restore-tests
     just build Rubjerg.Graphviz.Tests.sln
 
 # Run unit tests for a project
-test PROJECT:
+test PROJECT OUTPUT_PATH='bin/x64/Release/net8.0/':
     dotnet test --no-build \
-        -p:OutputPath=bin/x64/Release/net8.0 \
+        -p:OutputPath={{OUTPUT_PATH}} \
         -c Release \
         -f net8.0 \
         -v d \
@@ -61,8 +61,8 @@ test-nugetorg:
 test-win-x64: restore-tests
     dotnet build Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj --configuration Release --no-restore -r win-x64;
     dotnet build Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj --configuration Release --no-restore -r win-x64;
-    just test Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj
-    just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj
+    just test Rubjerg.Graphviz.Test/Rubjerg.Graphviz.Test.csproj bin/Release/net8.0/win-x64/
+    just test Rubjerg.Graphviz.TransitiveTest/Rubjerg.Graphviz.TransitiveTest.csproj bin/Release/net8.0/win-x64/
 
 locate-nupkg GITHUB_OUTPUT:
     echo "package=$(find . -name "Rubjerg.Graphviz.*.nupkg" | head -1)" >> "{{GITHUB_OUTPUT}}"
@@ -80,7 +80,7 @@ normalize:
     bash -c "git ls-files -- ':!GraphvizWrapper/graphvizfiles/*' ':!*.sh' | xargs unix2dos"
 
 # Format the code
-format:   
+format:
     dotnet format whitespace -v diag Rubjerg.Graphviz.sln
     dotnet format whitespace -v diag Rubjerg.Graphviz.Tests.sln
 
