@@ -108,8 +108,8 @@
 
     <!-- 6. Version logic -->
     <PropertyGroup>
-      <BaseVersion Condition="'$(LatestTag)' == ''">0.0.1</BaseVersion>
       <BaseVersion>$([System.Text.RegularExpressions.Regex]::Replace($(LatestTag), '^v', ''))</BaseVersion>
+      <BaseVersion Condition="'$(LatestTag)' == ''">0.0.1</BaseVersion>
       <MajorVersion>$([System.Text.RegularExpressions.Regex]::Match('$(BaseVersion)', '^\d+').Value)</MajorVersion>
       <MajorVersion Condition="'$(MajorVersion)' == ''">0</MajorVersion>
 
