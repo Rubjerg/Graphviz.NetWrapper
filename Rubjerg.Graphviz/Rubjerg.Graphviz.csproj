@@ -132,7 +132,7 @@
 
       <PackageVersion>$(Version)</PackageVersion> <!-- free form -->
       <InformationalVersion>$(Version)</InformationalVersion> <!-- free form, "Product Version" in file properties -->
-      <AssemblyVersion>$(MajorVersion).0.0.0</AssemblyVersion> <!-- numeric, change only on breaking changes -->
+      <AssemblyVersion>$(MajorVersion).0.0.0</AssemblyVersion> <!-- numeric, change only on breaking changes, which is what msft recommends for semver packages -->
       <FileVersion>$(AssemblyVersion)</FileVersion> <!-- numeric, "File Version" in file properties, match Assembly Version for easy visibility -->
     </PropertyGroup>
     
