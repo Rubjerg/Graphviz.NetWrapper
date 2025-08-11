@@ -70,7 +70,7 @@
     - Otherwise: 2.0.2-dev-<timestamp>
   -->
 
-  <Target Name="ComputeVersion" BeforeTargets="GenerateNuspec">
+  <Target Name="ComputeVersion" BeforeTargets="BeforeCompile" >
     <PropertyGroup>
       <_GitTmpFile>$([System.String]::Copy('$(IntermediateOutputPath)git-info.txt').Replace('\', '/'))</_GitTmpFile>
       <Timestamp>$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</Timestamp>
@@ -108,7 +108,10 @@
 
     <!-- 6. Version logic -->
     <PropertyGroup>
+      <BaseVersion Condition="'$(LatestTag)' == ''">0.0.1</BaseVersion>
       <BaseVersion>$([System.Text.RegularExpressions.Regex]::Replace($(LatestTag), '^v', ''))</BaseVersion>
+      <MajorVersion>$([System.Text.RegularExpressions.Regex]::Match('$(BaseVersion)', '^\d+').Value)</MajorVersion>
+      <MajorVersion Condition="'$(MajorVersion)' == ''">0</MajorVersion>
 
       <!-- Case 1: On exact tag, clean -->
       <_ResolvedVersion Condition="'$(ExactTag)' != '' and '$(IsDirty)' == 'no'">
@@ -125,9 +128,14 @@
         $(BaseVersion)-dev-$(Timestamp)
       </_ResolvedVersion>
 
-      <PackageVersion>$([System.String]::Copy($(_ResolvedVersion)).Trim())</PackageVersion>
-    </PropertyGroup>
+      <Version>$([System.String]::Copy($(_ResolvedVersion)).Trim())</Version>
 
+      <PackageVersion>$(Version)</PackageVersion> <!-- free form -->
+      <InformationalVersion>$(Version)</InformationalVersion> <!-- free form, "Product Version" in file properties -->
+      <AssemblyVersion>$(MajorVersion).0.0.0</AssemblyVersion> <!-- numeric, change only on breaking changes -->
+      <FileVersion>$(AssemblyVersion)</FileVersion> <!-- numeric, "File Version" in file properties, match Assembly Version for easy visibility -->
+    </PropertyGroup>
+    
     <Message Importance="High" Text="--- Git Version Debug Info ---" />
     <Message Importance="High" Text="LatestTag        : $(LatestTag)" />
     <Message Importance="High" Text="ExactTag         : $(ExactTag)" />
@@ -136,9 +144,12 @@
     <Message Importance="High" Text="MasterDescendant : $(MasterDescendant)" />
     <Message Importance="High" Text="BaseVersion      : $(BaseVersion)" />
     <Message Importance="High" Text="_ResolvedVersion : $(_ResolvedVersion)" />
-    <Message Importance="High" Text="Final Version    : $(PackageVersion)" />
     <Message Importance="High" Text="----------------------------------" />
-
+    <Message Importance="High" Text="Package Version    : $(PackageVersion)" />
+    <Message Importance="High" Text="Assembly Version : $(AssemblyVersion)" />
+    <Message Importance="High" Text="File Version : $(FileVersion)" />
+    <Message Importance="High" Text="Informational Version : $(InformationalVersion)" />
+    <Message Importance="High" Text="----------------------------------" />
   </Target>
 
 </Project>
