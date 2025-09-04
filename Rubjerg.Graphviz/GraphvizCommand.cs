@@ -34,7 +34,7 @@ public class GraphvizCommand
         }
     }
 
-    internal static Lazy<string> _DotExePath = new Lazy<string>(() =>
+    internal static readonly Lazy<string> _DotExePath = new Lazy<string>(() =>
     {
         // Depending on the method of deployment, there are several possible directories to look for dot
         string[] possibleLocations = [
