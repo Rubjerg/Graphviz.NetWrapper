@@ -43,8 +43,8 @@ public class GraphvizCommand
             Path.GetDirectoryName(AppContext.BaseDirectory),
             ""
         ];
-        return possibleLocations.FirstOrDefault(dir => File.Exists(Path.Combine(dir, "dot")))
-            ?? possibleLocations.FirstOrDefault(dir => File.Exists(Path.Combine(dir, "dot.exe")))
+        return possibleLocations.Select(dir => Path.Combine(dir, "dot")).FirstOrDefault(File.Exists)
+            ?? possibleLocations.Select(dir => Path.Combine(dir, "dot.exe")).FirstOrDefault(File.Exists)
             ?? throw new InvalidOperationException("Could not find path to dot binary");
     });
     internal static string DotExePath => _DotExePath.Value;
