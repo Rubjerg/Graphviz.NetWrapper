@@ -35,13 +35,18 @@ public class GraphvizCommand
     }
 
     internal static Lazy<string> _DotExePath = new Lazy<string>(() =>
-        // If graphviz is not found in the runtimes folder, look in the current directory for compatibility with nonportable windows builds.
-        new string[] {
-            Path.Combine(AppContext.BaseDirectory, "runtimes", Rid, "native", "dot"),
-            Path.Combine(AppContext.BaseDirectory, "runtimes", Rid, "native", "dot.exe"),
-            "dot",
-            "dot.exe"
-        }.FirstOrDefault(File.Exists));
+    {
+        // Depending on the method of deployment, there are several possible directories to look for dot
+        string[] possibleLocations = [
+            Path.Combine(AppContext.BaseDirectory, "runtimes", Rid, "native"),
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+            Path.GetDirectoryName(AppContext.BaseDirectory),
+            ""
+        ];
+        return possibleLocations.FirstOrDefault(dir => File.Exists(Path.Combine(dir, "dot")))
+            ?? possibleLocations.FirstOrDefault(dir => File.Exists(Path.Combine(dir, "dot.exe")))
+            ?? throw new InvalidOperationException("Could not find path to dot binary");
+    });
     internal static string DotExePath => _DotExePath.Value;
 
     public static RootGraph CreateLayout(Graph input, string engine = LayoutEngines.Dot, CoordinateSystem coordinateSystem = CoordinateSystem.BottomLeft)
@@ -74,18 +79,9 @@ public class GraphvizCommand
         }
         string? inputToStdin = input.ToDotString();
 
-        // Get the location of the currently executing DLL
-        // https://learn.microsoft.com/en-us/dotnet/api/system.reflection.assembly.codebase?view=net-5.0
-        string exeDirectory = AppDomain.CurrentDomain.RelativeSearchPath
-            ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-            ?? Path.GetDirectoryName(System.AppContext.BaseDirectory);
-
-        // Construct the path to the executable
-        string exePath = Path.Combine(exeDirectory, DotExePath);
-
         Process process = new Process();
 
-        process.StartInfo.FileName = exePath;
+        process.StartInfo.FileName = DotExePath;
         process.StartInfo.Arguments = arguments;
 
         // Redirect the input/output streams
