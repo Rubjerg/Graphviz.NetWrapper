@@ -17,7 +17,7 @@ However, we do not ship all the dependencies of Graphviz.
 You will have to make sure these are available on your system, if you need them.
 [Here is a list of all the graphviz dependencies.](https://packages.fedoraproject.org/pkgs/graphviz/graphviz/fedora-rawhide.html#dependencies)
 In practice you may not need all of those.
-In particular, if you only want to read graphs and run the DOT layout algorithm, libc and libz are enough.
+In particular, if you only want to read graphs and run the DOT layout algorithm, libtool-ldtl, libc and libz are enough.
 To run our tests successfully you will also need libgts and libpcre2 (for the neato algorithm).
 For more details, check the dependencies of any graphviz binaries with `ldd`.
 
