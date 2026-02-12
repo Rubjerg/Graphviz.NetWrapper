@@ -77,7 +77,7 @@ generate-readme:
 # Strip trailing spaces and normalize line endings to crlf
 normalize:
     bash -c "git ls-files -- ':!GraphvizWrapper/*' | xargs sed -i -b 's/[ \t]*$//' "
-    bash -c "git ls-files -- ':!GraphvizWrapper/graphvizfiles/*' ':!*.sh' | xargs unix2dos"
+    bash -c "git ls-files -- ':!GraphvizWrapper/graphvizfiles/*' ':!*.lib' ':!*.sh' | xargs unix2dos"
 
 # Format the code
 format:
