@@ -27,6 +27,7 @@ public class GraphvizCommand
                 Architecture.Arm64 => "arm64",
                 Architecture.X86 => "x86",
                 Architecture.Arm => "arm",
+                Architecture.S390x => "s390x",
                 _ => "unknown"
             };
 
@@ -129,4 +130,5 @@ public class GraphvizCommand
         }
     }
 }
+
 
