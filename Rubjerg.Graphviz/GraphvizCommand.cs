@@ -27,7 +27,9 @@ public class GraphvizCommand
                 Architecture.Arm64 => "arm64",
                 Architecture.X86 => "x86",
                 Architecture.Arm => "arm",
-                Architecture.S390x => "s390x",
+#if NET6_0_OR_GREATER
+                Architecture.S390x => "s390x",  // s390x support added in .NET 6
+endif
                 _ => "unknown"
             };
 
@@ -130,5 +132,6 @@ public class GraphvizCommand
         }
     }
 }
+
 
 
