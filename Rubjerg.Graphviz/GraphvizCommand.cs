@@ -27,6 +27,9 @@ public class GraphvizCommand
                 Architecture.Arm64 => "arm64",
                 Architecture.X86 => "x86",
                 Architecture.Arm => "arm",
+                // Cast allows compilation in .NET Standard 2.0/2.1.
+                // (Architecture)5 is S390x, added in .NET 6.
+                (Architecture)5 => "s390x",
                 _ => "unknown"
             };
 
