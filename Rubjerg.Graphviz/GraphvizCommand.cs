@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -27,6 +28,9 @@ public class GraphvizCommand
                 Architecture.Arm64 => "arm64",
                 Architecture.X86 => "x86",
                 Architecture.Arm => "arm",
+                // Cast allows compilation in .NET Standard 2.0/2.1.
+                // (Architecture)5 is S390x, added in .NET 6.
+                (Architecture)5 => "s390x",
                 _ => "unknown"
             };
 
@@ -37,12 +41,18 @@ public class GraphvizCommand
     internal static readonly Lazy<string> _DotExePath = new Lazy<string>(() =>
     {
         // Depending on the method of deployment, there are several possible directories to look for dot
-        string[] possibleLocations = [
-            Path.Combine(AppContext.BaseDirectory, "runtimes", Rid, "native"),
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-            Path.GetDirectoryName(AppContext.BaseDirectory),
-            ""
-        ];
+        // The DOT_BINARY_PATH environment variable can be set to point to a specific location, which will be checked first.
+        var dotBinaryPath = Environment.GetEnvironmentVariable("DOT_BINARY_PATH");
+        var possibleLocations = new List<string>();
+        if (!string.IsNullOrEmpty(dotBinaryPath))
+        {
+            possibleLocations.Add(dotBinaryPath);
+        }
+        possibleLocations.Add(Path.Combine(AppContext.BaseDirectory, "runtimes", Rid, "native"));
+        possibleLocations.Add(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+        possibleLocations.Add(Path.GetDirectoryName(AppContext.BaseDirectory));
+        possibleLocations.Add("");
+
         return possibleLocations.Where(d => d != null).Select(dir => Path.Combine(dir, "dot")).FirstOrDefault(File.Exists)
            ?? possibleLocations.Where(d => d != null).Select(dir => Path.Combine(dir, "dot.exe")).FirstOrDefault(File.Exists)
            ?? throw new InvalidOperationException("Could not find path to dot binary in any of: " + string.Join(", ", possibleLocations));
